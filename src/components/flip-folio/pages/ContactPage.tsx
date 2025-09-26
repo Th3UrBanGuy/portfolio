@@ -3,7 +3,7 @@
 import type { PortfolioData } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Mail, Phone, ExternalLink, Github, Linkedin, Twitter, Facebook, Send, Smartphone, Globe } from 'lucide-react';
+import { Mail, Phone, ExternalLink, Github, Linkedin, Twitter, Facebook, Send, Smartphone, Globe, Users } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 
@@ -38,18 +38,18 @@ export default function ContactPage({ contactDetails, socials }: { contactDetail
                             Direct Channels
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-3">
+                    <CardContent className="space-y-3 text-xs">
                          <div className="flex items-center">
                             <Phone className="h-4 w-4 text-primary/80 flex-shrink-0" />
-                            <a href={`tel:${contactDetails.phone}`} className="ml-3 text-xs font-medium text-page-foreground/90 hover:text-primary break-all">
+                            <a href={`tel:${contactDetails.phone}`} className="ml-3 font-medium text-page-foreground/90 hover:text-primary break-all">
                                 {contactDetails.phone}
                             </a>
                         </div>
                         <Separator className='bg-stone-400/30' />
                         <div className="flex items-start">
-                           <div className="ml-1 flex flex-col space-y-1">
+                            <div className="flex flex-col space-y-1">
                                 {contactDetails.emails.slice(0, 2).map(email => (
-                                    <a key={email} href={`mailto:${email}`} className="text-xs font-medium text-page-foreground/90 hover:text-primary break-all">
+                                    <a key={email} href={`mailto:${email}`} className="font-medium text-page-foreground/90 hover:text-primary break-all">
                                         {email}
                                     </a>
                                 ))}
@@ -111,24 +111,3 @@ export default function ContactPage({ contactDetails, socials }: { contactDetail
     </div>
   );
 }
-
-// Dummy icon for structure
-const Users = (props: any) => (
-  <svg
-    {...props}
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-    <circle cx="9" cy="7" r="4" />
-    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-  </svg>
-);
