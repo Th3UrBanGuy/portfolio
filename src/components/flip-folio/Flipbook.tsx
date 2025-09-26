@@ -100,14 +100,14 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
   };
   
   const getPageClass = (page: 'left' | 'right') => {
-    const isCover = currentPage === 'cover';
-
     if (isFlipping) {
         if (direction === 'next') {
-            return page === 'left' ? 'animate-flip-out-next' : 'animate-flip-in-next';
+            // The right page flips out, the left page flips in
+            return page === 'right' ? 'animate-flip-out-next' : 'animate-flip-in-next';
         }
         if (direction === 'prev') {
-            return page === 'left' ? 'animate-flip-in-prev' : 'animate-flip-out-prev';
+            // The left page flips out, the right page flips in
+            return page === 'left' ? 'animate-flip-out-prev' : 'animate-flip-in-prev';
         }
     }
     
@@ -117,10 +117,10 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
   const getMobilePageClass = () => {
      if (isFlipping) {
         if (direction === 'next') {
-          return 'animate-flip-in-next'; // Simplified for mobile
+          return 'animate-flip-out-next'; // Simplified for mobile
         }
         if (direction === 'prev') {
-          return 'animate-flip-in-prev'; // Simplified for mobile
+          return 'animate-flip-out-prev'; // Simplified for mobile
         }
     }
     return 'transform-none';
@@ -154,6 +154,10 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
                  <div className="absolute inset-0 backface-hidden rounded-lg overflow-hidden">
                     {renderPageContent(currentPage, currentPageIndex)}
                 </div>
+                 <div className="absolute inset-0 backface-hidden [transform:rotateY(180deg)] rounded-lg overflow-hidden">
+                    {direction === 'next' && currentPageIndex > 0 && renderPageContent(pageOrder[currentPageIndex - 1], currentPageIndex - 1)}
+                    {direction === 'prev' && currentPageIndex < totalPages - 1 && renderPageContent(pageOrder[currentPageIndex + 1], currentPageIndex + 1)}
+                </div>
             </div>
          </div>
 
@@ -185,10 +189,10 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
                getPageClass('left')
             )}>
               <div className="absolute inset-0 backface-hidden rounded-l-lg overflow-hidden">
-                {currentPageIndex > 1 && renderPageContent(pageOrder[currentPageIndex - 1], currentPageIndex - 1)}
+                {currentPageIndex > 0 && renderPageContent(pageOrder[currentPageIndex - 1], currentPageIndex - 1)}
               </div>
               <div className="absolute inset-0 backface-hidden [transform:rotateY(180deg)] rounded-l-lg overflow-hidden">
-                {renderPageContent(pageOrder[currentPageIndex], currentPageIndex)}
+                 {renderPageContent(pageOrder[currentPageIndex], currentPageIndex)}
               </div>
             </div>
 
@@ -201,8 +205,8 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
                 <div className="absolute inset-0 backface-hidden rounded-r-lg overflow-hidden">
                     {renderPageContent(currentPage, currentPageIndex)}
                 </div>
-                 <div className="absolute inset-0 backface-hidden [transform:rotateY(180deg)] rounded-r-lg overflow-hidden">
-                    {currentPageIndex > 0 && renderPageContent(pageOrder[currentPageIndex-1], currentPageIndex-1)}
+                 <div className="absolute inset-0 backface-hidden [transform:rotateY(-180deg)] rounded-r-lg overflow-hidden">
+                    {currentPageIndex > 0 && renderPageContent(pageOrder[currentPageIndex+1], currentPageIndex+1)}
                 </div>
             </div>
 
