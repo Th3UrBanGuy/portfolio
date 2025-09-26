@@ -22,10 +22,38 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
   const [direction, setDirection] = useState<'next' | 'prev' | null>(null);
   const [isFlipping, setIsFlipping] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const isMobile = useIsMobile();
 
   const currentPageIndex = pageOrder.indexOf(currentPage);
   const totalPages = pageOrder.length;
+
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null); // otherwise the swipe is fired even with usual touch events
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    if (isLeftSwipe) {
+      nextPage();
+    }
+    if (isRightSwipe) {
+      prevPage();
+    }
+    setTouchStart(null);
+    setTouchEnd(null);
+  };
 
   const navigate = (page: Page) => {
     if (isFlipping) return;
@@ -38,6 +66,7 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
     setTimeout(() => {
       setCurrentPage(page);
       setIsFlipping(false);
+      setDirection(null);
     }, 600);
   };
 
@@ -97,48 +126,58 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
   };
   
   const getPageClass = (page: 'left' | 'right') => {
-    if (isFlipping) {
-        if (direction === 'next') {
-            // The right page flips out, the left page flips in
-            return page === 'right' ? 'animate-flip-out-next' : 'animate-flip-in-next';
-        }
-        if (direction === 'prev') {
-            // The left page flips out, the right page flips in
-            return page === 'left' ? 'animate-flip-out-prev' : 'animate-flip-in-prev';
-        }
-    }
+    if (!isFlipping) return 'transform-none';
     
+    if (direction === 'next') {
+        return page === 'right' ? 'animate-flip-out-next' : 'animate-flip-in-next';
+    }
+    if (direction === 'prev') {
+        return page === 'left' ? 'animate-flip-out-prev' : 'animate-flip-in-prev';
+    }
     return 'transform-none';
   }
 
   const getMobilePageClass = () => {
-     if (isFlipping) {
-        if (direction === 'next') {
-          return 'animate-flip-out-next'; // Simplified for mobile
-        }
-        if (direction === 'prev') {
-          return 'animate-flip-out-prev'; // Simplified for mobile
-        }
-    }
+     if (!isFlipping) return 'transform-none';
+      if (direction === 'next') {
+        return 'animate-flip-out-next';
+      }
+      if (direction === 'prev') {
+        return 'animate-flip-out-prev';
+      }
     return 'transform-none';
   }
 
   if (isMobile) {
     return (
-       <main className="flex h-dvh w-full flex-col p-4">
+       <main className="flex h-dvh w-full flex-col p-4"
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
+        >
          <div className="relative flex-grow perspective">
             <div className={cn(
                 "w-full h-full rounded-lg shadow-2xl preserve-3d origin-center",
-                getMobilePageClass()
-            )} onClick={nextPage}>
+                 getMobilePageClass()
+            )}>
                  <div className="absolute inset-0 backface-hidden rounded-lg overflow-hidden">
                     {renderPageContent(currentPage, currentPageIndex)}
                 </div>
                  <div className="absolute inset-0 backface-hidden [transform:rotateY(180deg)] rounded-lg overflow-hidden">
-                    {direction === 'next' && currentPageIndex > 0 && renderPageContent(pageOrder[currentPageIndex - 1], currentPageIndex - 1)}
-                    {direction === 'prev' && currentPageIndex < totalPages - 1 && renderPageContent(pageOrder[currentPageIndex + 1], currentPageIndex + 1)}
+                    {direction === 'prev' && currentPageIndex > 0 ? renderPageContent(pageOrder[currentPageIndex - 1], currentPageIndex - 1) :
+                     direction === 'next' && currentPageIndex < totalPages - 1 ? renderPageContent(pageOrder[currentPageIndex + 1], currentPageIndex + 1) : null
+                    }
                 </div>
             </div>
+         </div>
+         <div className="flex justify-center items-center gap-4 mt-4">
+            <Button onClick={prevPage} disabled={isFlipping || currentPageIndex === 0} variant="outline" size="icon" className="bg-background/50">
+                <ArrowLeft />
+            </Button>
+            <span className="text-sm text-foreground/70">{currentPageIndex} / {totalPages - 1}</span>
+            <Button onClick={nextPage} disabled={isFlipping || currentPageIndex === totalPages - 1} variant="outline" size="icon" className="bg-background/50">
+                <ArrowRight />
+            </Button>
          </div>
 
         <ProjectDetailDialog project={selectedProject} open={!!selectedProject} onOpenChange={() => setSelectedProject(null)} />
@@ -147,7 +186,14 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
   }
 
   return (
-    <main className="flex h-screen w-full items-center justify-center bg-background p-4 overflow-hidden">
+    <main className="flex h-screen w-full items-center justify-center bg-background p-4 overflow-hidden"
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+    >
+      <Button onClick={prevPage} disabled={isFlipping || currentPageIndex === 0} className={cn("absolute left-4 top-1/2 -translate-y-1/2 z-30", currentPage === 'cover' && 'hidden')}>
+        <ArrowLeft />
+      </Button>
       <div className="relative w-full h-full flex items-center justify-center perspective">
         <div className={cn("relative w-full max-w-6xl aspect-[2/1.4] preserve-3d transition-transform duration-500 ease-in-out", currentPage === 'cover' && 'md:group-hover:rotate-y-2')}>
             
@@ -156,7 +202,7 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
               "absolute w-1/2 h-full left-0 top-0 rounded-l-lg shadow-xl preserve-3d origin-right border-r border-black/20",
                currentPage === 'cover' ? 'hidden' : 'block',
                getPageClass('left')
-            )} onClick={prevPage}>
+            )} >
               <div className="absolute inset-0 backface-hidden rounded-l-lg overflow-hidden">
                 {currentPageIndex > 0 && renderPageContent(pageOrder[currentPageIndex - 1], currentPageIndex - 1)}
               </div>
@@ -170,12 +216,12 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
                 "absolute w-1/2 h-full right-0 top-0 rounded-r-lg shadow-2xl preserve-3d origin-left",
                 currentPage === 'cover' && 'w-full rounded-lg',
                 getPageClass('right')
-            )} onClick={nextPage}>
+            )} >
                 <div className="absolute inset-0 backface-hidden rounded-r-lg overflow-hidden">
                     {renderPageContent(currentPage, currentPageIndex)}
                 </div>
                  <div className="absolute inset-0 backface-hidden [transform:rotateY(-180deg)] rounded-r-lg overflow-hidden">
-                    {currentPageIndex > 0 && renderPageContent(pageOrder[currentPageIndex+1], currentPageIndex+1)}
+                    {currentPageIndex < totalPages - 1 && renderPageContent(pageOrder[currentPageIndex+1], currentPageIndex+1)}
                 </div>
             </div>
 
@@ -186,6 +232,9 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
             </div>
         </div>
       </div>
+       <Button onClick={nextPage} disabled={isFlipping || currentPageIndex === totalPages - 1} className="absolute right-4 top-1/2 -translate-y-1/2 z-30">
+        <ArrowRight />
+      </Button>
 
       <ProjectDetailDialog project={selectedProject} open={!!selectedProject} onOpenChange={() => setSelectedProject(null)} />
     </main>
