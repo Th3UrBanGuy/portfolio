@@ -50,6 +50,17 @@ export type ContactDetails = {
     emails: string[];
 }
 
+export type Achievement = {
+  id: string;
+  title: string;
+  short_description: string;
+  icon_url: string;
+  certificate_image_url: string;
+  full_description: string;
+  how_achieved: string;
+  words_about_it: string;
+};
+
 export type PortfolioData = {
   personalInfo: PersonalInfo;
   education: Education[];
@@ -61,4 +72,5 @@ export type PortfolioData = {
   aboutMe: string;
   contactDetails: ContactDetails;
   socials: Social[];
+  achievements: Achievement[];
 };

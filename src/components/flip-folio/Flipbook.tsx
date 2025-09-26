@@ -15,10 +15,11 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import SkillsPage from './pages/SkillsPage';
 import ExperiencePage from './pages/ExperiencePage';
 import EducationPage from './pages/EducationPage';
+import AchievementsPage from './pages/AchievementsPage';
 
-type Page = 'cover' | 'toc' | 'about' | 'education' | 'skills' | 'experience' | 'projects' | 'contact';
+type Page = 'cover' | 'toc' | 'about' | 'education' | 'skills' | 'experience' | 'achievements' | 'projects' | 'contact';
 
-const pageOrder: Page[] = ['cover', 'toc', 'about', 'education', 'skills', 'experience', 'projects', 'contact'];
+const pageOrder: Page[] = ['cover', 'toc', 'about', 'education', 'skills', 'experience', 'achievements', 'projects', 'contact'];
 
 export default function Flipbook({ data }: { data: PortfolioData }) {
   const [currentPage, setCurrentPage] = useState<Page>('cover');
@@ -100,6 +101,8 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
                 return <SkillsPage skills={data.skills} />;
             case 'experience':
                 return <ExperiencePage experience={data.experience} />;
+            case 'achievements':
+                return <AchievementsPage achievements={data.achievements} />;
             case 'projects':
                 return <ProjectsPage projects={data.projects} onProjectSelect={setSelectedProject} />;
             case 'contact':

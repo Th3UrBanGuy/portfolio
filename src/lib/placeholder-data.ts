@@ -21,6 +21,7 @@ const typedData = rawData as Omit<PortfolioData, 'projects' | 'aboutMe' | 'autho
 };
 
 export const defaultPortfolioData: PortfolioData = {
+  ...typedData,
   personalInfo: typedData.personalInfo,
   education: typedData.education,
   skills: typedData.skills,
