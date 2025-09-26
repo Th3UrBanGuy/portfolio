@@ -26,9 +26,9 @@
     },
     {
       "id": "author-image",
-      "description": "Portrait of a person",
-      "imageUrl": "https://images.unsplash.com/photo-1733231291541-7cc13adf08e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxhdXRob3IlMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTg4MzQ0Mzl8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "author portrait"
+      "description": "Portrait of Alahi Majnur Osama",
+      "imageUrl": "https://storage.googleapis.com/aifire-previews/356c279c-b3a5-4f51-b3b3-8c43793226a3.png",
+      "imageHint": "author portrait lake"
     }
   ]
 }
