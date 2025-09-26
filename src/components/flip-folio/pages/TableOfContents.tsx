@@ -20,17 +20,24 @@ const navItems = [
 export default function TableOfContents({ onNavigate, isStaticPanel = false }: TableOfContentsProps) {
   return (
     <div className={cn(
-      "flex h-full flex-col justify-center items-center text-center",
+      "flex h-full flex-col justify-center",
+      isStaticPanel ? "items-start pt-16" : "items-center text-center"
     )}>
-       <div className="flex flex-col items-center text-center mb-10">
-          <BookOpenCheck className="h-10 w-10 text-primary mb-3" />
-          <h1 className="font-headline text-3xl font-bold tracking-tight">
-              FlipFolio
-          </h1>
+       <div className={cn(
+         "flex flex-col mb-10",
+         isStaticPanel ? "items-start text-left" : "items-center text-center"
+       )}>
+          <div className="flex items-center gap-3">
+            <BookOpenCheck className="h-10 w-10 text-primary" />
+            <h1 className="font-headline text-3xl font-bold tracking-tight">
+                FlipFolio
+            </h1>
+          </div>
+          <p className="text-muted-foreground mt-2">An Interactive Portfolio</p>
        </div>
       
-      <nav>
-        <ul className="space-y-4 w-64">
+      <nav className={cn(isStaticPanel ? "w-full" : "w-64")}>
+        <ul className="space-y-4">
           {navItems.map((item) => (
             <li key={item.page}>
               <Button

@@ -12,6 +12,7 @@ import ContactPage from './pages/ContactPage';
 import ProjectDetailDialog from './ProjectDetailDialog';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 type Page = 'cover' | 'toc' | 'about' | 'projects' | 'contact';
 
@@ -23,6 +24,7 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
   const [isFlipping, setIsFlipping] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   const currentPageIndex = pageOrder.indexOf(currentPage);
   const totalPages = pageOrder.length;
@@ -73,7 +75,6 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
   
   const getPageClass = (page: 'left' | 'right') => {
     const isCover = currentPage === 'cover';
-    const isContact = currentPage === 'contact';
 
     if (isFlipping) {
         if (direction === 'next') {
@@ -87,24 +88,67 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
     return 'transform-none';
   }
 
+  const getMobilePageClass = () => {
+     if (isFlipping) {
+        if (direction === 'next') {
+          return 'animate-flip-in-next'; // Simplified for mobile
+        }
+        if (direction === 'prev') {
+          return 'animate-flip-in-prev'; // Simplified for mobile
+        }
+    }
+    return 'transform-none';
+  }
+
+  if (isMobile) {
+    return (
+       <main className="flex h-dvh w-full flex-col p-4 pt-20">
+         <header className="fixed top-0 left-0 right-0 z-50 flex md:hidden items-center justify-between p-4 bg-background/80 backdrop-blur-sm border-b">
+           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon"><Menu /></Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="glass">
+               <TableOfContents onNavigate={navigate} isStaticPanel={true} />
+            </SheetContent>
+           </Sheet>
+           <div className="text-sm font-medium uppercase tracking-wider">
+            {currentPage === 'cover' ? 'FlipFolio' : currentPage}
+           </div>
+           <Button onClick={() => navigate('toc')} variant="ghost" size="icon" disabled={isFlipping || currentPage === 'toc'} className="rounded-full hover:bg-primary/10">
+              <Home className="h-5 w-5" />
+            </Button>
+         </header>
+         
+         <div className="relative flex-grow perspective">
+            <div className={cn(
+                "w-full h-full bg-card rounded-lg shadow-2xl preserve-3d glass origin-center",
+                getMobilePageClass()
+            )}>
+                 <div className="absolute inset-0 p-6 backface-hidden">
+                    {renderPageContent(currentPage)}
+                </div>
+            </div>
+         </div>
+
+        <div className="flex-shrink-0 pt-4 flex items-center justify-center gap-4 z-20">
+          <Button onClick={prevPage} disabled={currentPageIndex === 0 || isFlipping} variant="outline" size="icon" className="rounded-full glass h-12 w-12">
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div className="text-sm font-medium text-muted-foreground w-16 text-center">
+            {currentPageIndex > 0 ? `${currentPageIndex} / ${totalPages - 1}` : ''}
+          </div>
+          <Button onClick={nextPage} disabled={currentPageIndex === totalPages - 1 || isFlipping} variant="outline" size="icon" className="rounded-full glass h-12 w-12">
+            <ArrowRight className="h-5 w-5" />
+          </Button>
+        </div>
+        <ProjectDetailDialog project={selectedProject} open={!!selectedProject} onOpenChange={() => setSelectedProject(null)} />
+      </main>
+    )
+  }
+
   return (
     <main className="flex h-screen w-full items-center justify-center bg-background p-4 overflow-hidden">
-        {/* Mobile Header */}
-       <header className="fixed top-0 left-0 right-0 z-50 flex md:hidden items-center justify-between p-4 bg-background/80 backdrop-blur-sm">
-         <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon"><Menu /></Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="glass">
-             <TableOfContents onNavigate={navigate} isStaticPanel={true} />
-          </SheetContent>
-         </Sheet>
-         <div className="text-sm font-medium">
-          {currentPageIndex > 0 ? `${currentPageIndex} / ${totalPages - 1}` : 'Cover'}
-         </div>
-         <div className="w-10"></div>
-       </header>
-
       <div className="relative w-full h-full flex items-center justify-center perspective">
         <div className={cn("relative w-full max-w-[90vw] md:max-w-6xl aspect-[4/3] md:aspect-[2/1.3] preserve-3d transition-transform duration-500 ease-in-out", currentPage === 'cover' && 'md:group-hover:rotate-y-2')}>
             {/* Left Page (Back of previous page) */}
