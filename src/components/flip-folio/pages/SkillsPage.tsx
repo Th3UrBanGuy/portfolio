@@ -20,7 +20,7 @@ export default function SkillsPage({ skills }: SkillsPageProps) {
 
   return (
     <div className="h-full flex flex-col">
-      <h2 className="font-headline text-3xl font-bold tracking-tight sm:text-4xl mb-6 flex-shrink-0 text-page-foreground">
+      <h2 className="font-headline text-2xl mb-6 flex-shrink-0 text-page-foreground">
         Skills & Arcana
       </h2>
       <ScrollArea className="flex-grow -mr-6">

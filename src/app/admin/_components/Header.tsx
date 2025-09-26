@@ -30,7 +30,7 @@ export default function Header() {
     <header className="flex items-center justify-between">
       <div className="flex items-center gap-2">
         <SidebarTrigger />
-        <h1 className="text-2xl font-semibold">{title}</h1>
+        <h1 className="text-xl font-semibold">{title}</h1>
       </div>
       {addLink && (
         <Button asChild>

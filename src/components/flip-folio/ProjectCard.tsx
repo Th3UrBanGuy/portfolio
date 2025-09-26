@@ -18,7 +18,7 @@ export default function ProjectCard({ project, onClick }: ProjectCardProps) {
       onClick={onClick}
     >
       <CardHeader className="flex-row items-start justify-between pb-2">
-        <CardTitle className="text-lg font-semibold text-page-foreground">{project.name}</CardTitle>
+        <CardTitle className="text-base font-semibold text-page-foreground">{project.name}</CardTitle>
         <ArrowUpRight className="h-5 w-5 text-page-foreground/50 transition-transform duration-300 group-hover:rotate-45 group-hover:text-primary" />
       </CardHeader>
       <CardContent className="flex flex-col md:flex-row gap-4 pt-2">

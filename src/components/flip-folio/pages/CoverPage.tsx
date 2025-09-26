@@ -37,11 +37,11 @@ export default function CoverPage({ onOpen }: CoverPageProps) {
         <GlyphIcon />
       </div>
 
-      <h1 className="font-headline text-4xl sm:text-5xl md:text-6xl font-bold tracking-wider text-amber-50"
+      <h1 className="font-headline text-5xl font-bold tracking-wider text-amber-50"
           style={{ textShadow: '0 0 10px hsl(var(--primary) / 0.8), 0 0 25px hsl(var(--primary) / 0.6)' }}>
         The Arcane Codex
       </h1>
-      <p className="mt-3 max-w-xs text-base text-amber-200/60">
+      <p className="mt-3 max-w-xs text-sm text-amber-200/60">
         An Interactive Portfolio
       </p>
       <Button onClick={onOpen} className="mt-8 bg-primary/90 text-primary-foreground border-2 border-amber-300/80 hover:bg-primary/100 shadow-[0_0_20px_hsl(var(--primary)/0.5)] hover:shadow-[0_0_30px_hsl(var(--primary)/0.7)] transition-all duration-300" size="lg">

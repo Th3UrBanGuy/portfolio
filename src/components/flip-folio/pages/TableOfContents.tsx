@@ -33,7 +33,7 @@ export default function TableOfContents({ onNavigate, isStaticPanel = false }: T
        )}>
           <div className="flex items-center gap-3">
             <BookOpenCheck className="h-8 w-8 text-primary" />
-            <h1 className="font-headline text-2xl font-bold tracking-tight text-page-foreground">
+            <h1 className="font-headline text-xl text-page-foreground">
                 The Arcane Codex
             </h1>
           </div>

@@ -48,7 +48,7 @@ export default function AboutPage({ personalInfo, imageUrl, imageHint }: AboutPa
             </div>
           </div>
           <div className="md:w-2/3">
-            <h2 className="font-headline text-xl sm:text-2xl mb-3 text-page-foreground">
+            <h2 className="font-headline text-2xl mb-3 text-page-foreground">
               {personalInfo.name}
             </h2>
             <div className="grid grid-cols-2 gap-x-3 gap-y-2 text-xs text-page-foreground/80">
@@ -72,7 +72,7 @@ export default function AboutPage({ personalInfo, imageUrl, imageHint }: AboutPa
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-xs leading-relaxed text-page-foreground/80">
+            <p className="text-sm leading-relaxed text-page-foreground/80">
               I'm a hands-on tech explorer who dives into any technical issue, finds innovative solutions, and stays updated with the latest tech trends - a true 'Jugadu Technophile'. Since 2016, I've been solving diverse tech issues using creative methods and AI tools, and I'm always exploring new technologies.
             </p>
           </CardContent>

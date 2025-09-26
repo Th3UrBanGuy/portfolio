@@ -13,7 +13,7 @@ type AchievementsPageProps = {
 export default function AchievementsPage({ achievements }: AchievementsPageProps) {
   return (
     <div className="h-full flex flex-col">
-      <h2 className="font-headline text-2xl sm:text-3xl mb-4 flex-shrink-0 text-page-foreground">
+      <h2 className="font-headline text-2xl mb-4 flex-shrink-0 text-page-foreground">
         Deeds of Valor
       </h2>
       <ScrollArea className="flex-grow -mr-6">
@@ -23,7 +23,7 @@ export default function AchievementsPage({ achievements }: AchievementsPageProps
               <div className="grid md:grid-cols-3">
                 <div className="md:col-span-2">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-lg font-semibold text-page-foreground flex items-start gap-3">
+                    <CardTitle className="text-base font-semibold text-page-foreground flex items-start gap-3">
                       <Award className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
                       <span>{ach.title}</span>
                     </CardTitle>

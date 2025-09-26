@@ -20,11 +20,11 @@ export default function ContactPage({ contactDetails, socials }: { contactDetail
   
   return (
     <div className="flex h-full flex-col">
-       <h2 className="font-headline text-2xl sm:text-3xl mb-4 text-page-foreground">
+       <h2 className="font-headline text-2xl mb-4 text-page-foreground">
         Connect with the Scribe
       </h2>
       
-      <p className="text-xs text-page-foreground/80 mb-6">
+      <p className="text-sm text-page-foreground/80 mb-6">
           I'm always open to discussing new projects, creative ideas, or opportunities to be part of an amazing team. Reach out and let's create something magical.
       </p>
       
@@ -38,7 +38,7 @@ export default function ContactPage({ contactDetails, socials }: { contactDetail
                             Direct Channels
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-3 text-xs">
+                    <CardContent className="space-y-3 text-sm">
                          <div className="flex items-center">
                             <Phone className="h-4 w-4 text-primary/80 flex-shrink-0" />
                             <a href={`tel:${contactDetails.phone}`} className="ml-3 font-medium text-page-foreground/90 hover:text-primary break-all">
@@ -66,7 +66,7 @@ export default function ContactPage({ contactDetails, socials }: { contactDetail
                                 <Globe className="h-5 w-5 text-primary"/>
                             </div>
                             <div>
-                                <CardTitle className="text-base text-page-foreground">Find All My Links</CardTitle>
+                                <CardTitle className="text-sm text-page-foreground">Find All My Links</CardTitle>
                                 <CardDescription className="text-xs">bio.link</CardDescription>
                             </div>
                             <ExternalLink className="h-4 w-4 text-page-foreground/50 ml-auto" />
@@ -97,7 +97,7 @@ export default function ContactPage({ contactDetails, socials }: { contactDetail
                                 >
                                 <a href={social.url} target="_blank" rel="noopener noreferrer">
                                     <Icon className="mr-2.5 h-4 w-4 text-primary" />
-                                    <span className="font-semibold text-xs">{social.name}</span>
+                                    <span className="font-semibold text-sm">{social.name}</span>
                                 </a>
                                 </Button>
                             )

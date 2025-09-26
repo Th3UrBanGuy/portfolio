@@ -42,7 +42,7 @@ export default function ProjectDetailDialog({
         </div>
         <div className="p-6 pt-0 -mt-16 relative z-10">
             <DialogHeader className='mb-4'>
-                <DialogTitle className="text-2xl font-bold text-white">{project.name}</DialogTitle>
+                <DialogTitle className="text-xl font-bold text-white">{project.name}</DialogTitle>
             </DialogHeader>
 
             <div className="flex flex-wrap gap-2 mb-4">

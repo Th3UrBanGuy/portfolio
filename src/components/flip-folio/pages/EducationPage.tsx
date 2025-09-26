@@ -12,7 +12,7 @@ type EducationPageProps = {
 export default function EducationPage({ education }: EducationPageProps) {
   return (
     <div className="h-full flex flex-col">
-      <h2 className="font-headline text-2xl sm:text-3xl mb-4 flex-shrink-0 text-page-foreground">
+      <h2 className="font-headline text-2xl mb-4 flex-shrink-0 text-page-foreground">
         Scrolls of Knowledge
       </h2>
       <ScrollArea className="flex-grow -mr-6">
@@ -20,7 +20,7 @@ export default function EducationPage({ education }: EducationPageProps) {
           {education.map((edu) => (
             <Card key={edu.id} className="bg-transparent border-stone-400/50">
               <CardHeader className="pb-3">
-                <CardTitle className="text-lg font-semibold text-page-foreground flex items-center gap-3">
+                <CardTitle className="text-base font-semibold text-page-foreground flex items-center gap-3">
                     <School className="h-5 w-5 text-primary"/>
                     {edu.institution}
                 </CardTitle>
