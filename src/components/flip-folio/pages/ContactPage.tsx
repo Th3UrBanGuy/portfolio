@@ -8,20 +8,20 @@ const socialLinks = [
   {
     name: 'GitHub',
     icon: Github,
-    url: '#',
-    user: 'your-github',
+    url: 'https://alahimajnurosama.github.io/',
+    user: 'alahimajnurosama',
   },
   {
     name: 'LinkedIn',
     icon: Linkedin,
-    url: '#',
+    url: '#', // Placeholder, as not provided
     user: 'your-linkedin',
   },
   {
-    name: 'Twitter',
+    name: 'X (Twitter)',
     icon: Twitter,
-    url: '#',
-    user: '@your_twitter',
+    url: 'https://twitter.com/AlahiMajnurOsama',
+    user: '@AlahiMajnurOsama',
   },
 ];
 
@@ -40,8 +40,8 @@ export default function ContactPage() {
           <CardContent className="p-6">
             <div className="flex items-center">
               <Mail className="h-6 w-6 text-primary" />
-              <a href="mailto:hello@example.com" className="ml-4 text-lg font-medium hover:underline">
-                hello@example.com
+              <a href="mailto:alahimajnurosama@gmail.com" className="ml-4 text-lg font-medium hover:underline">
+                alahimajnurosama@gmail.com
               </a>
             </div>
           </CardContent>

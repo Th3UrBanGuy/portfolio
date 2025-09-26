@@ -3,34 +3,34 @@ import { PlaceHolderImages } from './placeholder-images';
 
 export const defaultPortfolioData: PortfolioData = {
   aboutMe:
-    "Welcome to my digital portfolio! I'm a passionate developer with a knack for creating beautiful, functional, and user-centric web experiences. With a background in both design and engineering, I bridge the gap between creative vision and technical implementation. I thrive on solving complex problems and am always eager to learn new technologies. When I'm not coding, you can find me exploring new coffee shops or contributing to open-source projects.",
+    "I'm a hands-on tech explorer who dives into any technical issue, finds innovative solutions, and stays updated with the latest tech trends - a true 'Jugadu Technophile'. Since 2016, I've been solving diverse tech issues using creative methods and AI tools, and I'm always exploring new technologies.",
   projects: [
     {
       id: '1',
-      name: 'QuantumLeap CRM',
+      name: 'Automated Visitor Appointment System',
       description:
-        'A next-generation customer relationship management platform designed for startups. It features a modular design, real-time analytics, and an intuitive user interface to help businesses grow.',
+        'A sophisticated automated solution for scheduling appointments with the esteemed Vice Chancellor at BGC Trust University Bangladesh, aimed at redefining and streamlining the process.',
       imageUrl: PlaceHolderImages[0].imageUrl,
       imageHint: PlaceHolderImages[0].imageHint,
-      technologies: ['React', 'TypeScript', 'Node.js', 'GraphQL', 'PostgreSQL'],
+      technologies: ['Python', 'Docker', 'UI/UX'],
     },
     {
       id: '2',
-      name: 'Project Nebula',
+      name: 'k-NN Algorithm Optimization',
       description:
-        'An e-commerce site for a bespoke furniture brand. The project focused on a seamless user experience, 3D product visualizations, and a highly-performant, secure checkout process.',
+        'Co-authored a research paper on optimizing the k value in the k-Nearest Neighbor algorithm, specifically for the academic prediction of working students.',
       imageUrl: PlaceHolderImages[1].imageUrl,
       imageHint: PlaceHolderImages[1].imageHint,
-      technologies: ['Next.js', 'Three.js', 'Stripe', 'Tailwind CSS', 'Vercel'],
+      technologies: ['Python', 'C++', 'Data Analysis'],
     },
     {
       id: '3',
-      name: 'EchoWave Social',
+      name: 'Real-Time Cricket Scoring Web App',
       description:
-        'A decentralized social media application that gives users full control over their data. Built on blockchain technology, it prioritizes privacy and censorship resistance.',
+        'A dynamic web application designed to provide real-time cricket scorecards for university-level matches, creating the ultimate cricket experience for fans.',
       imageUrl: PlaceHolderImages[2].imageUrl,
       imageHint: PlaceHolderImages[2].imageHint,
-      technologies: ['SvelteKit', 'Ethers.js', 'IPFS', 'The Graph'],
+      technologies: ['HTML', 'CSS', 'WordPress', 'JavaScript'],
     },
   ],
 };
