@@ -1,6 +1,7 @@
 'use client';
 
 import { ScrollArea } from '@/components/ui/scroll-area';
+import Image from 'next/image';
 
 type AboutPageProps = {
   content: string;
@@ -9,13 +10,13 @@ type AboutPageProps = {
 export default function AboutPage({ content }: AboutPageProps) {
   return (
     <div className="h-full flex flex-col">
-      <h2 className="font-headline text-3xl font-bold tracking-tight sm:text-4xl mb-6 flex-shrink-0 text-primary">
-        About Me
+      <h2 className="font-headline text-3xl font-bold tracking-tight sm:text-4xl mb-6 flex-shrink-0 text-page-foreground">
+        About the Author
       </h2>
       <ScrollArea className="flex-grow">
-        <div className="prose prose-lg max-w-none text-muted-foreground pr-4 prose-p:mb-4">
+        <div className="text-page-foreground/80 pr-4 space-y-4 text-base">
           {content.split('\n\n').map((paragraph, index) => (
-            <p key={index}>{paragraph}</p>
+            <p key={index} className="leading-relaxed">{paragraph}</p>
           ))}
         </div>
       </ScrollArea>

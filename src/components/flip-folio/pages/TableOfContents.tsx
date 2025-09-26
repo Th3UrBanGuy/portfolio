@@ -12,9 +12,9 @@ type TableOfContentsProps = {
 };
 
 const navItems = [
-  { page: 'about' as Page, label: 'About Me', icon: User },
-  { page: 'projects' as Page, label: 'Projects', icon: Briefcase },
-  { page: 'contact' as Page, label: 'Contact', icon: Mail },
+  { page: 'about' as Page, label: 'About the Author', icon: User },
+  { page: 'projects' as Page, label: 'Creations', icon: Briefcase },
+  { page: 'contact' as Page, label: 'Make Contact', icon: Mail },
 ];
 
 export default function TableOfContents({ onNavigate, isStaticPanel = false }: TableOfContentsProps) {
@@ -29,11 +29,11 @@ export default function TableOfContents({ onNavigate, isStaticPanel = false }: T
        )}>
           <div className="flex items-center gap-3">
             <BookOpenCheck className="h-10 w-10 text-primary" />
-            <h1 className="font-headline text-3xl font-bold tracking-tight">
-                FlipFolio
+            <h1 className="font-headline text-3xl font-bold tracking-tight text-page-foreground">
+                The Arcane Codex
             </h1>
           </div>
-          <p className="text-muted-foreground mt-2">An Interactive Portfolio</p>
+          <p className="text-page-foreground/80 mt-2">Table of Contents</p>
        </div>
       
       <nav className={cn(isStaticPanel ? "w-full" : "w-64")}>
@@ -42,7 +42,7 @@ export default function TableOfContents({ onNavigate, isStaticPanel = false }: T
             <li key={item.page}>
               <Button
                 variant="outline"
-                className="w-full justify-start text-left h-14 px-6 text-base glass"
+                className="w-full justify-start text-left h-14 px-6 text-base bg-transparent border-stone-400/50 text-page-foreground hover:bg-black/5 hover:border-primary"
                 onClick={() => onNavigate(item.page)}
               >
                 <item.icon className="mr-4 h-5 w-5 text-primary" />

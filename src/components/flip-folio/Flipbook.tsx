@@ -56,21 +56,47 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
     }
   };
 
-  const renderPageContent = (page: Page) => {
-    switch (page) {
-      case 'cover':
-        return <CoverPage onOpen={() => navigate('toc')} />;
-      case 'toc':
-        return <TableOfContents onNavigate={navigate} />;
-      case 'about':
-        return <AboutPage content={data.aboutMe} />;
-      case 'projects':
-        return <ProjectsPage projects={data.projects} onProjectSelect={setSelectedProject} />;
-      case 'contact':
-        return <ContactPage />;
-      default:
-        return null;
+  const renderPageContent = (page: Page, pageNumber: number) => {
+    const pageContent = () => {
+        switch (page) {
+            case 'cover':
+                return <CoverPage onOpen={() => navigate('toc')} />;
+            case 'toc':
+                return <TableOfContents onNavigate={navigate} />;
+            case 'about':
+                return <AboutPage content={data.aboutMe} />;
+            case 'projects':
+                return <ProjectsPage projects={data.projects} onProjectSelect={setSelectedProject} />;
+            case 'contact':
+                return <ContactPage />;
+            default:
+                return null;
+        }
     }
+
+    return (
+        <div className="p-8 md:p-10 h-full w-full bg-page-background text-page-foreground relative overflow-hidden">
+            {/* Gutter shadow */}
+            <div className={cn(
+                "absolute inset-y-0 w-8 pointer-events-none",
+                pageNumber % 2 === 0 ? "left-0 bg-gradient-to-r from-black/10 to-transparent" : "right-0 bg-gradient-to-l from-black/10 to-transparent"
+            )} />
+            
+            <div className="relative z-10 h-full w-full">
+                {pageContent()}
+            </div>
+            
+            {/* Page Number */}
+            {pageNumber > 0 && (
+                 <div className={cn(
+                    "absolute bottom-4 text-xs text-page-foreground/50 font-sans",
+                    pageNumber % 2 === 0 ? "left-6" : "right-6"
+                 )}>
+                    Page {pageNumber}
+                </div>
+            )}
+        </div>
+    )
   };
   
   const getPageClass = (page: 'left' | 'right') => {
@@ -113,7 +139,7 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
             </SheetContent>
            </Sheet>
            <div className="text-sm font-medium uppercase tracking-wider">
-            {currentPage === 'cover' ? 'FlipFolio' : currentPage}
+            {currentPage === 'cover' ? 'The Arcane Codex' : currentPage}
            </div>
            <Button onClick={() => navigate('toc')} variant="ghost" size="icon" disabled={isFlipping || currentPage === 'toc'} className="rounded-full hover:bg-primary/10">
               <Home className="h-5 w-5" />
@@ -122,11 +148,11 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
          
          <div className="relative flex-grow perspective">
             <div className={cn(
-                "w-full h-full bg-card rounded-lg shadow-2xl preserve-3d glass origin-center",
+                "w-full h-full rounded-lg shadow-2xl preserve-3d origin-center",
                 getMobilePageClass()
             )}>
-                 <div className="absolute inset-0 p-6 backface-hidden">
-                    {renderPageContent(currentPage)}
+                 <div className="absolute inset-0 backface-hidden rounded-lg overflow-hidden">
+                    {renderPageContent(currentPage, currentPageIndex)}
                 </div>
             </div>
          </div>
@@ -150,32 +176,40 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
   return (
     <main className="flex h-screen w-full items-center justify-center bg-background p-4 overflow-hidden">
       <div className="relative w-full h-full flex items-center justify-center perspective">
-        <div className={cn("relative w-full max-w-[90vw] md:max-w-6xl aspect-[4/3] md:aspect-[2/1.3] preserve-3d transition-transform duration-500 ease-in-out", currentPage === 'cover' && 'md:group-hover:rotate-y-2')}>
-            {/* Left Page (Back of previous page) */}
+        <div className={cn("relative w-full max-w-6xl aspect-[2/1.4] preserve-3d transition-transform duration-500 ease-in-out", currentPage === 'cover' && 'md:group-hover:rotate-y-2')}>
+            
+            {/* Left Page */}
             <div className={cn(
-              "absolute w-1/2 h-full left-0 top-0 bg-card rounded-l-lg shadow-xl preserve-3d origin-right border-r border-border/50 glass",
+              "absolute w-1/2 h-full left-0 top-0 rounded-l-lg shadow-xl preserve-3d origin-right border-r border-black/20",
                currentPage === 'cover' ? 'hidden' : 'block',
                getPageClass('left')
             )}>
-              <div className="absolute inset-0 p-8 backface-hidden">
-                {currentPageIndex > 1 && renderPageContent(pageOrder[currentPageIndex - 1])}
+              <div className="absolute inset-0 backface-hidden rounded-l-lg overflow-hidden">
+                {currentPageIndex > 1 && renderPageContent(pageOrder[currentPageIndex - 1], currentPageIndex - 1)}
+              </div>
+              <div className="absolute inset-0 backface-hidden [transform:rotateY(180deg)] rounded-l-lg overflow-hidden">
+                {renderPageContent(pageOrder[currentPageIndex], currentPageIndex)}
               </div>
             </div>
 
-            {/* Right Page (Current Page) */}
+            {/* Right Page */}
             <div className={cn(
-                "absolute w-1/2 h-full right-0 top-0 bg-card rounded-r-lg shadow-2xl preserve-3d origin-left glass",
+                "absolute w-1/2 h-full right-0 top-0 rounded-r-lg shadow-2xl preserve-3d origin-left",
                 currentPage === 'cover' && 'w-full rounded-lg',
                 getPageClass('right')
             )}>
-                <div className="absolute inset-0 p-8 backface-hidden">
-                    {renderPageContent(currentPage)}
+                <div className="absolute inset-0 backface-hidden rounded-r-lg overflow-hidden">
+                    {renderPageContent(currentPage, currentPageIndex)}
+                </div>
+                 <div className="absolute inset-0 backface-hidden [transform:rotateY(180deg)] rounded-r-lg overflow-hidden">
+                    {currentPageIndex > 0 && renderPageContent(pageOrder[currentPageIndex-1], currentPageIndex-1)}
                 </div>
             </div>
 
              {/* Book Spine */}
-            <div className={cn("hidden md:block absolute w-8 h-full top-0 left-1/2 -translate-x-1/2 bg-neutral-900/80 shadow-inner-lg transform -rotate-y-90 origin-center preserve-3d", currentPage==='cover' ? 'opacity-0' : 'opacity-100')}>
-                <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-1 bg-gradient-to-b from-neutral-700 via-neutral-900 to-neutral-700"></div>
+            <div className={cn("hidden md:block absolute w-8 h-full top-0 left-1/2 -translate-x-1/2 bg-stone-900 shadow-inner-lg transform origin-center preserve-3d", currentPage==='cover' ? 'opacity-0' : 'opacity-100')}>
+                <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-1 bg-gradient-to-b from-amber-900 via-stone-950 to-amber-900"></div>
+                <div className="w-full h-full bg-repeat-y bg-[length:100%_10px]" style={{backgroundImage: 'linear-gradient(to bottom, transparent, transparent 4px, hsl(var(--border)) 4px, hsl(var(--border)) 5px, transparent 5px, transparent 10px)'}} />
             </div>
         </div>
       </div>

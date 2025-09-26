@@ -18,8 +18,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['Roboto', 'sans-serif'],
-        headline: ['Playfair Display', 'serif'],
+        body: ['Merriweather', 'serif'],
+        headline: ['"Uncial Antiqua"', 'cursive'],
         code: ['monospace'],
       },
       colors: {
@@ -56,6 +56,10 @@ export default {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
+        page: {
+          background: 'hsl(var(--page-background))',
+          foreground: 'hsl(var(--page-foreground))',
+        },
         chart: {
           '1': 'hsl(var(--chart-1))',
           '2': 'hsl(var(--chart-2))',
@@ -115,6 +119,10 @@ export default {
             'from': { transform: 'rotateY(-180deg)' },
             'to': { transform: 'rotateY(0deg)' },
         },
+        'pulse-glow': {
+          '0%, 100%': { opacity: '0.7', boxShadow: '0 0 8px 2px hsl(var(--primary) / 0.6)' },
+          '50%': { opacity: '1', boxShadow: '0 0 16px 4px hsl(var(--primary) / 0.8)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -123,6 +131,7 @@ export default {
         'flip-in-next': 'flip-in-next 0.6s ease-in-out forwards',
         'flip-out-prev': 'flip-out-prev 0.6s ease-in-out forwards',
         'flip-in-prev': 'flip-in-prev 0.6s ease-in-out forwards',
+        'pulse-glow': 'pulse-glow 3s ease-in-out infinite',
       },
     },
   },

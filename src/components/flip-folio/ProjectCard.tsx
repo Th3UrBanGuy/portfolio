@@ -14,15 +14,15 @@ type ProjectCardProps = {
 export default function ProjectCard({ project, onClick }: ProjectCardProps) {
   return (
     <Card
-      className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:border-primary/50 bg-card/50"
+      className="group cursor-pointer transition-all duration-300 bg-transparent hover:bg-black/5 border-stone-400/50 shadow-sm hover:shadow-md"
       onClick={onClick}
     >
-      <CardHeader className="flex-row items-start justify-between">
-        <CardTitle className="text-xl font-semibold">{project.name}</CardTitle>
-        <ArrowUpRight className="h-5 w-5 text-muted-foreground transition-transform duration-300 group-hover:rotate-45 group-hover:text-primary" />
+      <CardHeader className="flex-row items-start justify-between pb-2">
+        <CardTitle className="text-xl font-semibold text-page-foreground">{project.name}</CardTitle>
+        <ArrowUpRight className="h-5 w-5 text-page-foreground/50 transition-transform duration-300 group-hover:rotate-45 group-hover:text-primary" />
       </CardHeader>
-      <CardContent className="flex flex-col md:flex-row gap-4">
-        <div className="relative w-full md:w-1/3 aspect-video overflow-hidden rounded-md">
+      <CardContent className="flex flex-col md:flex-row gap-4 pt-2">
+        <div className="relative w-full md:w-1/3 aspect-video overflow-hidden rounded-md border border-stone-300">
            <Image
               src={project.imageUrl}
               alt={project.name}
@@ -32,10 +32,10 @@ export default function ProjectCard({ project, onClick }: ProjectCardProps) {
             />
         </div>
         <div className="flex-1">
-          <p className="mb-4 text-muted-foreground line-clamp-2">{project.description}</p>
+          <p className="mb-4 text-page-foreground/70 line-clamp-2">{project.description}</p>
           <div className="flex flex-wrap gap-2">
             {project.technologies.slice(0, 4).map((tech) => (
-              <Badge key={tech} variant="secondary">
+              <Badge key={tech} variant="outline" className="border-amber-900/50 text-amber-900/80">
                 {tech}
               </Badge>
             ))}
