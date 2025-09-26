@@ -12,10 +12,12 @@ import ContactPage from './pages/ContactPage';
 import ProjectDetailDialog from './ProjectDetailDialog';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
+import SkillsPage from './pages/SkillsPage';
+import ExperiencePage from './pages/ExperiencePage';
 
-type Page = 'cover' | 'toc' | 'about' | 'projects' | 'contact';
+type Page = 'cover' | 'toc' | 'about' | 'skills' | 'experience' | 'projects' | 'contact';
 
-const pageOrder: Page[] = ['cover', 'toc', 'about', 'projects', 'contact'];
+const pageOrder: Page[] = ['cover', 'toc', 'about', 'skills', 'experience', 'projects', 'contact'];
 
 export default function Flipbook({ data }: { data: PortfolioData }) {
   const [currentPage, setCurrentPage] = useState<Page>('cover');
@@ -90,7 +92,11 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
             case 'toc':
                 return <TableOfContents onNavigate={navigate} />;
             case 'about':
-                return <AboutPage content={data.aboutMe} imageUrl={data.authorImageUrl} imageHint={data.authorImageHint} />;
+                return <AboutPage personalInfo={data.personalInfo} education={data.education} imageUrl={data.authorImageUrl} imageHint={data.authorImageHint} />;
+            case 'skills':
+                return <SkillsPage skills={data.skills} />;
+            case 'experience':
+                return <ExperiencePage experience={data.experience} />;
             case 'projects':
                 return <ProjectsPage projects={data.projects} onProjectSelect={setSelectedProject} />;
             case 'contact':

@@ -1,0 +1,180 @@
+{
+  "personalInfo": {
+    "name": "Alahi Majnur Osama",
+    "dob": "2005-01-25",
+    "bloodGroup": "A+",
+    "nationality": "Bangladeshi",
+    "occupation": "Student",
+    "status": "Single",
+    "hobby": "Exploring Technologies",
+    "aimInLife": "Become A Cyber Specialist"
+  },
+  "education": [
+    {
+      "id": "University",
+      "institution": "BGC Trust University Bangladesh",
+      "session": "2023-2027",
+      "details": "Ongoing: BSC in CSE"
+    },
+    {
+      "id": "College",
+      "institution": "Uttar Kattali Alhaz Mostofa Hakim Degree College",
+      "session": "2021-2022",
+      "details": "Completed: HSC (4.25)"
+    },
+    {
+      "id": "High School",
+      "institution": "Govt. muslim High School",
+      "session": "2016-2020",
+      "details": "Completed: JSC(4.57), SSC(4.50)"
+    },
+    {
+      "id": "Primary School",
+      "institution": "Firingee Bazar Govt Primary School",
+      "session": "2015",
+      "details": "Completed: PSC (5.00)"
+    }
+  ],
+  "skills": [
+    "AI Integration & Automation (Fluent in using AI to enhance development, design & workflows)",
+    "Creative Coding & Intuitive UI/UX (Vibe Coding – blending logic, design, and flow seamlessly)",
+    "Project Lifecycle, Problem-Solving, Teamwork, Time Management",
+    "Microsoft Office, Data Entry & Analysis, Project Coordination",
+    "HTML, CSS, WordPress, Python, C++, GitHub",
+    "Linux, Docker, Canva",
+    "Basic Networking"
+  ],
+  "projects": [
+    {
+      "id": "calculator",
+      "title": "Simple Calculator UI",
+      "short_description": "A glassmorphism-based calculator app with clean design and smooth user interaction.",
+      "image_url": "Calculator.png",
+      "full_description": "A visually appealing calculator built with HTML, CSS, and JavaScript featuring glassmorphism design. It offers basic arithmetic operations with an intuitive UI suitable for beginners and non-tech users.",
+      "technologies": ["HTML", "CSS", "JavaScript"],
+      "preview_link": "https://alahimajnurosama.github.io/Calculator"
+    },
+    {
+      "id": "customsms",
+      "title": "Custom SMS API Solution",
+      "short_description": "An API-integrated SMS platform used with services like Badhan and Robi Express.",
+      "image_url": "CustomSMS.png",
+      "full_description": "Developed a platform to send SMS via APIs from multiple service providers. Though discontinued for ethical reasons, it was a deep dive into API integration and security practices.",
+      "technologies": ["HTML", "JavaScript", "REST API"],
+      "preview_link": "https://alahimajnurosama.github.io/CustomSMS"
+    },
+    {
+      "id": "retro",
+      "title": "IPTV Streamer App",
+      "short_description": "Stream IPTV content with M3U playlist support and multiple video engines.",
+      "image_url": "Retro.png",
+      "full_description": "Supports JSON and M3U playlists with 4 different media playback methods. Designed to explore IPTV systems. Discontinued due to copyright concerns.",
+      "technologies": ["HTML", "JavaScript", "M3U", "VLC-Embed"],
+      "preview_link": "https://alahimajnurosama.github.io/Retro"
+    },
+    {
+      "id": "urbanai",
+      "title": "Urban AI – ChatGPT Integration",
+      "short_description": "A lightweight ChatGPT interface with custom styling for easy conversations.",
+      "image_url": "UrbanAi.png",
+      "full_description": "A minimal HTML/JS-based ChatGPT integration offering conversational AI interaction in a user-friendly format. Great for experimenting with OpenAI APIs.",
+      "technologies": ["HTML", "JavaScript", "OpenAI API"],
+      "preview_link": "https://alahimajnurosama.github.io/UrbanAi"
+    },
+    {
+      "id": "urbanmail",
+      "title": "Temporary Email System",
+      "short_description": "Create disposable email inboxes with APIs like 1secmail and mail.tm.",
+      "image_url": "UrbanMail.png",
+      "full_description": "A two-version build: v1 with basic inbox using 1secmail, and v2 upgraded to support mail.tm with login functionality and persistent inbox. Great for spam-free testing.",
+      "technologies": ["HTML", "JavaScript", "1secmail API", "mail.tm API"],
+      "preview_link": "https://alahimajnurosama.github.io/UrbanMail"
+    },
+    {
+      "id": "html-encrypt",
+      "title": "HTML Encryption Tool",
+      "short_description": "Offline tool to encrypt and obfuscate HTML code.",
+      "image_url": "html-encrypt.png",
+      "full_description": "Encrypts HTML content for basic source code protection, aimed at creators who want to obscure their content. Works entirely offline.",
+      "technologies": ["HTML", "JavaScript"],
+      "preview_link": "https://alahimajnurosama.github.io/html-encrypt"
+    },
+    {
+      "id": "json2m3u",
+      "title": "JSON to M3U Converter",
+      "short_description": "A conversion tool to generate M3U playlists from JSON IPTV data.",
+      "image_url": "json2m3u.png",
+      "full_description": "Takes structured JSON channel data and turns it into valid M3U format playlists. Useful for IPTV devs or testers working on stream-based platforms.",
+      "technologies": ["HTML", "JavaScript", "JSON"],
+      "preview_link": "https://alahimajnurosama.github.io/json2m3u"
+    },
+    {
+      "id": "passgen",
+      "title": "Password Generator (C++ UI)",
+      "short_description": "Secure password generator with GUI features and custom word options.",
+      "image_url": "passgen.png",
+      "full_description": "Initially a CLI project, now upgraded to GUI using C++. Users can generate secure passwords with different rules and even include their custom words.",
+      "technologies": ["C++", "File Handling", "GUI"],
+      "preview_link": "https://github.io/AlahiMajnurOsama/Projects/passgen"
+    },
+    {
+      "id": "simtools",
+      "title": "SIM Toolkit Utilities (SimTools)",
+      "short_description": "A toolkit for SIM-based services like balance check, recharge automation, etc.",
+      "image_url": "simtools.png",
+      "full_description": "Built for academic and telecom exploration, SimTools contains mini utilities to automate or simplify SIM card-related tasks (offline app).",
+      "technologies": ["HTML", "JavaScript", "Offline Scripts"],
+      "preview_link": "https://alahimajnurosama.github.io/simtools"
+    },
+    {
+      "id": "weather",
+      "title": "Interactive Weather App",
+      "short_description": "A weather app using location or city to fetch real-time data via API.",
+      "image_url": "weather.png",
+      "full_description": "Simple web app that uses the OpenWeather API to fetch weather updates based on user input or geolocation. Built with intuitive UI in mind.",
+      "technologies": ["HTML", "CSS", "JavaScript", "OpenWeather API"],
+      "preview_link": "https://alahimajnurosama.github.io/weather"
+    }
+  ],
+  "experience": [
+    {
+      "id": "exp-1",
+      "company": "BGCTUB IT Club",
+      "role": "IT Coordinator",
+      "duration": "2024 - Present",
+      "location": "Chittagong, Bangladesh",
+      "short_description": "Led the IT operations of the university's tech club and coordinated digital events.",
+      "details": [
+        "Managed IT infrastructure and supported club operations through tech innovation.",
+        "Guided team members on digital tools and automation processes.",
+        "Collaborated on university-wide initiatives as part of the BASIS - BGCTUB Chapter executive committee."
+      ]
+    },
+    {
+      "id": "exp-2",
+      "company": "Team Hydra & Team Urban",
+      "role": "Cybersecurity Consultant & Trainer",
+      "duration": "2024 - Present",
+      "location": "Chittagong, Bangladesh",
+      "short_description": "Consulted and trained members on cybersecurity practices as part of campus tech initiatives.",
+      "details": [
+        "Conducted training sessions on cybersecurity fundamentals.",
+        "Worked with two tech-focused teams to address real-world cybersecurity challenges.",
+        "Implemented AI-assisted threat detection simulations."
+      ]
+    },
+    {
+      "id": "exp-3",
+      "company": "Independent Tech Explorer",
+      "role": "Freelance Tech Consultant",
+      "duration": "2016 - Present",
+      "location": "Remote",
+      "short_description": "Self-driven exploration of emerging technologies and hands-on solution building.",
+      "details": [
+        "Used AI and automation to creatively solve technical problems across various domains.",
+        "Engaged in continuous learning, testing new tools, platforms, and frameworks.",
+        "Documented findings and shared insights through GitHub and personal blog."
+      ]
+    }
+  ]
+}

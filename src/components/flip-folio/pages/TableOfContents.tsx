@@ -1,10 +1,10 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { User, Briefcase, Mail, BookOpenCheck } from 'lucide-react';
+import { User, Briefcase, Mail, BookOpenCheck, Star, ShieldCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-type Page = 'cover' | 'toc' | 'about' | 'projects' | 'contact';
+type Page = 'cover' | 'toc' | 'about' | 'skills' | 'experience' | 'projects' | 'contact';
 
 type TableOfContentsProps = {
   onNavigate: (page: Page) => void;
@@ -13,6 +13,8 @@ type TableOfContentsProps = {
 
 const navItems = [
   { page: 'about' as Page, label: 'About the Author', icon: User },
+  { page: 'skills' as Page, label: 'Skills', icon: Star },
+  { page: 'experience' as Page, label: 'Experience', icon: ShieldCheck },
   { page: 'projects' as Page, label: 'Creations', icon: Briefcase },
   { page: 'contact' as Page, label: 'Make Contact', icon: Mail },
 ];

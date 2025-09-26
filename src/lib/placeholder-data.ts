@@ -1,38 +1,43 @@
-import type { PortfolioData } from './types';
+import type { PortfolioData, Project } from './types';
 import { PlaceHolderImages } from './placeholder-images';
+import rawData from './portfolio-data.json';
+
+const projectImageMap = PlaceHolderImages.reduce((acc, img, index) => {
+  if (index < rawData.projects.length) {
+    const projectId = rawData.projects[index].id;
+    acc[projectId] = {
+        imageUrl: img.imageUrl,
+        imageHint: img.imageHint
+    };
+  }
+  return acc;
+}, {} as Record<string, {imageUrl: string, imageHint: string}>);
+
+
+const authorImage = PlaceHolderImages.find(img => img.id === 'author-image');
+
+const typedData = rawData as Omit<PortfolioData, 'projects' | 'aboutMe' | 'authorImageUrl' | 'authorImageHint'> & {
+    projects: Omit<Project, 'imageUrl' | 'imageHint' | 'name' | 'description'>[] & {title: string, short_description: string}[],
+};
 
 export const defaultPortfolioData: PortfolioData = {
+  personalInfo: typedData.personalInfo,
+  education: typedData.education,
+  skills: typedData.skills,
+  experience: typedData.experience,
   aboutMe:
     "I'm a hands-on tech explorer who dives into any technical issue, finds innovative solutions, and stays updated with the latest tech trends - a true 'Jugadu Technophile'. Since 2016, I've been solving diverse tech issues using creative methods and AI tools, and I'm always exploring new technologies.",
-  authorImageUrl: PlaceHolderImages[4].imageUrl,
-  authorImageHint: PlaceHolderImages[4].imageHint,
-  projects: [
-    {
-      id: '1',
-      name: 'Automated Visitor Appointment System',
-      description:
-        'A sophisticated automated solution for scheduling appointments with the esteemed Vice Chancellor at BGC Trust University Bangladesh, aimed at redefining and streamlining the process.',
-      imageUrl: PlaceHolderImages[0].imageUrl,
-      imageHint: PlaceHolderImages[0].imageHint,
-      technologies: ['Python', 'Docker', 'UI/UX'],
-    },
-    {
-      id: '2',
-      name: 'k-NN Algorithm Optimization',
-      description:
-        'Co-authored a research paper on optimizing the k value in the k-Nearest Neighbor algorithm, specifically for the academic prediction of working students.',
-      imageUrl: PlaceHolderImages[1].imageUrl,
-      imageHint: PlaceHolderImages[1].imageHint,
-      technologies: ['Python', 'C++', 'Data Analysis'],
-    },
-    {
-      id: '3',
-      name: 'Real-Time Cricket Scoring Web App',
-      description:
-        'A dynamic web application designed to provide real-time cricket scorecards for university-level matches, creating the ultimate cricket experience for fans.',
-      imageUrl: PlaceHolderImages[2].imageUrl,
-      imageHint: PlaceHolderImages[2].imageHint,
-      technologies: ['HTML', 'CSS', 'WordPress', 'JavaScript'],
-    },
-  ],
+  authorImageUrl: authorImage?.imageUrl || '',
+  authorImageHint: authorImage?.imageHint || '',
+  projects: typedData.projects.map((p, index) => ({
+    ...p,
+    id: p.id,
+    name: p.title,
+    description: p.short_description,
+    imageUrl: projectImageMap[p.id]?.imageUrl || `https://picsum.photos/seed/${p.id}/600/400`,
+    imageHint: projectImageMap[p.id]?.imageHint || 'project image',
+    full_description: p.full_description,
+    technologies: p.technologies,
+    preview_link: p.preview_link,
+  })),
 };

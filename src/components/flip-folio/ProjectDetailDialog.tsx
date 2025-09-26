@@ -11,6 +11,8 @@ import {
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Button } from '../ui/button';
+import { Eye } from 'lucide-react';
 
 type ProjectDetailDialogProps = {
   project: Project | null;
@@ -53,9 +55,18 @@ export default function ProjectDetailDialog({
 
             <ScrollArea className="h-40">
               <DialogDescription className="text-base text-muted-foreground pr-4">
-                {project.description}
+                {project.full_description}
               </DialogDescription>
             </ScrollArea>
+
+            {project.preview_link && (
+                 <Button asChild className="mt-6">
+                    <a href={project.preview_link} target="_blank" rel="noopener noreferrer">
+                        <Eye className="mr-2 h-4 w-4" />
+                        Live Preview
+                    </a>
+                 </Button>
+            )}
         </div>
       </DialogContent>
     </Dialog>
