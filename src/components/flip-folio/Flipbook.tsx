@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { PortfolioData, Project } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
@@ -29,6 +29,11 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const isMobile = useIsMobile();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const currentPageIndex = pageOrder.indexOf(currentPage);
   const totalPages = pageOrder.length;
@@ -164,6 +169,24 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
         return 'animate-flip-out-prev';
       }
     return 'transform-none';
+  }
+
+  if (!isMounted) {
+    return (
+        <main className="flex h-dvh w-full flex-col items-center justify-center bg-background p-4 overflow-hidden">
+            <div className="relative flex-grow w-full perspective flex items-center justify-center">
+                 <div className={cn("relative w-full max-w-6xl aspect-[2/1.4] preserve-3d")}>
+                     <div className={cn("absolute w-full h-full right-0 top-0 rounded-r-lg shadow-2xl preserve-3d origin-left rounded-lg")}>
+                        <div className="absolute inset-0 backface-hidden rounded-r-lg overflow-hidden rounded-lg">
+                           {renderPageContent('cover', 0)}
+                        </div>
+                    </div>
+                </div>
+            </div>
+             <div className="flex justify-center items-center gap-4 mt-4 flex-shrink-0 h-10">
+             </div>
+        </main>
+    );
   }
 
   return (

@@ -1,5 +1,3 @@
-'use client';
-
 import { defaultPortfolioData } from '@/lib/placeholder-data';
 import Flipbook from '@/components/flip-folio/Flipbook';
 
