@@ -133,7 +133,7 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
                     isMobile ? (pageNumber % 2 === 0 ? "left-6" : "right-6") : (pageNumber % 2 === 0 ? "left-6" : "right-6"),
                     isCover ? "text-amber-200/50" : "text-page-foreground/50"
                  )}>
-                    Page {pageNumber}
+                    {pageNumber}
                 </div>
             )}
         </div>
