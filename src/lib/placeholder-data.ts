@@ -4,6 +4,8 @@ import { PlaceHolderImages } from './placeholder-images';
 export const defaultPortfolioData: PortfolioData = {
   aboutMe:
     "I'm a hands-on tech explorer who dives into any technical issue, finds innovative solutions, and stays updated with the latest tech trends - a true 'Jugadu Technophile'. Since 2016, I've been solving diverse tech issues using creative methods and AI tools, and I'm always exploring new technologies.",
+  authorImageUrl: PlaceHolderImages[4].imageUrl,
+  authorImageHint: PlaceHolderImages[4].imageHint,
   projects: [
     {
       id: '1',

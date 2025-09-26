@@ -90,7 +90,7 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
             case 'toc':
                 return <TableOfContents onNavigate={navigate} />;
             case 'about':
-                return <AboutPage content={data.aboutMe} />;
+                return <AboutPage content={data.aboutMe} imageUrl={data.authorImageUrl} imageHint={data.authorImageHint} />;
             case 'projects':
                 return <ProjectsPage projects={data.projects} onProjectSelect={setSelectedProject} />;
             case 'contact':

@@ -9,5 +9,7 @@ export type Project = {
 
 export type PortfolioData = {
   aboutMe: string;
+  authorImageUrl: string;
+  authorImageHint: string;
   projects: Project[];
 };

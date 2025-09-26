@@ -23,6 +23,12 @@
       "description": "Lines of code on a dark screen",
       "imageUrl": "https://images.unsplash.com/photo-1569396116180-7fe09fa16dd8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxjb2RlJTIwc2NyZWVufGVufDB8fHx8MTc1ODgwMjU0MXww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "code screen"
+    },
+    {
+      "id": "author-image",
+      "description": "Portrait of a person",
+      "imageUrl": "https://images.unsplash.com/photo-1733231291541-7cc13adf08e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxhdXRob3IlMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTg4MzQ0Mzl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "author portrait"
     }
   ]
 }
