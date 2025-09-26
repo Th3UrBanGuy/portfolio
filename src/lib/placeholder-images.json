@@ -1,3 +1,28 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "project-1",
+      "description": "Abstract colorful geometric shapes",
+      "imageUrl": "https://images.unsplash.com/photo-1533135091724-62cc5402aa20?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhYnN0cmFjdCUyMGdlb21ldHJpY3xlbnwwfHx8fDE3NTg5MDI0Njh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "abstract geometric"
+    },
+    {
+      "id": "project-2",
+      "description": "A person working on a laptop in a modern office",
+      "imageUrl": "https://images.unsplash.com/photo-1561754825-6f9d7b82322d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxkZXNrJTIwc2V0dXB8ZW58MHx8fHwxNzU4ODEzNjUxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "desk setup"
+    },
+    {
+      "id": "project-3",
+      "description": "A futuristic city skyline at night",
+      "imageUrl": "https://images.unsplash.com/photo-1533637041618-f0e4c869801e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxmdXR1cmlzdGljJTIwY2l0eXxlbnwwfHx8fDE3NTg4MzQ2NDN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "futuristic city"
+    },
+    {
+      "id": "project-4",
+      "description": "Lines of code on a dark screen",
+      "imageUrl": "https://images.unsplash.com/photo-1569396116180-7fe09fa16dd8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxjb2RlJTIwc2NyZWVufGVufDB8fHx8MTc1ODgwMjU0MXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "code screen"
+    }
+  ]
 }
