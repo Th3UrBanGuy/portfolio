@@ -9,6 +9,54 @@
     "hobby": "Exploring Technologies",
     "aimInLife": "Become A Cyber Specialist"
   },
+  "contactDetails": {
+    "contactMeLink": "https://alahimajnurosama.bio.link/",
+    "phone": "+8801642778252",
+    "emails": [
+      "alahimajnur@gmail.com",
+      "osama@bgctub.ac.bd",
+      "osama@rj8b.onmicrosoft.com",
+      "alahimajnurosama@outlook.com"
+    ]
+  },
+  "socials": [
+    {
+      "id": "linkedin",
+      "name": "LinkedIn",
+      "url": "https://www.linkedin.com/in/alahimajnurosama",
+      "icon_class": "fab fa-linkedin-in"
+    },
+    {
+      "id": "github",
+      "name": "GitHub",
+      "url": "https://github.com/alahimajnurosama",
+      "icon_class": "fab fa-github"
+    },
+    {
+      "id": "twitter",
+      "name": "Twitter",
+      "url": "https://x.com/alahimajnur",
+      "icon_class": "fab fa-twitter"
+    },
+    {
+      "id": "facebook",
+      "name": "Facebook",
+      "url": "https://www.facebook.com/AlahiMajnurOsama.official/",
+      "icon_class": "fab fa-facebook-f"
+    },
+    {
+      "id": "telegram",
+      "name": "Telegram",
+      "url": "https://t.me/MarkAtorny",
+      "icon_class": "fab fa-telegram-plane"
+    },
+    {
+      "id": "whatsapp",
+      "name": "WhatsApp",
+      "url": "https://api.whatsapp.com/send/?phone=%2B8801642778252&text&type=phone_number&app_absent=0",
+      "icon_class": "fab fa-whatsapp"
+    }
+  ],
   "education": [
     {
       "id": "University",

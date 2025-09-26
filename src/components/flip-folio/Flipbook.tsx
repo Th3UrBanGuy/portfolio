@@ -103,7 +103,7 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
             case 'projects':
                 return <ProjectsPage projects={data.projects} onProjectSelect={setSelectedProject} />;
             case 'contact':
-                return <ContactPage />;
+                return <ContactPage contactDetails={data.contactDetails} socials={data.socials} />;
             default:
                 return null;
         }

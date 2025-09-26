@@ -37,6 +37,19 @@ export type Project = {
   preview_link: string;
 };
 
+export type Social = {
+    id: string;
+    name: string;
+    url: string;
+    icon_class: string;
+}
+
+export type ContactDetails = {
+    contactMeLink: string;
+    phone: string;
+    emails: string[];
+}
+
 export type PortfolioData = {
   personalInfo: PersonalInfo;
   education: Education[];
@@ -46,4 +59,6 @@ export type PortfolioData = {
   authorImageUrl: string;
   authorImageHint: string;
   aboutMe: string;
+  contactDetails: ContactDetails;
+  socials: Social[];
 };
