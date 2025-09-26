@@ -35,7 +35,7 @@ export default function TableOfContents({ onNavigate, isStaticPanel = false }: T
             <li key={item.page}>
               <Button
                 variant="outline"
-                className="w-full justify-start text-left h-14 px-6 text-base"
+                className="w-full justify-start text-left h-14 px-6 text-base glass"
                 onClick={() => onNavigate(item.page)}
               >
                 <item.icon className="mr-4 h-5 w-5 text-primary" />

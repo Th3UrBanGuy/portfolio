@@ -95,7 +95,7 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon"><Menu /></Button>
           </SheetTrigger>
-          <SheetContent side="left">
+          <SheetContent side="left" className="glass">
              <TableOfContents onNavigate={navigate} isStaticPanel={true} />
           </SheetContent>
          </Sheet>
@@ -109,7 +109,7 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
         <div className={cn("relative w-full max-w-[90vw] md:max-w-6xl aspect-[4/3] md:aspect-[2/1.3] preserve-3d transition-transform duration-500 ease-in-out", currentPage === 'cover' && 'md:group-hover:rotate-y-2')}>
             {/* Left Page (Back of previous page) */}
             <div className={cn(
-              "absolute w-1/2 h-full left-0 top-0 bg-card rounded-l-lg shadow-xl preserve-3d origin-right border-r border-border/50",
+              "absolute w-1/2 h-full left-0 top-0 bg-card rounded-l-lg shadow-xl preserve-3d origin-right border-r border-border/50 glass",
                currentPage === 'cover' ? 'hidden' : 'block',
                getPageClass('left')
             )}>
@@ -120,7 +120,7 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
 
             {/* Right Page (Current Page) */}
             <div className={cn(
-                "absolute w-1/2 h-full right-0 top-0 bg-card rounded-r-lg shadow-2xl preserve-3d origin-left",
+                "absolute w-1/2 h-full right-0 top-0 bg-card rounded-r-lg shadow-2xl preserve-3d origin-left glass",
                 currentPage === 'cover' && 'w-full rounded-lg',
                 getPageClass('right')
             )}>
@@ -130,7 +130,7 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
             </div>
 
              {/* Book Spine */}
-            <div className={cn("hidden md:block absolute w-8 h-full top-0 left-1/2 -translate-x-1/2 bg-neutral-900 shadow-inner-lg transform -rotate-y-90 origin-center preserve-3d", currentPage==='cover' ? 'opacity-0' : 'opacity-100')}>
+            <div className={cn("hidden md:block absolute w-8 h-full top-0 left-1/2 -translate-x-1/2 bg-neutral-900/80 shadow-inner-lg transform -rotate-y-90 origin-center preserve-3d", currentPage==='cover' ? 'opacity-0' : 'opacity-100')}>
                 <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-1 bg-gradient-to-b from-neutral-700 via-neutral-900 to-neutral-700"></div>
             </div>
         </div>
@@ -139,13 +139,13 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
 
       {/* Desktop & Mobile Navigation */}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-4 z-20">
-        <Button onClick={prevPage} disabled={currentPageIndex === 0 || isFlipping} variant="outline" size="icon" className="rounded-full">
+        <Button onClick={prevPage} disabled={currentPageIndex === 0 || isFlipping} variant="outline" size="icon" className="rounded-full glass">
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <Button onClick={() => navigate('toc')} variant="ghost" size="icon" disabled={isFlipping || currentPage === 'toc'} className="rounded-full hover:bg-primary/10">
+        <Button onClick={() => navigate('toc')} variant="ghost" size="icon" disabled={isFlipping || currentPage === 'toc'} className="rounded-full hover:bg-primary/10 glass">
           <Home className="h-4 w-4" />
         </Button>
-        <Button onClick={nextPage} disabled={currentPageIndex === totalPages - 1 || isFlipping} variant="outline" size="icon" className="rounded-full">
+        <Button onClick={nextPage} disabled={currentPageIndex === totalPages - 1 || isFlipping} variant="outline" size="icon" className="rounded-full glass">
           <ArrowRight className="h-4 w-4" />
         </Button>
       </div>

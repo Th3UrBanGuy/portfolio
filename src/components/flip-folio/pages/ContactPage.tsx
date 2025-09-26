@@ -36,7 +36,7 @@ export default function ContactPage() {
           I'm always open to discussing new projects, creative ideas, or opportunities to be part of an amazing team.
         </p>
 
-        <Card className='bg-muted/50'>
+        <Card className='glass'>
           <CardContent className="p-4 sm:p-6">
             <div className="flex items-center">
               <Mail className="h-6 w-6 text-primary" />
@@ -52,7 +52,7 @@ export default function ContactPage() {
             <Button
               key={social.name}
               variant="outline"
-              className="w-full justify-start h-14"
+              className="w-full justify-start h-14 glass"
               asChild
             >
               <a href={social.url} target="_blank" rel="noopener noreferrer">

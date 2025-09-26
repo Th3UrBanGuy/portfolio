@@ -9,7 +9,7 @@ type CoverPageProps = {
 
 export default function CoverPage({ onOpen }: CoverPageProps) {
   return (
-    <div className="flex h-full flex-col items-center justify-center text-center bg-neutral-900 rounded-lg shadow-2xl p-8">
+    <div className="flex h-full flex-col items-center justify-center text-center bg-neutral-900/80 rounded-lg shadow-2xl p-8 glass">
       <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary/10 mb-6 border-2 border-primary/20">
         <BookOpenCheck className="h-12 w-12 text-primary" />
       </div>
@@ -19,7 +19,7 @@ export default function CoverPage({ onOpen }: CoverPageProps) {
       <p className="mt-4 max-w-xs text-lg text-muted-foreground">
         An Interactive Portfolio
       </p>
-      <Button onClick={onOpen} className="mt-8" size="lg" variant="secondary">
+      <Button onClick={onOpen} className="mt-8 glass" size="lg" variant="secondary">
         Open Portfolio
       </Button>
     </div>

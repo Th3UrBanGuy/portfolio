@@ -27,7 +27,7 @@ export default function ProjectDetailDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-3xl p-0 !rounded-xl overflow-hidden transform scale-100 transition-all duration-300 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95">
+      <DialogContent className="sm:max-w-3xl p-0 !rounded-xl overflow-hidden transform scale-100 transition-all duration-300 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 glass">
         <div className="relative h-64 w-full">
           <Image
             src={project.imageUrl}

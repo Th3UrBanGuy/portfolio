@@ -14,7 +14,7 @@ type ProjectCardProps = {
 export default function ProjectCard({ project, onClick }: ProjectCardProps) {
   return (
     <Card
-      className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:border-primary/50"
+      className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:border-primary/50 bg-card/50"
       onClick={onClick}
     >
       <CardHeader className="flex-row items-start justify-between">
