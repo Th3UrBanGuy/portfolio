@@ -2,13 +2,12 @@
 
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Image from 'next/image';
-import type { PersonalInfo, Education } from '@/lib/types';
+import type { PersonalInfo } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { User, Book, Calendar, Droplet, Flag, Briefcase, Heart, Target } from 'lucide-react';
+import { User, Calendar, Droplet, Flag, Briefcase, Heart, Target } from 'lucide-react';
 
 type AboutPageProps = {
   personalInfo: PersonalInfo;
-  education: Education[];
   imageUrl: string;
   imageHint: string;
 };
@@ -23,7 +22,7 @@ const personalInfoIcons = {
   aimInLife: Target
 };
 
-export default function AboutPage({ personalInfo, education, imageUrl, imageHint }: AboutPageProps) {
+export default function AboutPage({ personalInfo, imageUrl, imageHint }: AboutPageProps) {
   
   const personalDetails = [
     { label: 'Born', value: new Date(personalInfo.dob).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), icon: personalInfoIcons.dob },
@@ -65,7 +64,7 @@ export default function AboutPage({ personalInfo, education, imageUrl, imageHint
             </div>
           </div>
 
-          <Card className='bg-transparent border-stone-400/50 mb-8'>
+          <Card className='bg-transparent border-stone-400/50'>
             <CardHeader>
                 <CardTitle className="flex items-center gap-2 font-headline text-2xl text-page-foreground">
                     <User className="h-6 w-6 text-primary"/>
@@ -76,26 +75,6 @@ export default function AboutPage({ personalInfo, education, imageUrl, imageHint
                 <p className="leading-relaxed text-page-foreground/80">
                     I'm a hands-on tech explorer who dives into any technical issue, finds innovative solutions, and stays updated with the latest tech trends - a true 'Jugadu Technophile'. Since 2016, I've been solving diverse tech issues using creative methods and AI tools, and I'm always exploring new technologies.
                 </p>
-            </CardContent>
-          </Card>
-
-          <Card className='bg-transparent border-stone-400/50'>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2 font-headline text-2xl text-page-foreground">
-                    <Book className="h-6 w-6 text-primary"/>
-                    Education
-                </CardTitle>
-            </CardHeader>
-            <CardContent>
-                <div className="space-y-4">
-                    {education.map(edu => (
-                        <div key={edu.id}>
-                            <h3 className="font-semibold text-page-foreground">{edu.institution}</h3>
-                            <p className="text-sm text-page-foreground/70">{edu.session}</p>
-                            <p className="text-sm text-page-foreground/80">{edu.details}</p>
-                        </div>
-                    ))}
-                </div>
             </CardContent>
           </Card>
         </div>
