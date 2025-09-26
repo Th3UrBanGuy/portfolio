@@ -2,9 +2,10 @@
 
 import type { PortfolioData } from '@/lib/types';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Mail, Phone, ExternalLink, Github, Linkedin, Twitter, Facebook, Send, Smartphone } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Mail, Phone, ExternalLink, Github, Linkedin, Twitter, Facebook, Send, Smartphone, Globe } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
 
 const iconMap: { [key: string]: React.ComponentType<any> } = {
   linkedin: Linkedin,
@@ -20,66 +21,114 @@ export default function ContactPage({ contactDetails, socials }: { contactDetail
   return (
     <div className="flex h-full flex-col">
        <h2 className="font-headline text-2xl sm:text-3xl mb-4 text-page-foreground">
-        Make Contact
+        Connect with the Scribe
       </h2>
       
-      <p className="text-base text-page-foreground/80 mb-4">
-          I'm always open to discussing new projects, creative ideas, or opportunities to be part of an amazing team.
+      <p className="text-xs text-page-foreground/80 mb-6">
+          I'm always open to discussing new projects, creative ideas, or opportunities to be part of an amazing team. Reach out and let's create something magical.
       </p>
       
       <ScrollArea className="flex-grow -mr-6 pr-6">
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="space-y-4">
+                <Card className='bg-transparent border-stone-400/50'>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2 font-headline text-lg text-page-foreground">
+                            <Mail className="h-5 w-5 text-primary"/>
+                            Direct Channels
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                         <div className="flex items-center">
+                            <Phone className="h-4 w-4 text-primary/80 flex-shrink-0" />
+                            <a href={`tel:${contactDetails.phone}`} className="ml-3 text-xs font-medium text-page-foreground/90 hover:text-primary break-all">
+                                {contactDetails.phone}
+                            </a>
+                        </div>
+                        <Separator className='bg-stone-400/30' />
+                        <div className="flex items-start">
+                           <div className="ml-1 flex flex-col space-y-1">
+                                {contactDetails.emails.slice(0, 2).map(email => (
+                                    <a key={email} href={`mailto:${email}`} className="text-xs font-medium text-page-foreground/90 hover:text-primary break-all">
+                                        {email}
+                                    </a>
+                                ))}
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
 
-            {contactDetails.contactMeLink && (
-            <Button asChild className="w-full h-14 text-base" size='lg'>
-                <a href={contactDetails.contactMeLink} target="_blank" rel="noopener noreferrer">
-                    <ExternalLink className="mr-3 h-5 w-5" />
-                    Find All My Links Here
-                </a>
-            </Button>
-            )}
-
-            <Card className='bg-transparent border-stone-400/50'>
-            <CardContent className="p-4 space-y-3">
-                <div className="flex items-center">
-                <Phone className="h-5 w-5 text-primary flex-shrink-0" />
-                <a href={`tel:${contactDetails.phone}`} className="ml-4 text-sm sm:text-base font-medium text-page-foreground/90 hover:text-primary break-all">
-                    {contactDetails.phone}
-                </a>
-                </div>
-                <div className="flex items-start">
-                <Mail className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
-                <div className="ml-4 flex flex-col">
-                    {contactDetails.emails.slice(0, 2).map(email => (
-                        <a key={email} href={`mailto:${email}`} className="text-sm font-medium text-page-foreground/90 hover:text-primary break-all">
-                            {email}
-                        </a>
-                    ))}
-                </div>
-                </div>
-            </CardContent>
-            </Card>
-
-            <div className="grid grid-cols-2 gap-3">
-            {socials.map((social) => {
-                const Icon = iconMap[social.id] || ExternalLink;
-                return (
-                    <Button
-                        key={social.id}
-                        variant="outline"
-                        className="w-full justify-start h-12 bg-transparent border-stone-400/50 text-page-foreground hover:bg-black/5 hover:border-primary"
-                        asChild
-                    >
-                    <a href={social.url} target="_blank" rel="noopener noreferrer">
-                        <Icon className="mr-3 h-5 w-5 text-primary" />
-                        <span className="font-semibold text-sm">{social.name}</span>
-                    </a>
-                    </Button>
-                )
-            })}
+                {contactDetails.contactMeLink && (
+                 <a href={contactDetails.contactMeLink} target="_blank" rel="noopener noreferrer" className="block">
+                    <Card className='bg-transparent border-stone-400/50 hover:border-primary/50 hover:bg-black/5 transition-colors'>
+                        <CardHeader className="flex-row items-center gap-3 space-y-0 p-4">
+                            <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-primary/10 border border-primary/20">
+                                <Globe className="h-5 w-5 text-primary"/>
+                            </div>
+                            <div>
+                                <CardTitle className="text-base text-page-foreground">Find All My Links</CardTitle>
+                                <CardDescription className="text-xs">bio.link</CardDescription>
+                            </div>
+                            <ExternalLink className="h-4 w-4 text-page-foreground/50 ml-auto" />
+                        </CardHeader>
+                    </Card>
+                 </a>
+                )}
+            </div>
+            
+            <div className="space-y-4">
+                <Card className='bg-transparent border-stone-400/50'>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2 font-headline text-lg text-page-foreground">
+                            <Users className="h-5 w-5 text-primary"/>
+                            Social Realms
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid grid-cols-2 gap-3">
+                        {socials.map((social) => {
+                            const Icon = iconMap[social.id] || ExternalLink;
+                            return (
+                                <Button
+                                    key={social.id}
+                                    variant="outline"
+                                    className="w-full justify-start h-11 bg-transparent border-stone-400/50 text-page-foreground hover:bg-black/5 hover:border-primary/80"
+                                    asChild
+                                >
+                                <a href={social.url} target="_blank" rel="noopener noreferrer">
+                                    <Icon className="mr-2.5 h-4 w-4 text-primary" />
+                                    <span className="font-semibold text-xs">{social.name}</span>
+                                </a>
+                                </Button>
+                            )
+                        })}
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
         </div>
       </ScrollArea>
     </div>
   );
 }
+
+// Dummy icon for structure
+const Users = (props: any) => (
+  <svg
+    {...props}
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+    <circle cx="9" cy="7" r="4" />
+    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+  </svg>
+);
