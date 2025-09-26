@@ -1,5 +1,13 @@
 import type {Config} from 'tailwindcss';
 
+function plugin({addUtilities}: {addUtilities: any}) {
+  addUtilities({
+    '.backface-hidden': {
+      'backface-visibility': 'hidden',
+    },
+  });
+}
+
 export default {
   darkMode: ['class'],
   content: [
@@ -88,12 +96,32 @@ export default {
             height: '0',
           },
         },
+        'flip-out-to-left': {
+          'from': { transform: 'rotateY(0deg)', opacity: '1' },
+          'to': { transform: 'rotateY(-90deg)', opacity: '0' },
+        },
+        'flip-in-from-right': {
+          'from': { transform: 'rotateY(90deg)', opacity: '0' },
+          'to': { transform: 'rotateY(0deg)', opacity: '1' },
+        },
+        'flip-out-to-right': {
+          'from': { transform: 'rotateY(0deg)', opacity: '1' },
+          'to': { transform: 'rotateY(90deg)', opacity: '0' },
+        },
+        'flip-in-from-left': {
+          'from': { transform: 'rotateY(-90deg)', opacity: '0' },
+          'to': { transform: 'rotateY(0deg)', opacity: '1' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'flip-out-to-left': 'flip-out-to-left 0.3s ease-in forwards',
+        'flip-in-from-right': 'flip-in-from-right 0.3s ease-out 0.3s forwards',
+        'flip-out-to-right': 'flip-out-to-right 0.3s ease-in forwards',
+        'flip-in-from-left': 'flip-in-from-left 0.3s ease-out 0.3s forwards',
       },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [require('tailwindcss-animate'), plugin],
 } satisfies Config;
