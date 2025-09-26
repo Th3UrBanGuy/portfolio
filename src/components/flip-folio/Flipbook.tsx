@@ -2,10 +2,8 @@
 
 import React, { useState } from 'react';
 import type { PortfolioData, Project } from '@/lib/types';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, Home } from 'lucide-react';
-
+import { ArrowLeft, ArrowRight, Home, Menu } from 'lucide-react';
 import CoverPage from './pages/CoverPage';
 import TableOfContents from './pages/TableOfContents';
 import AboutPage from './pages/AboutPage';
@@ -13,6 +11,7 @@ import ProjectsPage from './pages/ProjectsPage';
 import ContactPage from './pages/ContactPage';
 import ProjectDetailDialog from './ProjectDetailDialog';
 import { cn } from '@/lib/utils';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 type Page = 'cover' | 'toc' | 'about' | 'projects' | 'contact';
 
@@ -20,29 +19,31 @@ const pageOrder: Page[] = ['cover', 'toc', 'about', 'projects', 'contact'];
 
 export default function Flipbook({ data }: { data: PortfolioData }) {
   const [currentPage, setCurrentPage] = useState<Page>('cover');
-  const [direction, setDirection] = useState(0); // 1 for next, -1 for prev
+  const [direction, setDirection] = useState<'next' | 'prev' | null>(null);
   const [isFlipping, setIsFlipping] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const currentPageIndex = pageOrder.indexOf(currentPage);
+  const totalPages = pageOrder.length;
 
   const navigate = (page: Page) => {
     if (isFlipping) return;
     const newIndex = pageOrder.indexOf(page);
     if (newIndex === currentPageIndex) return;
-    
+
     setIsFlipping(true);
-    setDirection(newIndex > currentPageIndex ? 1 : -1);
-    
+    setDirection(newIndex > currentPageIndex ? 'next' : 'prev');
+    setMobileMenuOpen(false);
+
     setTimeout(() => {
       setCurrentPage(page);
       setIsFlipping(false);
-      setDirection(0);
-    }, 300); // Half of the animation duration
+    }, 600);
   };
 
   const nextPage = () => {
-    if (currentPageIndex < pageOrder.length - 1) {
+    if (currentPageIndex < totalPages - 1) {
       navigate(pageOrder[currentPageIndex + 1]);
     }
   };
@@ -52,74 +53,103 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
       navigate(pageOrder[currentPageIndex - 1]);
     }
   };
+
+  const renderPageContent = (page: Page) => {
+    switch (page) {
+      case 'cover':
+        return <CoverPage onOpen={() => navigate('toc')} />;
+      case 'toc':
+        return <TableOfContents onNavigate={navigate} />;
+      case 'about':
+        return <AboutPage content={data.aboutMe} />;
+      case 'projects':
+        return <ProjectsPage projects={data.projects} onProjectSelect={setSelectedProject} />;
+      case 'contact':
+        return <ContactPage />;
+      default:
+        return null;
+    }
+  };
   
-  const renderPage = () => {
-    const pageProps = {
-      key: currentPage, // Ensures component re-mounts on page change
-      className: cn(
-        "absolute inset-0 p-6 sm:p-8 transition-transform duration-700 ease-in-out backface-hidden",
-        direction === 1 && "animate-flip-out-to-left",
-        direction === -1 && "animate-flip-out-to-right",
-      )
-    };
-    
-    const pageContent = () => {
-        switch (currentPage) {
-          case 'cover':
-            return <CoverPage onOpen={() => navigate('toc')} />;
-          case 'toc':
-            return <TableOfContents onNavigate={navigate} />;
-          case 'about':
-            return <AboutPage content={data.aboutMe} />;
-          case 'projects':
-            return <ProjectsPage projects={data.projects} onProjectSelect={setSelectedProject} />;
-          case 'contact':
-            return <ContactPage />;
-          default:
-            return null;
+  const getPageClass = (page: 'left' | 'right') => {
+    const isCover = currentPage === 'cover';
+    const isContact = currentPage === 'contact';
+
+    if (isFlipping) {
+        if (direction === 'next') {
+            return page === 'left' ? 'animate-flip-out-next' : 'animate-flip-in-next';
+        }
+        if (direction === 'prev') {
+            return page === 'left' ? 'animate-flip-in-prev' : 'animate-flip-out-prev';
         }
     }
     
-    // This logic is a bit tricky. We need to render the content with a wrapper
-    // that has the animation classes.
-    const content = pageContent();
-    if (content && content.props) {
-        // Clone the element and add the animation class
-        return React.cloneElement(content, { ...content.props, className: cn(content.props.className, pageProps.className)}, content.props.children);
-    }
-    
-    return <div {...pageProps}>{pageContent()}</div>;
-  };
-
+    return 'transform-none';
+  }
 
   return (
-    <main className="flex h-screen w-full items-center justify-center bg-gradient-to-br from-primary/10 via-background to-accent/10 p-4 sm:p-6 md:p-8">
-      <Card className="relative flex aspect-[1/1.5] w-full max-w-xl flex-col overflow-hidden shadow-2xl md:aspect-video md:max-w-6xl md:flex-row perspective">
-        {/* Static left-side panel for desktop */}
-        <div className="hidden md:flex md:w-1/2 md:flex-col md:items-center md:justify-center md:bg-primary/5 md:p-8">
-           <TableOfContents onNavigate={navigate} isStaticPanel={true} />
-        </div>
-        <div className="hidden md:block border-l-2 border-dashed border-border/50"></div>
-        
-        {/* Animated right-side panel for desktop, full view for mobile */}
-        <div className="relative h-full w-full overflow-hidden md:w-1/2 preserve-3d">
-            {renderPage()}
-        </div>
+    <main className="flex h-screen w-full items-center justify-center bg-background p-4 overflow-hidden">
+        {/* Mobile Header */}
+       <header className="fixed top-0 left-0 right-0 z-50 flex md:hidden items-center justify-between p-4 bg-background/80 backdrop-blur-sm">
+         <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon"><Menu /></Button>
+          </SheetTrigger>
+          <SheetContent side="left">
+             <TableOfContents onNavigate={navigate} isStaticPanel={true} />
+          </SheetContent>
+         </Sheet>
+         <div className="text-sm font-medium">
+          {currentPageIndex > 0 ? `${currentPageIndex} / ${totalPages - 1}` : 'Cover'}
+         </div>
+         <div className="w-10"></div>
+       </header>
 
-        {/* Mobile Navigation */}
-        <div className="absolute bottom-4 left-4 right-4 flex justify-between md:hidden">
-            <Button onClick={prevPage} disabled={currentPageIndex === 0 || isFlipping} variant="outline" size="icon">
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-            <Button onClick={() => navigate('toc')} variant="outline" size="icon" disabled={isFlipping}>
-              <Home className="h-4 w-4" />
-            </Button>
-            <Button onClick={nextPage} disabled={currentPageIndex === pageOrder.length - 1 || isFlipping} variant="outline" size="icon">
-              <ArrowRight className="h-4 w-4" />
-            </Button>
+      <div className="relative w-full h-full flex items-center justify-center perspective">
+        <div className={cn("relative w-full max-w-[90vw] md:max-w-6xl aspect-[4/3] md:aspect-[2/1.3] preserve-3d transition-transform duration-500 ease-in-out", currentPage === 'cover' && 'md:group-hover:rotate-y-2')}>
+            {/* Left Page (Back of previous page) */}
+            <div className={cn(
+              "absolute w-1/2 h-full left-0 top-0 bg-card rounded-l-lg shadow-xl preserve-3d origin-right border-r border-border/50",
+               currentPage === 'cover' ? 'hidden' : 'block',
+               getPageClass('left')
+            )}>
+              <div className="absolute inset-0 p-8 backface-hidden">
+                {currentPageIndex > 1 && renderPageContent(pageOrder[currentPageIndex - 1])}
+              </div>
+            </div>
+
+            {/* Right Page (Current Page) */}
+            <div className={cn(
+                "absolute w-1/2 h-full right-0 top-0 bg-card rounded-r-lg shadow-2xl preserve-3d origin-left",
+                currentPage === 'cover' && 'w-full rounded-lg',
+                getPageClass('right')
+            )}>
+                <div className="absolute inset-0 p-8 backface-hidden">
+                    {renderPageContent(currentPage)}
+                </div>
+            </div>
+
+             {/* Book Spine */}
+            <div className={cn("hidden md:block absolute w-8 h-full top-0 left-1/2 -translate-x-1/2 bg-neutral-900 shadow-inner-lg transform -rotate-y-90 origin-center preserve-3d", currentPage==='cover' ? 'opacity-0' : 'opacity-100')}>
+                <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-1 bg-gradient-to-b from-neutral-700 via-neutral-900 to-neutral-700"></div>
+            </div>
         </div>
-      </Card>
-      
+      </div>
+
+
+      {/* Desktop & Mobile Navigation */}
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-4 z-20">
+        <Button onClick={prevPage} disabled={currentPageIndex === 0 || isFlipping} variant="outline" size="icon" className="rounded-full">
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <Button onClick={() => navigate('toc')} variant="ghost" size="icon" disabled={isFlipping || currentPage === 'toc'} className="rounded-full hover:bg-primary/10">
+          <Home className="h-4 w-4" />
+        </Button>
+        <Button onClick={nextPage} disabled={currentPageIndex === totalPages - 1 || isFlipping} variant="outline" size="icon" className="rounded-full">
+          <ArrowRight className="h-4 w-4" />
+        </Button>
+      </div>
+
       <ProjectDetailDialog project={selectedProject} open={!!selectedProject} onOpenChange={() => setSelectedProject(null)} />
     </main>
   );

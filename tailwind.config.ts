@@ -18,8 +18,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['Inter', 'sans-serif'],
-        headline: ['Inter', 'sans-serif'],
+        body: ['Roboto', 'sans-serif'],
+        headline: ['Playfair Display', 'serif'],
         code: ['monospace'],
       },
       colors: {
@@ -79,6 +79,9 @@ export default {
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
       },
+      boxShadow: {
+        'inner-lg': 'inset 0 2px 15px 0 rgb(0 0 0 / 0.5)',
+      },
       keyframes: {
         'accordion-down': {
           from: {
@@ -96,30 +99,30 @@ export default {
             height: '0',
           },
         },
-        'flip-out-to-left': {
-          'from': { transform: 'rotateY(0deg)', opacity: '1' },
-          'to': { transform: 'rotateY(-90deg)', opacity: '0' },
+        'flip-out-next': {
+          'from': { transform: 'rotateY(0deg)' },
+          'to': { transform: 'rotateY(-180deg)' },
         },
-        'flip-in-from-right': {
-          'from': { transform: 'rotateY(90deg)', opacity: '0' },
-          'to': { transform: 'rotateY(0deg)', opacity: '1' },
+        'flip-in-next': {
+            'from': { transform: 'rotateY(180deg)' },
+            'to': { transform: 'rotateY(0deg)' },
         },
-        'flip-out-to-right': {
-          'from': { transform: 'rotateY(0deg)', opacity: '1' },
-          'to': { transform: 'rotateY(90deg)', opacity: '0' },
+        'flip-out-prev': {
+            'from': { transform: 'rotateY(0deg)' },
+            'to': { transform: 'rotateY(180deg)' },
         },
-        'flip-in-from-left': {
-          'from': { transform: 'rotateY(-90deg)', opacity: '0' },
-          'to': { transform: 'rotateY(0deg)', opacity: '1' },
+        'flip-in-prev': {
+            'from': { transform: 'rotateY(-180deg)' },
+            'to': { transform: 'rotateY(0deg)' },
         },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
-        'flip-out-to-left': 'flip-out-to-left 0.3s ease-in forwards',
-        'flip-in-from-right': 'flip-in-from-right 0.3s ease-out 0.3s forwards',
-        'flip-out-to-right': 'flip-out-to-right 0.3s ease-in forwards',
-        'flip-in-from-left': 'flip-in-from-left 0.3s ease-out 0.3s forwards',
+        'flip-out-next': 'flip-out-next 0.6s ease-in-out forwards',
+        'flip-in-next': 'flip-in-next 0.6s ease-in-out forwards',
+        'flip-out-prev': 'flip-out-prev 0.6s ease-in-out forwards',
+        'flip-in-prev': 'flip-in-prev 0.6s ease-in-out forwards',
       },
     },
   },
