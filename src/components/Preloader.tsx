@@ -28,7 +28,7 @@ export default function Preloader() {
       style={{ backgroundColor: '#252627' }}
     >
       <Image 
-        src="/preloader.gif" 
+        src="https://gifdb.com/images/high/blue-fire-498-x-498-gif-wnffgxmn5h3b7dkg.webp" 
         alt="Loading..." 
         width={300} 
         height={300} 
