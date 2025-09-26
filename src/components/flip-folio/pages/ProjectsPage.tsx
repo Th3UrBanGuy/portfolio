@@ -12,11 +12,11 @@ type ProjectsPageProps = {
 export default function ProjectsPage({ projects, onProjectSelect }: ProjectsPageProps) {
   return (
     <div className="h-full flex flex-col">
-      <h2 className="font-headline text-3xl font-bold tracking-tight sm:text-4xl mb-6 flex-shrink-0 text-page-foreground">
+      <h2 className="font-headline text-2xl sm:text-3xl mb-4 flex-shrink-0 text-page-foreground">
         Creations & Constructs
       </h2>
       <ScrollArea className="flex-grow -mr-6">
-        <div className="space-y-6 pr-6">
+        <div className="space-y-4 pr-6">
           {projects.map((project) => (
             <ProjectCard
               key={project.id}

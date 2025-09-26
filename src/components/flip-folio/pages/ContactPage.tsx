@@ -19,19 +19,19 @@ export default function ContactPage({ contactDetails, socials }: { contactDetail
   
   return (
     <div className="flex h-full flex-col">
-       <h2 className="font-headline text-3xl font-bold tracking-tight sm:text-4xl mb-6 text-page-foreground">
+       <h2 className="font-headline text-2xl sm:text-3xl mb-4 text-page-foreground">
         Make Contact
       </h2>
       
-      <p className="text-lg text-page-foreground/80 mb-6">
+      <p className="text-base text-page-foreground/80 mb-4">
           I'm always open to discussing new projects, creative ideas, or opportunities to be part of an amazing team.
       </p>
       
       <ScrollArea className="flex-grow -mr-6 pr-6">
-        <div className="space-y-6">
+        <div className="space-y-4">
 
             {contactDetails.contactMeLink && (
-            <Button asChild className="w-full h-16 text-lg" size='lg'>
+            <Button asChild className="w-full h-14 text-base" size='lg'>
                 <a href={contactDetails.contactMeLink} target="_blank" rel="noopener noreferrer">
                     <ExternalLink className="mr-3 h-5 w-5" />
                     Find All My Links Here
@@ -40,18 +40,18 @@ export default function ContactPage({ contactDetails, socials }: { contactDetail
             )}
 
             <Card className='bg-transparent border-stone-400/50'>
-            <CardContent className="p-4 sm:p-6 space-y-4">
+            <CardContent className="p-4 space-y-3">
                 <div className="flex items-center">
-                <Phone className="h-6 w-6 text-primary flex-shrink-0" />
-                <a href={`tel:${contactDetails.phone}`} className="ml-4 text-base sm:text-lg font-medium text-page-foreground/90 hover:text-primary break-all">
+                <Phone className="h-5 w-5 text-primary flex-shrink-0" />
+                <a href={`tel:${contactDetails.phone}`} className="ml-4 text-sm sm:text-base font-medium text-page-foreground/90 hover:text-primary break-all">
                     {contactDetails.phone}
                 </a>
                 </div>
                 <div className="flex items-start">
-                <Mail className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
+                <Mail className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
                 <div className="ml-4 flex flex-col">
                     {contactDetails.emails.slice(0, 2).map(email => (
-                        <a key={email} href={`mailto:${email}`} className="text-base font-medium text-page-foreground/90 hover:text-primary break-all">
+                        <a key={email} href={`mailto:${email}`} className="text-sm font-medium text-page-foreground/90 hover:text-primary break-all">
                             {email}
                         </a>
                     ))}
@@ -60,19 +60,19 @@ export default function ContactPage({ contactDetails, socials }: { contactDetail
             </CardContent>
             </Card>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3">
             {socials.map((social) => {
                 const Icon = iconMap[social.id] || ExternalLink;
                 return (
                     <Button
                         key={social.id}
                         variant="outline"
-                        className="w-full justify-start h-14 bg-transparent border-stone-400/50 text-page-foreground hover:bg-black/5 hover:border-primary"
+                        className="w-full justify-start h-12 bg-transparent border-stone-400/50 text-page-foreground hover:bg-black/5 hover:border-primary"
                         asChild
                     >
                     <a href={social.url} target="_blank" rel="noopener noreferrer">
                         <Icon className="mr-3 h-5 w-5 text-primary" />
-                        <span className="font-semibold">{social.name}</span>
+                        <span className="font-semibold text-sm">{social.name}</span>
                     </a>
                     </Button>
                 )

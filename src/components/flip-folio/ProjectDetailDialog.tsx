@@ -42,25 +42,25 @@ export default function ProjectDetailDialog({
         </div>
         <div className="p-6 pt-0 -mt-16 relative z-10">
             <DialogHeader className='mb-4'>
-                <DialogTitle className="text-3xl font-bold text-white">{project.name}</DialogTitle>
+                <DialogTitle className="text-2xl font-bold text-white">{project.name}</DialogTitle>
             </DialogHeader>
 
-            <div className="flex flex-wrap gap-2 mb-6">
+            <div className="flex flex-wrap gap-2 mb-4">
                 {project.technologies.map((tech) => (
-                <Badge key={tech} variant="outline" className="bg-white/10 border-white/20 text-white backdrop-blur-sm">
+                <Badge key={tech} variant="outline" className="bg-white/10 border-white/20 text-white backdrop-blur-sm text-xs">
                     {tech}
                 </Badge>
                 ))}
             </div>
 
-            <ScrollArea className="h-40">
-              <DialogDescription className="text-base text-muted-foreground pr-4">
+            <ScrollArea className="h-32">
+              <DialogDescription className="text-sm text-muted-foreground pr-4">
                 {project.full_description}
               </DialogDescription>
             </ScrollArea>
 
             {project.preview_link && (
-                 <Button asChild className="mt-6">
+                 <Button asChild className="mt-4">
                     <a href={project.preview_link} target="_blank" rel="noopener noreferrer">
                         <Eye className="mr-2 h-4 w-4" />
                         Live Preview
