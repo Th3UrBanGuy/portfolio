@@ -19,7 +19,7 @@ export default {
     extend: {
       fontFamily: {
         body: ['Merriweather', 'serif'],
-        headline: ['"Uncial Antiqua"', 'cursive'],
+        headline: ['"Cinzel"', 'serif'],
         code: ['monospace'],
       },
       colors: {
