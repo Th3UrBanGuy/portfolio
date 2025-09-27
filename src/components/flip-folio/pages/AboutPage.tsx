@@ -4,7 +4,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import Image from 'next/image';
 import type { PersonalInfo } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { User, Calendar, Droplet, Flag, Briefcase, Heart, Target } from 'lucide-react';
+import { User, Calendar, Droplet, Flag, Briefcase, Heart, Target, Download } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 type AboutPageProps = {
   personalInfo: PersonalInfo;
@@ -46,6 +47,14 @@ export default function AboutPage({ personalInfo, imageUrl, imageHint }: AboutPa
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
             </div>
+            <div className="mt-4 hidden md:block">
+              <Button asChild className="w-full">
+                <a href="https://alahimajnurosama.github.io/resume" target="_blank" rel="noopener noreferrer">
+                  <Download className="mr-2 h-4 w-4" />
+                  View CV
+                </a>
+              </Button>
+            </div>
           </div>
           <div className="md:w-2/3">
             <h2 className="font-headline text-2xl mb-3 text-page-foreground">
@@ -60,6 +69,14 @@ export default function AboutPage({ personalInfo, imageUrl, imageHint }: AboutPa
                   </span>
                 </div>
               ))}
+            </div>
+             <div className="mt-4 md:hidden">
+              <Button asChild className="w-full">
+                <a href="https://alahimajnurosama.github.io/resume" target="_blank" rel="noopener noreferrer">
+                  <Download className="mr-2 h-4 w-4" />
+                  View CV
+                </a>
+              </Button>
             </div>
           </div>
         </div>
