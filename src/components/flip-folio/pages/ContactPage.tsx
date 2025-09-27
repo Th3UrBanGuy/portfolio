@@ -85,7 +85,7 @@ export default function ContactPage({ contactDetails, socials }: { contactDetail
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {socials.map((social) => {
                             const Icon = iconMap[social.id] || ExternalLink;
                             return (

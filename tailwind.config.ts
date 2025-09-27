@@ -19,7 +19,7 @@ export default {
     extend: {
       fontFamily: {
         body: ['Merriweather', 'serif'],
-        headline: ['"Cinzel"', 'serif'],
+        headline: ['Merriweather', 'serif'],
         code: ['monospace'],
       },
       colors: {
