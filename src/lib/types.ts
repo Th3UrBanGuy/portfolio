@@ -66,6 +66,7 @@ export type Skill = {
   name: string;
   icon: string;
   description: string;
+  category: string;
 };
 
 export type PortfolioData = {
