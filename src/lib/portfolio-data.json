@@ -84,13 +84,60 @@
     }
   ],
   "skills": [
-    "AI Integration & Automation (Fluent in using AI to enhance development, design & workflows)",
-    "Creative Coding & Intuitive UI/UX (Vibe Coding – blending logic, design, and flow seamlessly)",
-    "Project Lifecycle, Problem-Solving, Teamwork, Time Management",
-    "Microsoft Office, Data Entry & Analysis, Project Coordination",
-    "HTML, CSS, WordPress, Python, C++, GitHub",
-    "Linux, Docker, Canva",
-    "Basic Networking"
+    {
+      "id": "ai-integration",
+      "name": "AI Integration & Automation",
+      "icon": "BrainCircuit",
+      "description": "Fluent in using AI to enhance development, design & workflows. I leverage various AI tools and APIs to build smarter applications and automate repetitive tasks, significantly boosting productivity and innovation."
+    },
+    {
+      "id": "creative-coding",
+      "name": "Creative Coding & Intuitive UI/UX",
+      "icon": "Paintbrush",
+      "description": "I practice 'Vibe Coding' – a unique approach where I blend logic, design, and user flow seamlessly to create interfaces that are not only functional but also intuitive and enjoyable to use."
+    },
+    {
+      "id": "project-management",
+      "name": "Project Lifecycle Management",
+      "icon": "ClipboardCheck",
+      "description": "Experienced in managing the full project lifecycle, from initial concept to deployment and maintenance. I excel at problem-solving, fostering teamwork, and effective time management to deliver projects successfully."
+    },
+    {
+      "id": "data-analysis",
+      "name": "Data Entry & Analysis",
+      "icon": "Database",
+      "description": "Proficient in using Microsoft Office for data entry, analysis, and project coordination. I can organize and interpret data to provide actionable insights for better decision-making."
+    },
+    {
+      "id": "web-development",
+      "name": "Web Development",
+      "icon": "Code",
+      "description": "Skilled in core web technologies including HTML, CSS, and WordPress. I can build and customize websites that are both visually appealing and highly functional."
+    },
+    {
+      "id": "programming-languages",
+      "name": "Programming Languages",
+      "icon": "FileCode",
+      "description": "I have a solid foundation in Python and C++, enabling me to tackle a wide range of programming challenges. I use GitHub for version control and collaborative development."
+    },
+    {
+      "id": "devops",
+      "name": "DevOps & System Admin",
+      "icon": "Server",
+      "description": "Comfortable working with Linux environments and using Docker for containerization. This allows me to create consistent and scalable application deployments."
+    },
+    {
+      "id": "design-tools",
+      "name": "Design Tools",
+      "icon": "PenTool",
+      "description": "I use Canva for creating quick and professional-looking graphics, presentations, and other visual content to support my projects."
+    },
+    {
+      "id": "networking",
+      "name": "Basic Networking",
+      "icon": "Network",
+      "description": "I have a foundational understanding of networking concepts, which helps in diagnosing connectivity issues and understanding web application architecture."
+    }
   ],
   "projects": [
     {

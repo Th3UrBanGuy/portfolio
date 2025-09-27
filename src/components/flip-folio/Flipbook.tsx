@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import type { PortfolioData, Project } from '@/lib/types';
+import type { PortfolioData, Project, Skill } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import CoverPage from './pages/CoverPage';
@@ -16,6 +16,7 @@ import SkillsPage from './pages/SkillsPage';
 import ExperiencePage from './pages/ExperiencePage';
 import EducationPage from './pages/EducationPage';
 import AchievementsPage from './pages/AchievementsPage';
+import SkillDetailDialog from './SkillDetailDialog';
 
 type Page = 'cover' | 'toc' | 'about' | 'education' | 'skills' | 'experience' | 'achievements' | 'projects' | 'contact';
 
@@ -26,6 +27,7 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
   const [direction, setDirection] = useState<'next' | 'prev' | null>(null);
   const [isFlipping, setIsFlipping] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const isMobile = useIsMobile();
@@ -103,7 +105,7 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
             case 'education':
                 return <EducationPage education={data.education} />;
             case 'skills':
-                return <SkillsPage skills={data.skills} />;
+                return <SkillsPage skills={data.skills} onSkillSelect={setSelectedSkill} />;
             case 'experience':
                 return <ExperiencePage experience={data.experience} />;
             case 'achievements':
@@ -262,6 +264,7 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
        </div>
 
       <ProjectDetailDialog project={selectedProject} open={!!selectedProject} onOpenChange={() => setSelectedProject(null)} />
+      <SkillDetailDialog skill={selectedSkill} open={!!selectedSkill} onOpenChange={() => setSelectedSkill(null)} />
     </main>
   );
 }

@@ -61,10 +61,17 @@ export type Achievement = {
   words_about_it: string;
 };
 
+export type Skill = {
+  id: string;
+  name: string;
+  icon: string;
+  description: string;
+};
+
 export type PortfolioData = {
   personalInfo: PersonalInfo;
   education: Education[];
-  skills: string[];
+  skills: Skill[];
   projects: Project[];
   experience: Experience[];
   authorImageUrl: string;
