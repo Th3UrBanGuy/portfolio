@@ -38,7 +38,7 @@ export default function CoverPage({ onOpen }: CoverPageProps) {
       </div>
 
       <h1 className="font-headline text-5xl font-bold tracking-wider text-amber-50"
-          style={{ textShadow: '0 0 10px hsl(var(--primary) / 0.8), 0 0 25px hsl(var(--primary) / 0.6)' }}>
+          style={{ textShadow: '0 0 15px hsl(var(--primary) / 0.8), 0 0 35px hsl(var(--primary) / 0.6)' }}>
         The Arcane Codex
       </h1>
       <p className="mt-3 max-w-xs text-sm text-amber-200/60">
