@@ -12,7 +12,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '../ui/button';
-import { Eye } from 'lucide-react';
+import { Eye, BookText } from 'lucide-react';
 
 type ProjectDetailDialogProps = {
   project: Project | null;
@@ -58,15 +58,24 @@ export default function ProjectDetailDialog({
                 {project.full_description}
               </DialogDescription>
             </ScrollArea>
-
-            {project.preview_link && (
-                 <Button asChild className="mt-4">
-                    <a href={project.preview_link} target="_blank" rel="noopener noreferrer">
-                        <Eye className="mr-2 h-4 w-4" />
-                        Live Preview
-                    </a>
-                 </Button>
-            )}
+            <div className='flex items-center gap-4'>
+              {project.preview_link && (
+                   <Button asChild className="mt-4">
+                      <a href={project.preview_link} target="_blank" rel="noopener noreferrer">
+                          <Eye className="mr-2 h-4 w-4" />
+                          Live Preview
+                      </a>
+                   </Button>
+              )}
+              {project.documentation_link && (
+                  <Button asChild className="mt-4" variant="secondary">
+                      <a href={project.documentation_link} target="_blank" rel="noopener noreferrer">
+                          <BookText className="mr-2 h-4 w-4" />
+                          View Documentation
+                      </a>
+                  </Button>
+              )}
+            </div>
         </div>
       </DialogContent>
     </Dialog>

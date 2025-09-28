@@ -35,6 +35,7 @@ export type Project = {
   technologies: string[];
   full_description: string;
   preview_link: string;
+  documentation_link?: string;
   category: string;
 };
 

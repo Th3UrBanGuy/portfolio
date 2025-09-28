@@ -48,6 +48,7 @@ export const defaultPortfolioData: PortfolioData = {
     full_description: p.full_description,
     technologies: p.technologies,
     preview_link: p.preview_link,
+    documentation_link: p.documentation_link,
     category: p.category,
   })),
 };

@@ -4,10 +4,11 @@
       "id": "uranusx",
       "title": "UranusX",
       "short_description": "A sophisticated, feature-rich web application that serves as a personalized dashboard for streaming content.",
-      "image_url": "placeholder_uranusx.png",
+      "image_url": "https://storage.googleapis.com/aai-web-samples/app-prototyper/uranusx-logo.png",
       "full_description": "UranusX is a sophisticated, feature-rich web application that serves as a personalized dashboard for streaming content. It features a dual-interface system: a sleek, dynamic user-facing dashboard and a comprehensive admin panel for complete control over content, users, and subscriptions. Built on a modern tech stack including Next.js (App Router), React, TypeScript, Firebase, and Tailwind CSS with ShadCN UI components, the application is designed for performance, scalability, and a seamless user experience.",
       "technologies": ["Next.js", "React", "TypeScript", "Firebase", "Tailwind CSS", "ShadCN UI"],
       "preview_link": "https://uranusx.vercel.app",
+      "documentation_link": "https://burnt-iguanadon-520.notion.site/uranusx",
       "category": "Featured Projects"
     },
     {
