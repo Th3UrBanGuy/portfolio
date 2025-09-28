@@ -1,35 +1,27 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import { cn } from '@/lib/utils';
 
-export default function Preloader() {
-  const [visible, setVisible] = useState(true);
+type PreloaderProps = {
+  showFire: boolean;
+  isClosing: boolean;
+};
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setVisible(false);
-      const mainContent = document.getElementById('main-content');
-      if (mainContent) {
-        mainContent.style.opacity = '1';
-        mainContent.style.transition = 'opacity 1s ease-in-out';
-      }
-    }, 3000); 
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (!visible) return null;
-
+export default function Preloader({ showFire, isClosing }: PreloaderProps) {
   return (
     <div 
       id="preloader"
-      className="fixed inset-0 z-50 flex items-center justify-center"
-      style={{ backgroundColor: '#252627' }}
+      className={cn(
+        "fixed inset-0 z-50 flex items-center justify-center transition-opacity duration-1000",
+        showFire ? "opacity-100" : "opacity-0 pointer-events-none",
+        isClosing && "bg-background"
+      )}
+      style={{ backgroundColor: !isClosing ? '#252627' : undefined }}
     >
       <Image 
         src="https://gifdb.com/images/high/blue-fire-498-x-498-gif-wnffgxmn5h3b7dkg.webp" 
-        alt="Loading..." 
+        alt="Mystical Fire..." 
         width={300} 
         height={300} 
         unoptimized 

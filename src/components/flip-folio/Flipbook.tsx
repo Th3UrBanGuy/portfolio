@@ -18,18 +18,20 @@ import EducationPage from './pages/EducationPage';
 import AchievementsPage from './pages/AchievementsPage';
 import SkillDetailDialog from './SkillDetailDialog';
 import HTMLFlipBook from 'react-pageflip';
+import BackCoverPage from './pages/BackCoverPage';
+import Preloader from '../Preloader';
 
-type Page = 'cover' | 'toc' | 'about' | 'education' | 'skills' | 'experience' | 'achievements' | 'projects' | 'contact';
-const pageOrder: Page[] = ['cover', 'toc', 'about', 'education', 'skills', 'experience', 'achievements', 'projects', 'contact'];
+type Page = 'cover' | 'toc' | 'about' | 'education' | 'skills' | 'experience' | 'achievements' | 'projects' | 'contact' | 'back-cover';
+const pageOrder: Page[] = ['cover', 'toc', 'about', 'education', 'skills', 'experience', 'achievements', 'projects', 'contact', 'back-cover'];
 
-const PageComponentWrapper = React.forwardRef<HTMLDivElement, { children: React.ReactNode, isCover?: boolean, pageNumber: number }>(
-  ({ children, isCover, pageNumber }, ref) => {
+const PageComponentWrapper = React.forwardRef<HTMLDivElement, { children: React.ReactNode, isCover?: boolean, isBackCover?: boolean, pageNumber: number }>(
+  ({ children, isCover, isBackCover, pageNumber }, ref) => {
     return (
-      <div ref={ref} className={cn("overflow-hidden", isCover ? "bg-stone-950" : "bg-page-background text-page-foreground")}>
+      <div ref={ref} className={cn("overflow-hidden", (isCover || isBackCover) ? "bg-stone-950" : "bg-page-background text-page-foreground")}>
         <div className={cn(
             "p-8 md:p-10 h-full w-full relative",
         )}>
-            {!isCover && (
+            {!(isCover || isBackCover) && (
                 <div className={cn(
                     "absolute inset-y-0 w-8 pointer-events-none",
                     pageNumber % 2 === 0 ? "left-0 bg-gradient-to-r from-black/10 to-transparent" : "right-0 bg-gradient-to-l from-black/10 to-transparent"
@@ -40,7 +42,7 @@ const PageComponentWrapper = React.forwardRef<HTMLDivElement, { children: React.
                 {children}
             </div>
             
-            {!isCover && (
+            {!(isCover || isBackCover) && (
                  <div className={cn(
                     "absolute bottom-4 text-xs font-sans",
                     pageNumber % 2 === 0 ? "left-6" : "right-6",
@@ -66,6 +68,28 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
   const bookRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [bookDimensions, setBookDimensions] = useState({ width: 0, height: 0 });
+
+  const [hasIntroPlayed, setHasIntroPlayed] = useState(false);
+  const [showFire, setShowFire] = useState(true);
+  const [showContent, setShowContent] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+
+  useEffect(() => {
+    if (hasIntroPlayed) {
+        setShowFire(false);
+        setShowContent(true);
+        return;
+    }
+
+    const introTimer = setTimeout(() => {
+        setShowFire(false);
+        setShowContent(true);
+        setHasIntroPlayed(true);
+    }, 3000);
+
+    return () => clearTimeout(introTimer);
+  }, [hasIntroPlayed]);
+
 
   useEffect(() => {
     setIsMounted(true);
@@ -113,7 +137,11 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
 
   const onFlip = useCallback((e: { data: number }) => {
     setCurrentPageIndex(e.data);
-  }, []);
+    if (isClosing && e.data === 0) {
+        setShowContent(false);
+        setShowFire(true);
+    }
+  }, [isClosing]);
 
   const navigate = (page: Page) => {
     const newIndex = pageOrder.indexOf(page);
@@ -122,6 +150,13 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
     }
     setCurrentPageIndex(newIndex);
   };
+
+  const closeBook = () => {
+    if (bookRef.current) {
+        setIsClosing(true);
+        bookRef.current.pageFlip().turnToPage(0);
+    }
+  }
 
   const nextPage = () => {
     if (bookRef.current) {
@@ -155,6 +190,8 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
             return <ProjectsPage projects={data.projects} onProjectSelect={setSelectedProject} />;
         case 'contact':
             return <ContactPage contactDetails={data.contactDetails} socials={data.socials} />;
+        case 'back-cover':
+            return <BackCoverPage onClose={closeBook} />;
         default:
             return null;
     }
@@ -162,63 +199,62 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
 
   if (!isMounted) {
     return (
-        <main ref={containerRef} className="flex h-dvh w-full flex-col items-center justify-center bg-background p-4 overflow-hidden">
-            <div className="relative w-full max-w-6xl aspect-[10/7]">
-                 {/* Placeholder for pre-render */}
-            </div>
-             <div className="flex justify-center items-center gap-4 mt-4 flex-shrink-0 h-10">
-             </div>
-        </main>
+        <div className="h-dvh w-full bg-background flex items-center justify-center">
+            <Preloader showFire={true} isClosing={false} />
+        </div>
     );
   }
 
   const flipbookPages = pageOrder.map((page, index) => (
-    <PageComponentWrapper key={index} isCover={page === 'cover'} pageNumber={index}>
+    <PageComponentWrapper key={index} isCover={page === 'cover'} isBackCover={page === 'back-cover'} pageNumber={index}>
         {renderPageContent(page, index)}
     </PageComponentWrapper>
   ));
 
 
   return (
-    <main className="flex h-dvh w-full flex-col items-center justify-center bg-background p-4 overflow-hidden">
-      <div ref={containerRef} className="relative flex-grow w-full flex items-center justify-center">
-        {bookDimensions.width > 0 && (
-            <div style={{ width: bookDimensions.width, height: bookDimensions.height }}>
-              <HTMLFlipBook
-                ref={bookRef}
-                width={isMobile ? bookDimensions.width : bookDimensions.width / 2}
-                height={bookDimensions.height}
-                onFlip={onFlip}
-                showCover={true}
-                className="shadow-2xl rounded-lg"
-                useMouseEvents={!isMobile}
-                flippingTime={600}
-                size={isMobile ? "stretch" : "fixed"}
-                minWidth={300}
-                maxWidth={1000}
-                minHeight={400}
-                maxHeight={1400}
-                drawShadow={true}
-                mobileScrollSupport={false}
-              >
-                {flipbookPages}
-              </HTMLFlipBook>
-            </div>
-        )}
-      </div>
+    <>
+        <Preloader showFire={showFire} isClosing={isClosing} />
+        <main className={cn("flex h-dvh w-full flex-col items-center justify-center bg-background p-4 overflow-hidden transition-opacity duration-500", showContent ? "opacity-100" : "opacity-0")}>
+        <div ref={containerRef} className="relative flex-grow w-full flex items-center justify-center">
+            {bookDimensions.width > 0 && (
+                <div style={{ width: bookDimensions.width, height: bookDimensions.height }}>
+                <HTMLFlipBook
+                    ref={bookRef}
+                    width={isMobile ? bookDimensions.width : bookDimensions.width / 2}
+                    height={bookDimensions.height}
+                    onFlip={onFlip}
+                    showCover={true}
+                    className="shadow-2xl rounded-lg"
+                    useMouseEvents={!isMobile}
+                    flippingTime={600}
+                    size={isMobile ? "stretch" : "fixed"}
+                    minWidth={300}
+                    maxWidth={1000}
+                    minHeight={400}
+                    maxHeight={1400}
+                    drawShadow={true}
+                    mobileScrollSupport={false}
+                >
+                    {flipbookPages}
+                </HTMLFlipBook>
+                </div>
+            )}
+        </div>
 
-       <div className="flex justify-center items-center gap-4 mt-4 flex-shrink-0">
-          <Button onClick={prevPage} disabled={currentPageIndex === 0} variant="outline" size="icon" className="bg-background/50">
-              <ArrowLeft />
-          </Button>
-          <span className="text-sm text-foreground/70">{currentPageIndex === 0 ? 'Cover' : `${currentPageIndex} / ${totalPages - 1}`}</span>
-          <Button onClick={nextPage} disabled={currentPageIndex >= totalPages -1} variant="outline" size="icon" className="bg-background/50">
-              <ArrowRight />
-          </Button>
-       </div>
+        <div className="flex justify-center items-center gap-4 mt-4 flex-shrink-0">
+            <Button onClick={prevPage} disabled={currentPageIndex === 0} variant="outline" size="icon" className="bg-background/50">
+                <ArrowLeft />
+            </Button>
+            <span className="text-sm text-foreground/70">{currentPageIndex === 0 ? 'Cover' : `${currentPageIndex} / ${totalPages - 2}`}</span>
+            <Button onClick={nextPage} disabled={currentPageIndex >= totalPages -1} variant="outline" size="icon" className="bg-background/50">
+                <ArrowRight />
+            </Button>
+        </div>
 
-      <ProjectDetailDialog project={selectedProject} open={!!selectedProject} onOpenChange={() => setSelectedProject(null)} />
-      <SkillDetailDialog skill={selectedSkill} open={!!selectedSkill} onOpenChange={() => setSelectedSkill(null)} />
-    </main>
+        <ProjectDetailDialog project={selectedProject} open={!!selectedProject} onOpenChange={() => setSelectedProject(null)} />
+        <SkillDetailDialog skill={selectedSkill} open={!!selectedSkill} onOpenChange={() => setSelectedSkill(null)} />
+        </main>
+    </>
   );
 }
