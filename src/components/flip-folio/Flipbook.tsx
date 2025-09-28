@@ -137,11 +137,16 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
 
   const onFlip = useCallback((e: { data: number }) => {
     setCurrentPageIndex(e.data);
-    if (isClosing && e.data === 0) {
-        setShowContent(false);
-        setShowFire(true);
+    if (isClosing) {
+        if (isMobile && e.data === totalPages - 1) {
+            setTimeout(() => bookRef.current.pageFlip().turnToPage(0), 500);
+        } else if (e.data === 0) {
+            setShowContent(false);
+            setShowFire(true);
+        }
     }
-  }, [isClosing]);
+  }, [isClosing, isMobile, totalPages]);
+
 
   const navigate = (page: Page) => {
     const newIndex = pageOrder.indexOf(page);
@@ -154,7 +159,11 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
   const closeBook = () => {
     if (bookRef.current) {
         setIsClosing(true);
-        bookRef.current.pageFlip().turnToPage(0);
+        if (isMobile) {
+            bookRef.current.pageFlip().turnToPage(totalPages - 1);
+        } else {
+            bookRef.current.pageFlip().turnToPage(0);
+        }
     }
   }
 
