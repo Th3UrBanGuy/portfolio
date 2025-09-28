@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import type { PortfolioData, Project, Skill } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
@@ -17,114 +17,17 @@ import ExperiencePage from './pages/ExperiencePage';
 import EducationPage from './pages/EducationPage';
 import AchievementsPage from './pages/AchievementsPage';
 import SkillDetailDialog from './SkillDetailDialog';
+import HTMLFlipBook from 'react-pageflip';
 
 type Page = 'cover' | 'toc' | 'about' | 'education' | 'skills' | 'experience' | 'achievements' | 'projects' | 'contact';
-
 const pageOrder: Page[] = ['cover', 'toc', 'about', 'education', 'skills', 'experience', 'achievements', 'projects', 'contact'];
 
-export default function Flipbook({ data }: { data: PortfolioData }) {
-  const [currentPage, setCurrentPage] = useState<Page>('cover');
-  const [direction, setDirection] = useState<'next' | 'prev' | null>(null);
-  const [isFlipping, setIsFlipping] = useState(false);
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
-  const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [touchEnd, setTouchEnd] = useState<number | null>(null);
-  const isMobile = useIsMobile();
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  const currentPageIndex = pageOrder.indexOf(currentPage);
-  const totalPages = pageOrder.length;
-
-  const minSwipeDistance = 50;
-
-  const onTouchStart = (e: React.TouchEvent) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const onTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-    if (isLeftSwipe) {
-      nextPage();
-    }
-    if (isRightSwipe) {
-      prevPage();
-    }
-    setTouchStart(null);
-    setTouchEnd(null);
-  };
-
-  const navigate = (page: Page) => {
-    if (isFlipping) return;
-    const newIndex = pageOrder.indexOf(page);
-    if (newIndex === currentPageIndex) return;
-
-    setIsFlipping(true);
-    setDirection(newIndex > currentPageIndex ? 'next' : 'prev');
-
-    setTimeout(() => {
-      setCurrentPage(page);
-      setIsFlipping(false);
-      setDirection(null);
-    }, 600);
-  };
-
-  const nextPage = () => {
-    if (currentPageIndex < totalPages - 1) {
-      navigate(pageOrder[currentPageIndex + 1]);
-    }
-  };
-
-  const prevPage = () => {
-    if (currentPageIndex > 0) {
-      navigate(pageOrder[currentPageIndex - 1]);
-    }
-  };
-
-  const renderPageContent = (page: Page, pageNumber: number) => {
-    const pageContent = () => {
-        switch (page) {
-            case 'cover':
-                return <CoverPage onOpen={() => navigate('toc')} />;
-            case 'toc':
-                return <TableOfContents onNavigate={navigate} />;
-            case 'about':
-                return <AboutPage personalInfo={data.personalInfo} imageUrl={data.authorImageUrl} imageHint={data.authorImageHint} />;
-            case 'education':
-                return <EducationPage education={data.education} />;
-            case 'skills':
-                return <SkillsPage skills={data.skills} onSkillSelect={setSelectedSkill} />;
-            case 'experience':
-                return <ExperiencePage experience={data.experience} />;
-            case 'achievements':
-                return <AchievementsPage achievements={data.achievements} />;
-            case 'projects':
-                return <ProjectsPage projects={data.projects} onProjectSelect={setSelectedProject} />;
-            case 'contact':
-                return <ContactPage contactDetails={data.contactDetails} socials={data.socials} />;
-            default:
-                return null;
-        }
-    }
-
-    const isCover = pageNumber === 0;
-
+const PageComponentWrapper = React.forwardRef<HTMLDivElement, { children: React.ReactNode, isCover?: boolean, pageNumber: number }>(
+  ({ children, isCover, pageNumber }, ref) => {
     return (
+      <div ref={ref} className={cn("overflow-hidden", isCover ? "bg-stone-950" : "bg-page-background text-page-foreground")}>
         <div className={cn(
-            "p-8 md:p-10 h-full w-full relative overflow-hidden",
-            isCover ? "bg-stone-950" : "bg-page-background text-page-foreground"
+            "p-8 md:p-10 h-full w-full relative",
         )}>
             {!isCover && (
                 <div className={cn(
@@ -134,56 +37,134 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
             )}
             
             <div className="relative z-10 h-full w-full">
-                {pageContent()}
+                {children}
             </div>
             
             {!isCover && (
                  <div className={cn(
                     "absolute bottom-4 text-xs font-sans",
-                    isMobile ? (pageNumber % 2 === 0 ? "left-6" : "right-6") : (pageNumber % 2 === 0 ? "left-6" : "right-6"),
-                    isCover ? "text-amber-200/50" : "text-page-foreground/50"
+                    pageNumber % 2 === 0 ? "left-6" : "right-6",
+                    "text-page-foreground/50"
                  )}>
                     {pageNumber}
                 </div>
             )}
         </div>
-    )
-  };
-  
-  const getPageClass = (page: 'left' | 'right') => {
-    if (!isFlipping) return 'transform-none';
-    
-    if (direction === 'next') {
-        return page === 'right' ? 'animate-flip-out-next' : 'animate-flip-in-next';
-    }
-    if (direction === 'prev') {
-        return page === 'left' ? 'animate-flip-out-prev' : 'animate-flip-in-prev';
-    }
-    return 'transform-none';
+      </div>
+    );
   }
+);
+PageComponentWrapper.displayName = 'PageComponentWrapper';
 
-  const getMobilePageClass = () => {
-     if (!isFlipping) return 'transform-none';
-      if (direction === 'next') {
-        return 'animate-flip-out-next';
+
+export default function Flipbook({ data }: { data: PortfolioData }) {
+  const [currentPageIndex, setCurrentPageIndex] = useState(0);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
+  const isMobile = useIsMobile();
+  const [isMounted, setIsMounted] = useState(false);
+  const bookRef = useRef<any>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [bookDimensions, setBookDimensions] = useState({ width: 0, height: 0 });
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted) return;
+
+    const updateDimensions = () => {
+      if (containerRef.current) {
+        const containerWidth = containerRef.current.offsetWidth;
+        const containerHeight = containerRef.current.offsetHeight;
+        
+        if (isMobile) {
+            setBookDimensions({ width: containerWidth, height: containerHeight });
+        } else {
+            const aspectRatio = 10 / 7;
+            let newWidth = containerWidth;
+            let newHeight = newWidth / aspectRatio;
+
+            if (newHeight > containerHeight) {
+                newHeight = containerHeight;
+                newWidth = newHeight * aspectRatio;
+            }
+             setBookDimensions({ width: newWidth, height: newHeight });
+        }
       }
-      if (direction === 'prev') {
-        return 'animate-flip-out-prev';
+    };
+    
+    updateDimensions();
+
+    const resizeObserver = new ResizeObserver(updateDimensions);
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
+    
+    return () => {
+      if (containerRef.current) {
+        resizeObserver.unobserve(containerRef.current);
       }
-    return 'transform-none';
+    };
+  }, [isMounted, isMobile]);
+
+  const totalPages = pageOrder.length;
+
+  const onFlip = useCallback((e: { data: number }) => {
+    setCurrentPageIndex(e.data);
+  }, []);
+
+  const navigate = (page: Page) => {
+    const newIndex = pageOrder.indexOf(page);
+    if (bookRef.current) {
+      bookRef.current.pageFlip().turnToPage(newIndex);
+    }
+    setCurrentPageIndex(newIndex);
+  };
+
+  const nextPage = () => {
+    if (bookRef.current) {
+      bookRef.current.pageFlip().flipNext();
+    }
+  };
+
+  const prevPage = () => {
+    if (bookRef.current) {
+      bookRef.current.pageFlip().flipPrev();
+    }
+  };
+
+  const renderPageContent = (page: Page, pageNumber: number) => {
+    switch (page) {
+        case 'cover':
+            return <CoverPage onOpen={() => navigate('toc')} />;
+        case 'toc':
+            return <TableOfContents onNavigate={navigate} />;
+        case 'about':
+            return <AboutPage personalInfo={data.personalInfo} imageUrl={data.authorImageUrl} imageHint={data.authorImageHint} />;
+        case 'education':
+            return <EducationPage education={data.education} />;
+        case 'skills':
+            return <SkillsPage skills={data.skills} onSkillSelect={setSelectedSkill} />;
+        case 'experience':
+            return <ExperiencePage experience={data.experience} />;
+        case 'achievements':
+            return <AchievementsPage achievements={data.achievements} />;
+        case 'projects':
+            return <ProjectsPage projects={data.projects} onProjectSelect={setSelectedProject} />;
+        case 'contact':
+            return <ContactPage contactDetails={data.contactDetails} socials={data.socials} />;
+        default:
+            return null;
+    }
   }
 
   if (!isMounted) {
     return (
-        <main className="flex h-dvh w-full flex-col items-center justify-center bg-background p-4 overflow-hidden">
-            <div className="relative flex-grow w-full perspective flex items-center justify-center">
-                 <div className={cn("relative w-full max-w-6xl aspect-[2/1.4] preserve-3d")}>
-                     <div className={cn("absolute w-full h-full right-0 top-0 rounded-r-lg shadow-2xl preserve-3d origin-left rounded-lg")}>
-                        <div className="absolute inset-0 backface-hidden rounded-r-lg overflow-hidden rounded-lg">
-                           {renderPageContent('cover', 0)}
-                        </div>
-                    </div>
-                </div>
+        <main ref={containerRef} className="flex h-dvh w-full flex-col items-center justify-center bg-background p-4 overflow-hidden">
+            <div className="relative w-full max-w-6xl aspect-[10/7]">
+                 {/* Placeholder for pre-render */}
             </div>
              <div className="flex justify-center items-center gap-4 mt-4 flex-shrink-0 h-10">
              </div>
@@ -191,74 +172,47 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
     );
   }
 
+  const flipbookPages = pageOrder.map((page, index) => (
+    <PageComponentWrapper key={index} isCover={page === 'cover'} pageNumber={index}>
+        {renderPageContent(page, index)}
+    </PageComponentWrapper>
+  ));
+
+
   return (
-    <main className="flex h-dvh w-full flex-col items-center justify-center bg-background p-4 overflow-hidden"
-      onTouchStart={onTouchStart}
-      onTouchMove={onTouchMove}
-      onTouchEnd={onTouchEnd}
-    >
-      <div className="relative flex-grow w-full perspective flex items-center justify-center">
-        {isMobile ? (
-             <div className="w-full h-full relative perspective">
-                <div className={cn(
-                    "w-full h-full rounded-lg shadow-2xl preserve-3d origin-center",
-                     getMobilePageClass()
-                )}>
-                     <div className="absolute inset-0 backface-hidden rounded-lg overflow-hidden">
-                        {renderPageContent(currentPage, currentPageIndex)}
-                    </div>
-                     <div className="absolute inset-0 backface-hidden [transform:rotateY(180deg)] rounded-lg overflow-hidden">
-                        {direction === 'prev' && currentPageIndex > 0 ? renderPageContent(pageOrder[currentPageIndex - 1], currentPageIndex - 1) :
-                         direction === 'next' && currentPageIndex < totalPages - 1 ? renderPageContent(pageOrder[currentPageIndex + 1], currentPageIndex + 1) : null
-                        }
-                    </div>
-                </div>
-             </div>
-        ) : (
-             <div className={cn("relative w-full max-w-6xl aspect-[2/1.4] preserve-3d transition-transform duration-500 ease-in-out", currentPage === 'cover' && 'md:group-hover:rotate-y-2')}>
-                {/* Left Page */}
-                <div className={cn(
-                  "absolute w-1/2 h-full left-0 top-0 rounded-l-lg shadow-xl preserve-3d origin-right border-r border-black/20",
-                   currentPage === 'cover' ? 'hidden' : 'block',
-                   getPageClass('left')
-                )} >
-                  <div className="absolute inset-0 backface-hidden rounded-l-lg overflow-hidden">
-                    {currentPageIndex > 0 && renderPageContent(pageOrder[currentPageIndex - 1], currentPageIndex - 1)}
-                  </div>
-                  <div className="absolute inset-0 backface-hidden [transform:rotateY(180deg)] rounded-l-lg overflow-hidden">
-                     {renderPageContent(pageOrder[currentPageIndex], currentPageIndex)}
-                  </div>
-                </div>
-
-                {/* Right Page */}
-                <div className={cn(
-                    "absolute w-1/2 h-full right-0 top-0 rounded-r-lg shadow-2xl preserve-3d origin-left",
-                    currentPage === 'cover' && 'w-full rounded-lg',
-                    getPageClass('right')
-                )} >
-                    <div className="absolute inset-0 backface-hidden rounded-r-lg overflow-hidden">
-                        {renderPageContent(currentPage, currentPageIndex)}
-                    </div>
-                     <div className="absolute inset-0 backface-hidden [transform:rotateY(-180deg)] rounded-r-lg overflow-hidden">
-                        {currentPageIndex < totalPages - 1 && renderPageContent(pageOrder[currentPageIndex+1], currentPageIndex+1)}
-                    </div>
-                </div>
-
-                 {/* Book Spine */}
-                <div className={cn("hidden md:block absolute w-8 h-full top-0 left-1/2 -translate-x-1/2 bg-stone-900 shadow-inner-lg transform origin-center preserve-3d", currentPage==='cover' ? 'opacity-0' : 'opacity-100')}>
-                    <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-1 bg-gradient-to-b from-amber-900 via-stone-950 to-amber-900"></div>
-                    <div className="w-full h-full bg-repeat-y bg-[length:100%_10px]" style={{backgroundImage: 'linear-gradient(to bottom, transparent, transparent 4px, hsl(var(--border)) 4px, hsl(var(--border)) 5px, transparent 5px, transparent 10px)'}} />
-                </div>
+    <main className="flex h-dvh w-full flex-col items-center justify-center bg-background p-4 overflow-hidden">
+      <div ref={containerRef} className="relative flex-grow w-full flex items-center justify-center">
+        {bookDimensions.width > 0 && (
+            <div style={{ width: bookDimensions.width, height: bookDimensions.height }}>
+              <HTMLFlipBook
+                ref={bookRef}
+                width={isMobile ? bookDimensions.width : bookDimensions.width / 2}
+                height={bookDimensions.height}
+                onFlip={onFlip}
+                showCover={true}
+                className="shadow-2xl rounded-lg"
+                useMouseEvents={!isMobile}
+                flippingTime={600}
+                size={isMobile ? "stretch" : "fixed"}
+                minWidth={300}
+                maxWidth={1000}
+                minHeight={400}
+                maxHeight={1400}
+                drawShadow={true}
+                mobileScrollSupport={false}
+              >
+                {flipbookPages}
+              </HTMLFlipBook>
             </div>
         )}
       </div>
 
        <div className="flex justify-center items-center gap-4 mt-4 flex-shrink-0">
-          <Button onClick={prevPage} disabled={isFlipping || currentPageIndex === 0} variant="outline" size="icon" className="bg-background/50">
+          <Button onClick={prevPage} disabled={currentPageIndex === 0} variant="outline" size="icon" className="bg-background/50">
               <ArrowLeft />
           </Button>
-          <span className="text-sm text-foreground/70">{currentPage === 'cover' ? 'Cover' : `${currentPageIndex} / ${totalPages - 1}`}</span>
-          <Button onClick={nextPage} disabled={isFlipping || currentPageIndex === totalPages - 1} variant="outline" size="icon" className="bg-background/50">
+          <span className="text-sm text-foreground/70">{currentPageIndex === 0 ? 'Cover' : `${currentPageIndex} / ${totalPages - 1}`}</span>
+          <Button onClick={nextPage} disabled={currentPageIndex >= totalPages -1} variant="outline" size="icon" className="bg-background/50">
               <ArrowRight />
           </Button>
        </div>
