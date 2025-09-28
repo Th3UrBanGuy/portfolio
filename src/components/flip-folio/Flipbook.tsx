@@ -224,7 +224,7 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
                     onFlip={onFlip}
                     showCover={true}
                     className="shadow-2xl rounded-lg"
-                    useMouseEvents={!isMobile}
+                    useMouseEvents={false}
                     flippingTime={600}
                     size={isMobile ? "stretch" : "fixed"}
                     minWidth={300}
@@ -232,7 +232,7 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
                     minHeight={400}
                     maxHeight={1400}
                     drawShadow={true}
-                    mobileScrollSupport={false}
+                    mobileScrollSupport={true}
                 >
                     {flipbookPages}
                 </HTMLFlipBook>
