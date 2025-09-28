@@ -71,7 +71,7 @@ export default function ProjectDetailDialog({
                   <Button asChild className="mt-4" variant="secondary">
                       <a href={project.documentation_link} target="_blank" rel="noopener noreferrer">
                           <BookText className="mr-2 h-4 w-4" />
-                          View Documentation
+                          Case Study
                       </a>
                   </Button>
               )}
