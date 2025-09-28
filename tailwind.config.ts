@@ -20,6 +20,7 @@ export default {
       fontFamily: {
         body: ['Merriweather', 'serif'],
         headline: ['Merriweather', 'serif'],
+        handwriting: ['Kalam', 'cursive'],
         code: ['monospace'],
       },
       colors: {
