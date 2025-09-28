@@ -1,6 +1,12 @@
 {
   "placeholderImages": [
     {
+      "id": "project-uranusx",
+      "description": "Abstract streaming dashboard interface",
+      "imageUrl": "https://images.unsplash.com/photo-1611162617474-5b21e879e113?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzdHJlYW1pbmclMjBkYXNoYm9hcmR8ZW58MHx8fHwxNzYwNDMwMTU0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "streaming dashboard"
+    },
+    {
       "id": "project-1",
       "description": "Abstract colorful geometric shapes",
       "imageUrl": "https://images.unsplash.com/photo-1590753684039-6adc03c5d6dc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxhYnN0cmFjdCUyMGNhbGN1bGF0b3J8ZW58MHx8fHwxNzU4OTE2MTYzfDA&ixlib=rb-4.1.0&q=80&w=1080",
