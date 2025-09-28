@@ -20,6 +20,9 @@ import SkillDetailDialog from './SkillDetailDialog';
 import HTMLFlipBook from 'react-pageflip';
 import BackCoverPage from './pages/BackCoverPage';
 import Preloader from '../Preloader';
+import StaticIntroPage from './pages/StaticIntroPage';
+import StaticOutroPage from './pages/StaticOutroPage';
+
 
 type Page = 'cover' | 'toc' | 'about' | 'education' | 'skills' | 'experience' | 'achievements' | 'projects' | 'contact' | 'back-cover';
 const pageOrder: Page[] = ['cover', 'toc', 'about', 'education', 'skills', 'experience', 'achievements', 'projects', 'contact', 'back-cover'];
@@ -216,26 +219,39 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
         <main className={cn("flex h-dvh w-full flex-col items-center justify-center bg-background p-4 overflow-hidden transition-opacity duration-500", showContent ? "opacity-100" : "opacity-0")}>
         <div ref={containerRef} className="relative flex-grow w-full flex items-center justify-center">
             {bookDimensions.width > 0 && (
-                <div style={{ width: bookDimensions.width, height: bookDimensions.height }}>
-                <HTMLFlipBook
-                    ref={bookRef}
-                    width={isMobile ? bookDimensions.width : bookDimensions.width / 2}
-                    height={bookDimensions.height}
-                    onFlip={onFlip}
-                    showCover={true}
-                    className="shadow-2xl rounded-lg"
-                    useMouseEvents={false}
-                    flippingTime={600}
-                    size={isMobile ? "stretch" : "fixed"}
-                    minWidth={300}
-                    maxWidth={1000}
-                    minHeight={400}
-                    maxHeight={1400}
-                    drawShadow={true}
-                    mobileScrollSupport={true}
-                >
-                    {flipbookPages}
-                </HTMLFlipBook>
+                <div style={{ width: bookDimensions.width, height: bookDimensions.height }} className='relative'>
+                    
+                    {!isMobile && currentPageIndex === 0 && (
+                        <div className='absolute left-0 top-0 bottom-0 w-1/2'>
+                           <StaticIntroPage />
+                        </div>
+                    )}
+                    
+                    <HTMLFlipBook
+                        ref={bookRef}
+                        width={isMobile ? bookDimensions.width : bookDimensions.width / 2}
+                        height={bookDimensions.height}
+                        onFlip={onFlip}
+                        showCover={true}
+                        className="shadow-2xl rounded-lg"
+                        useMouseEvents={false}
+                        flippingTime={600}
+                        size={isMobile ? "stretch" : "fixed"}
+                        minWidth={300}
+                        maxWidth={1000}
+                        minHeight={400}
+                        maxHeight={1400}
+                        drawShadow={true}
+                        mobileScrollSupport={true}
+                    >
+                        {flipbookPages}
+                    </HTMLFlipBook>
+
+                     {!isMobile && currentPageIndex === totalPages - 1 && (
+                        <div className='absolute left-0 top-0 bottom-0 w-1/2'>
+                           <StaticOutroPage />
+                        </div>
+                    )}
                 </div>
             )}
         </div>
@@ -244,7 +260,7 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
             <Button onClick={prevPage} disabled={currentPageIndex === 0} variant="outline" size="icon" className="bg-background/50">
                 <ArrowLeft />
             </Button>
-            <span className="text-sm text-foreground/70">{currentPageIndex === 0 ? 'Cover' : `${currentPageIndex} / ${totalPages - 2}`}</span>
+            <span className="text-sm text-foreground/70">{currentPageIndex === 0 ? 'Cover' : currentPageIndex === totalPages - 1 ? 'Back Cover' : `${currentPageIndex} / ${totalPages - 2}`}</span>
             <Button onClick={nextPage} disabled={currentPageIndex >= totalPages -1} variant="outline" size="icon" className="bg-background/50">
                 <ArrowRight />
             </Button>
