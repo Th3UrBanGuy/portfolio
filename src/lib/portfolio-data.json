@@ -387,7 +387,8 @@
       "image_url": "Calculator.png",
       "full_description": "A visually appealing calculator built with HTML, CSS, and JavaScript featuring glassmorphism design. It offers basic arithmetic operations with an intuitive UI suitable for beginners and non-tech users.",
       "technologies": ["HTML", "CSS", "JavaScript"],
-      "preview_link": "https://alahimajnurosama.github.io/Calculator"
+      "preview_link": "https://alahimajnurosama.github.io/Calculator",
+      "category": "Urban Projects (Smaller Projects)"
     },
     {
       "id": "customsms",
@@ -396,7 +397,8 @@
       "image_url": "CustomSMS.png",
       "full_description": "Developed a platform to send SMS via APIs from multiple service providers. Though discontinued for ethical reasons, it was a deep dive into API integration and security practices.",
       "technologies": ["HTML", "JavaScript", "REST API"],
-      "preview_link": "https://alahimajnurosama.github.io/CustomSMS"
+      "preview_link": "https://alahimajnurosama.github.io/CustomSMS",
+      "category": "Urban Projects (Smaller Projects)"
     },
     {
       "id": "retro",
@@ -405,7 +407,8 @@
       "image_url": "Retro.png",
       "full_description": "Supports JSON and M3U playlists with 4 different media playback methods. Designed to explore IPTV systems. Discontinued due to copyright concerns.",
       "technologies": ["HTML", "JavaScript", "M3U", "VLC-Embed"],
-      "preview_link": "https://alahimajnurosama.github.io/Retro"
+      "preview_link": "https://alahimajnurosama.github.io/Retro",
+      "category": "Urban Projects (Smaller Projects)"
     },
     {
       "id": "urbanai",
@@ -414,7 +417,8 @@
       "image_url": "UrbanAi.png",
       "full_description": "A minimal HTML/JS-based ChatGPT integration offering conversational AI interaction in a user-friendly format. Great for experimenting with OpenAI APIs.",
       "technologies": ["HTML", "JavaScript", "OpenAI API"],
-      "preview_link": "https://alahimajnurosama.github.io/UrbanAi"
+      "preview_link": "https://alahimajnurosama.github.io/UrbanAi",
+      "category": "Urban Projects (Smaller Projects)"
     },
     {
       "id": "urbanmail",
@@ -423,7 +427,8 @@
       "image_url": "UrbanMail.png",
       "full_description": "A two-version build: v1 with basic inbox using 1secmail, and v2 upgraded to support mail.tm with login functionality and persistent inbox. Great for spam-free testing.",
       "technologies": ["HTML", "JavaScript", "1secmail API", "mail.tm API"],
-      "preview_link": "https://alahimajnurosama.github.io/UrbanMail"
+      "preview_link": "https://alahimajnurosama.github.io/UrbanMail",
+      "category": "Urban Projects (Smaller Projects)"
     },
     {
       "id": "html-encrypt",
@@ -432,7 +437,8 @@
       "image_url": "html-encrypt.png",
       "full_description": "Encrypts HTML content for basic source code protection, aimed at creators who want to obscure their content. Works entirely offline.",
       "technologies": ["HTML", "JavaScript"],
-      "preview_link": "https://alahimajnurosama.github.io/html-encrypt"
+      "preview_link": "https://alahimajnurosama.github.io/html-encrypt",
+      "category": "Urban Projects (Smaller Projects)"
     },
     {
       "id": "json2m3u",
@@ -441,7 +447,8 @@
       "image_url": "json2m3u.png",
       "full_description": "Takes structured JSON channel data and turns it into valid M3U format playlists. Useful for IPTV devs or testers working on stream-based platforms.",
       "technologies": ["HTML", "JavaScript", "JSON"],
-      "preview_link": "https://alahimajnurosama.github.io/json2m3u"
+      "preview_link": "https://alahimajnurosama.github.io/json2m3u",
+      "category": "Urban Projects (Smaller Projects)"
     },
     {
       "id": "passgen",
@@ -450,7 +457,8 @@
       "image_url": "passgen.png",
       "full_description": "Initially a CLI project, now upgraded to GUI using C++. Users can generate secure passwords with different rules and even include their custom words.",
       "technologies": ["C++", "File Handling", "GUI"],
-      "preview_link": "https://github.io/AlahiMajnurOsama/Projects/passgen"
+      "preview_link": "https://github.io/AlahiMajnurOsama/Projects/passgen",
+      "category": "Urban Projects (Smaller Projects)"
     },
     {
       "id": "simtools",
@@ -459,7 +467,8 @@
       "image_url": "simtools.png",
       "full_description": "Built for academic and telecom exploration, SimTools contains mini utilities to automate or simplify SIM card-related tasks (offline app).",
       "technologies": ["HTML", "JavaScript", "Offline Scripts"],
-      "preview_link": "https://alahimajnurosama.github.io/simtools"
+      "preview_link": "https://alahimajnurosama.github.io/simtools",
+      "category": "Urban Projects (Smaller Projects)"
     },
     {
       "id": "weather",
@@ -468,7 +477,8 @@
       "image_url": "weather.png",
       "full_description": "Simple web app that uses the OpenWeather API to fetch weather updates based on user input or geolocation. Built with intuitive UI in mind.",
       "technologies": ["HTML", "CSS", "JavaScript", "OpenWeather API"],
-      "preview_link": "https://alahimajnurosama.github.io/weather"
+      "preview_link": "https://alahimajnurosama.github.io/weather",
+      "category": "Urban Projects (Smaller Projects)"
     }
   ],
   "experience": [
