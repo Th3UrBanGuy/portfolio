@@ -1,11 +1,8 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { Sparkles, BookLock } from 'lucide-react';
+import { BookLock } from 'lucide-react';
 
-type BackCoverPageProps = {
-  onClose: () => void;
-};
+type BackCoverPageProps = {};
 
 const GlyphIcon = () => (
     <svg viewBox="0 0 100 100" className="h-24 w-24 text-primary" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -17,28 +14,13 @@ const GlyphIcon = () => (
 )
 
 
-export default function BackCoverPage({ onClose }: BackCoverPageProps) {
+export default function BackCoverPage({}: BackCoverPageProps) {
   return (
     <div className="flex h-full flex-col items-center justify-center text-center bg-stone-950 rounded-lg shadow-2xl p-8 border-t-2 border-amber-900/80 border-x-2 border-x-amber-950/50"
          style={{
             backgroundImage: 'radial-gradient(circle at center, hsl(var(--background)), hsl(224, 71%, 2%)), url("data:image/svg+xml,%3Csvg width=\'80\' height=\'80\' viewBox=\'0 0 80 80\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23c0840c\' fill-opacity=\'0.05\'%3E%3Cpath d=\'M50 50 L50 0 L80 0 L80 80 L0 80 L0 50 Z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")'
          }}>
       
-      <div className="mb-6 opacity-50">
-        <GlyphIcon />
-      </div>
-
-      <h1 className="font-headline text-4xl font-bold tracking-wider text-amber-50/80"
-          style={{ textShadow: '0 0 10px hsl(var(--primary) / 0.5)' }}>
-        The End
-      </h1>
-      <p className="mt-3 max-w-xs text-sm text-amber-200/50">
-        You have reached the end of the codex.
-      </p>
-      <Button onClick={onClose} className="mt-8 bg-primary/80 text-primary-foreground border-2 border-amber-300/60 hover:bg-primary/100 shadow-[0_0_15px_hsl(var(--primary)/0.4)] hover:shadow-[0_0_25px_hsl(var(--primary)/0.6)] transition-all duration-300" size="lg">
-        <BookLock className="mr-2 h-5 w-5" />
-        Close the Codex
-      </Button>
     </div>
   );
 }

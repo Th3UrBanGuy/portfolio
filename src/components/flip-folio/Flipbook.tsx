@@ -156,17 +156,6 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
     setCurrentPageIndex(newIndex);
   };
 
-  const closeBook = () => {
-    if (bookRef.current) {
-        setIsClosing(true);
-        if (isMobile) {
-            bookRef.current.pageFlip().turnToPage(totalPages - 1);
-        } else {
-            bookRef.current.pageFlip().turnToPage(0);
-        }
-    }
-  }
-
   const nextPage = () => {
     if (bookRef.current) {
       bookRef.current.pageFlip().flipNext();
@@ -200,7 +189,7 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
         case 'contact':
             return <ContactPage contactDetails={data.contactDetails} socials={data.socials} />;
         case 'back-cover':
-            return <BackCoverPage onClose={closeBook} />;
+            return <BackCoverPage />;
         default:
             return null;
     }
