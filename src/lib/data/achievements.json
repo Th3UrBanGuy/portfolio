@@ -1,0 +1,23 @@
+
+[
+    {
+      "id": "automated-visitor-scheduler-research",
+      "title": "Published Research Paper on Automated Visitor Scheduling System",
+      "short_description": "Published a research paper on building an appointment system for BGC Trust University Bangladesh.",
+      "icon_url": "achievement-icon-research-1.png",
+      "certificate_image_url": "https://alahimajnurosama.github.io/portfolio/assets/images/blog-1.jpg",
+      "full_description": "Successfully published my first research paper titled 'Streamlining Visitor Appointments: Automated Scheduling System for BGC Trust University Bangladesh' in the International Research Journal Of Modernization In Engineering Technology And Science (IRJMETS), Volume 05, Issue 09, September 2023.",
+      "how_achieved": "Identified the inefficiencies in the manual visitor appointment process at the university and designed a fully automated web-based system. Developed and documented the system, followed by submission and review for publication.",
+      "words_about_it": "This project marked a major milestone in my academic career. Publishing my first paper taught me a lot about research methodology, documentation, and real-world problem-solving with technology."
+    },
+    {
+      "id": "top-ranked-university-recognition-2024",
+      "title": "Certificate of Academic Excellence from Top-Ranked University",
+      "short_description": "Recognized for contributing to BGC Trust University's rise to the No.1 university in Bangladesh (Scimago Ranking 2024).",
+      "icon_url": "achievement-icon-recognition-1.png",
+      "certificate_image_url": "https://alahimajnurosama.github.io/portfolio/assets/images/blog-2.jpg",
+      "full_description": "Received a Certificate of Appreciation in March 2024 from BGC Trust University for outstanding research contributions, which played a significant role in the university's top national ranking.",
+      "how_achieved": "My involvement in impactful research projects and successful publication helped elevate the academic standards of the university, contributing to its high Scimago Institutions Ranking.",
+      "words_about_it": "Receiving this certificate was a proud moment. It reminds me that persistence in research and passion for innovation can create real impact, not just for me but for the entire institution I represent."
+    }
+]

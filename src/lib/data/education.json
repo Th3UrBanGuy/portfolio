@@ -1,0 +1,27 @@
+
+[
+    {
+      "id": "University",
+      "institution": "BGC Trust University Bangladesh",
+      "session": "2023-2027",
+      "details": "Ongoing: BSC in CSE"
+    },
+    {
+      "id": "College",
+      "institution": "Uttar Kattali Alhaz Mostofa Hakim Degree College",
+      "session": "2021-2022",
+      "details": "Completed: HSC (4.25)"
+    },
+    {
+      "id": "High School",
+      "institution": "Govt. muslim High School",
+      "session": "2016-2020",
+      "details": "Completed: JSC(4.57), SSC(4.50)"
+    },
+    {
+      "id": "Primary School",
+      "institution": "Firingee Bazar Govt Primary School",
+      "session": "2015",
+      "details": "Completed: PSC (5.00)"
+    }
+]

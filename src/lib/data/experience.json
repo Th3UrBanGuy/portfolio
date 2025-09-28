@@ -1,0 +1,42 @@
+
+[
+    {
+      "id": "exp-1",
+      "company": "BGCTUB IT Club",
+      "role": "IT Coordinator",
+      "duration": "2024 - Present",
+      "location": "Chittagong, Bangladesh",
+      "short_description": "Led the IT operations of the university's tech club and coordinated digital events.",
+      "details": [
+        "Managed IT infrastructure and supported club operations through tech innovation.",
+        "Guided team members on digital tools and automation processes.",
+        "Collaborated on university-wide initiatives as part of the BASIS - BGCTUB Chapter executive committee."
+      ]
+    },
+    {
+      "id": "exp-2",
+      "company": "Team Hydra & Team Urban",
+      "role": "Cybersecurity Consultant & Trainer",
+      "duration": "2024 - Present",
+      "location": "Chittagong, Bangladesh",
+      "short_description": "Consulted and trained members on cybersecurity practices as part of campus tech initiatives.",
+      "details": [
+        "Conducted training sessions on cybersecurity fundamentals.",
+        "Worked with two tech-focused teams to address real-world cybersecurity challenges.",
+        "Implemented AI-assisted threat detection simulations."
+      ]
+    },
+    {
+      "id": "exp-3",
+      "company": "Independent Tech Explorer",
+      "role": "Freelance Tech Consultant",
+      "duration": "2016 - Present",
+      "location": "Remote",
+      "short_description": "Self-driven exploration of emerging technologies and hands-on solution building.",
+      "details": [
+        "Used AI and automation to creatively solve technical problems across various domains.",
+        "Engaged in continuous learning, testing new tools, platforms, and frameworks.",
+        "Documented findings and shared insights through GitHub and personal blog."
+      ]
+    }
+]

@@ -1,0 +1,297 @@
+
+[
+    {
+      "id": "html",
+      "name": "HTML",
+      "icon": "FileCode",
+      "description": "Expert in structuring web content with semantic HTML, ensuring accessibility and a solid foundation for styling and interactivity.",
+      "category": "Web Development"
+    },
+    {
+      "id": "css",
+      "name": "CSS",
+      "icon": "Paintbrush",
+      "description": "Proficient in styling modern, responsive web interfaces with CSS, including Flexbox, Grid, and custom animations to create visually appealing designs.",
+      "category": "Web Development"
+    },
+    {
+      "id": "javascript",
+      "name": "JavaScript",
+      "icon": "Codepen",
+      "description": "Skilled in JavaScript for creating dynamic and interactive user experiences, manipulating the DOM, and working with APIs.",
+      "category": "Web Development"
+    },
+    {
+      "id": "python",
+      "name": "Python",
+      "icon": "Code",
+      "description": "Experienced in using Python for scripting, automation, and backend development. Familiar with its syntax and a wide range of libraries.",
+      "category": "Programming"
+    },
+    {
+      "id": "cpp",
+      "name": "C++",
+      "icon": "Code",
+      "description": "Solid foundation in C++ for performance-critical applications and understanding lower-level system operations. Used for competitive programming and building simple GUI applications.",
+      "category": "Programming"
+    },
+    {
+      "id": "github",
+      "name": "GitHub",
+      "icon": "Github",
+      "description": "Proficient in using Git and GitHub for version control, collaboration, and managing code repositories in both personal and team projects.",
+      "category": "Tools"
+    },
+    {
+      "id": "responsive-design",
+      "name": "Responsive Design",
+      "icon": "Smartphone",
+      "description": "Adept at creating web designs that seamlessly adapt to various screen sizes, ensuring a consistent and optimal user experience on desktops, tablets, and mobile devices.",
+      "category": "Design & Branding"
+    },
+    {
+      "id": "firewalls",
+      "name": "Firewalls",
+      "icon": "Flame",
+      "description": "Knowledgeable in configuring and managing firewalls to protect networks by filtering traffic and preventing unauthorized access.",
+      "category": "Cyber Security"
+    },
+    {
+      "id": "vpns",
+      "name": "VPNs",
+      "icon": "Shield",
+      "description": "Understanding of Virtual Private Networks (VPNs) for securing internet connections and maintaining privacy by encrypting data.",
+      "category": "Cyber Security"
+    },
+    {
+      "id": "ssl-tls",
+      "name": "SSL/TLS",
+      "icon": "Lock",
+      "description": "Familiar with SSL/TLS protocols to secure data transmission between clients and servers, ensuring confidentiality and integrity.",
+      "category": "Cyber Security"
+    },
+    {
+      "id": "ui-design",
+      "name": "UI Design",
+      "icon": "PanelsTopLeft",
+      "description": "Skilled in creating intuitive and visually appealing user interfaces, focusing on layout, typography, and color to enhance user interaction.",
+      "category": "Design & Branding"
+    },
+    {
+      "id": "ux-design",
+      "name": "UX Design",
+      "icon": "UserCheck",
+      "description": "Focused on creating a seamless and enjoyable user experience by understanding user needs, creating user flows, and improving usability.",
+      "category": "Design & Branding"
+    },
+    {
+      "id": "wordpress",
+      "name": "WordPress",
+      "icon": "Wordpress",
+      "description": "Proficient in developing and managing websites using WordPress, including theme customization and plugin integration.",
+      "category": "Web Development"
+    },
+    {
+      "id": "branding",
+      "name": "Branding",
+      "icon": "Award",
+      "description": "Ability to develop and maintain a consistent brand identity across various platforms, ensuring a cohesive and recognizable presence.",
+      "category": "Design & Branding"
+    },
+    {
+      "id": "netlify",
+      "name": "Netlify",
+      "icon": "Cloud",
+      "description": "Experienced in deploying and managing modern web applications on Netlify, leveraging its features for continuous integration and serverless functions.",
+      "category": "Deployment"
+    },
+    {
+      "id": "vercel",
+      "name": "Vercel",
+      "icon": "Cloud",
+      "description": "Skilled in deploying Next.js and other frontend applications to Vercel, optimizing for performance and scalability.",
+      "category": "Deployment"
+    },
+    {
+      "id": "linux",
+      "name": "Linux",
+      "icon": "Linux",
+      "description": "Comfortable working in Linux environments, managing systems, and using the command line for various administrative tasks.",
+      "category": "System Administration"
+    },
+    {
+      "id": "virtualization",
+      "name": "Virtualization",
+      "icon": "Computer",
+      "description": "Understanding of virtualization technologies to create and manage virtual machines for development and testing environments.",
+      "category": "System Administration"
+    },
+    {
+      "id": "containerization",
+      "name": "Containerization",
+      "icon": "Container",
+      "description": "Knowledge of containerization concepts to package applications and their dependencies into isolated units for consistent deployment.",
+      "category": "System Administration"
+    },
+    {
+      "id": "docker",
+      "name": "Docker",
+      "icon": "Docker",
+      "description": "Hands-on experience with Docker for building, shipping, and running applications in containers, ensuring portability and scalability.",
+      "category": "System Administration"
+    },
+    {
+      "id": "powershell",
+      "name": "PowerShell",
+      "icon": "Terminal",
+      "description": "Proficient in using PowerShell for automating administrative tasks and managing Windows-based systems.",
+      "category": "System Administration"
+    },
+    {
+      "id": "bash",
+      "name": "Bash",
+      "icon": "TerminalSquare",
+      "description": "Skilled in writing Bash scripts for automating tasks, managing files, and controlling processes in Linux environments.",
+      "category": "System Administration"
+    },
+    {
+      "id": "ssh",
+      "name": "SSH",
+      "icon": "Key",
+      "description": "Experienced in using SSH for secure remote access to servers and managing systems over a network.",
+      "category": "System Administration"
+    },
+    {
+      "id": "penetration-testing",
+      "name": "Penetration Testing",
+      "icon": "ShieldAlert",
+      "description": "Experience in simulating cyber-attacks to identify and exploit vulnerabilities in systems and networks, providing recommendations for remediation.",
+      "category": "Cyber Security"
+    },
+    {
+      "id": "network-security",
+      "name": "Network Security",
+      "icon": "Network",
+      "description": "Knowledge of principles and practices for securing computer networks from threats and unauthorized access.",
+      "category": "Cyber Security"
+    },
+    {
+      "id": "cryptography",
+      "name": "Cryptography",
+      "icon": "KeySquare",
+      "description": "Understanding of cryptographic principles and algorithms for securing information and communications.",
+      "category": "Cyber Security"
+    },
+    {
+      "id": "wireshark",
+      "name": "Wireshark",
+      "icon": "Search",
+      "description": "Proficient in using Wireshark for network traffic analysis, troubleshooting, and identifying security issues.",
+      "category": "Cyber Security"
+    },
+    {
+      "id": "metasploit",
+      "name": "Metasploit",
+      "icon": "Bomb",
+      "description": "Familiarity with the Metasploit Framework for developing and executing exploit code against remote targets during penetration tests.",
+      "category": "Cyber Security"
+    },
+    {
+      "id": "nmap",
+      "name": "Nmap",
+      "icon": "Scan",
+      "description": "Skilled in using Nmap for network discovery and security auditing, including port scanning and vulnerability detection.",
+      "category": "Cyber Security"
+    },
+    {
+      "id": "threat-analysis",
+      "name": "Threat Analysis",
+      "icon": "ShieldQuestion",
+      "description": "Ability to identify, analyze, and evaluate potential security threats to an organization's assets and operations.",
+      "category": "Cyber Security"
+    },
+    {
+      "id": "osint",
+      "name": "OSINT",
+      "icon": "Globe",
+      "description": "Proficient in Open-Source Intelligence (OSINT) techniques to gather and analyze publicly available information for investigations.",
+      "category": "Cyber Security"
+    },
+    {
+      "id": "ethical-hacking",
+      "name": "Ethical Hacking",
+      "icon": "ShieldCheck",
+      "description": "Adept at using hacking techniques for defensive purposes, identifying vulnerabilities before malicious actors can exploit them.",
+      "category": "Cyber Security"
+    },
+    {
+      "id": "vulnerability-scanning",
+      "name": "Vulnerability Scanning",
+      "icon": "ScanSearch",
+      "description": "Experience with tools and techniques to proactively identify security weaknesses in systems and applications.",
+      "category": "Cyber Security"
+    },
+    {
+      "id": "malware-analysis",
+      "name": "Malware Analysis",
+      "icon": "Bug",
+      "description": "Basic understanding of techniques to analyze malicious software to understand its behavior, purpose, and origin.",
+      "category": "Cyber Security"
+    },
+    {
+      "id": "creativity",
+      "name": "Creativity",
+      "icon": "Lightbulb",
+      "description": "Adept at thinking outside the box to find innovative solutions to complex problems and create unique, engaging designs.",
+      "category": "Soft Skills"
+    },
+    {
+      "id": "communication",
+      "name": "Communication",
+      "icon": "MessageCircle",
+      "description": "Excellent verbal and written communication skills, capable of clearly conveying technical concepts to both technical and non-technical audiences.",
+      "category": "Soft Skills"
+    },
+    {
+      "id": "team-management",
+      "name": "Team Management",
+      "icon": "Users",
+      "description": "Experience in leading and coordinating teams to achieve project goals, fostering a collaborative and productive environment.",
+      "category": "Soft Skills"
+    },
+    {
+      "id": "time-management",
+      "name": "Time Management",
+      "icon": "Clock",
+      "description": "Highly organized and proficient in prioritizing tasks, managing deadlines, and optimizing workflows to ensure timely project delivery.",
+      "category": "Soft Skills"
+    },
+    {
+      "id": "problem-solving",
+      "name": "Problem Solving",
+      "icon": "Puzzle",
+      "description": "Strong analytical and problem-solving abilities, with a knack for breaking down complex issues and developing effective solutions.",
+      "category": "Soft Skills"
+    },
+    {
+      "id": "leadership",
+      "name": "Leadership",
+      "icon": "UserCog",
+      "description": "Proven ability to guide and motivate teams, taking initiative and ownership to drive projects forward and inspire others.",
+      "category": "Soft Skills"
+    },
+    {
+      "id": "team-work",
+      "name": "Team Work",
+      "icon": "Handshake",
+      "description": "A collaborative team player who thrives in group settings, contributing effectively and supporting teammates to achieve shared objectives.",
+      "category": "Soft Skills"
+    },
+    {
+      "id": "quick-learner",
+      "name": "Quick Learner",
+      "icon": "Brain",
+      "description": "Capacity to quickly grasp new technologies, concepts, and tools, adapting swiftly to changing project requirements and industry trends.",
+      "category": "Soft Skills"
+    }
+]

@@ -1,10 +1,18 @@
 import type { PortfolioData, Project } from './types';
 import { PlaceHolderImages } from './placeholder-images';
-import rawData from './portfolio-data.json';
+
+import personalInfoData from './data/personal-info.json';
+import educationData from './data/education.json';
+import skillsData from './data/skills.json';
+import experienceData from './data/experience.json';
+import contactDetailsData from './data/contact-details.json';
+import socialsData from './data/socials.json';
+import projectsData from './data/projects.json';
+import achievementsData from './data/achievements.json';
 
 const projectImageMap = PlaceHolderImages.reduce((acc, img, index) => {
-  if (index < rawData.projects.length) {
-    const projectId = rawData.projects[index].id;
+  if (index < projectsData.length) {
+    const projectId = projectsData[index].id;
     acc[projectId] = {
         imageUrl: img.imageUrl,
         imageHint: img.imageHint
@@ -16,23 +24,21 @@ const projectImageMap = PlaceHolderImages.reduce((acc, img, index) => {
 
 const authorImage = PlaceHolderImages.find(img => img.id === 'author-image');
 
-const typedData = rawData as Omit<PortfolioData, 'projects' | 'aboutMe' | 'authorImageUrl' | 'authorImageHint'> & {
-    projects: Omit<Project, 'imageUrl' | 'imageHint' | 'name' | 'description'>[] & {title: string, short_description: string}[],
-};
+const typedProjects = projectsData as (Omit<Project, 'imageUrl' | 'imageHint' | 'name' | 'description'> & {title: string, short_description: string})[];
 
 export const defaultPortfolioData: PortfolioData = {
-  ...typedData,
-  personalInfo: typedData.personalInfo,
-  education: typedData.education,
-  skills: typedData.skills,
-  experience: typedData.experience,
-  contactDetails: typedData.contactDetails,
-  socials: typedData.socials,
+  personalInfo: personalInfoData,
+  education: educationData,
+  skills: skillsData,
+  experience: experienceData,
+  contactDetails: contactDetailsData,
+  socials: socialsData,
+  achievements: achievementsData,
   aboutMe:
     "I'm a hands-on tech explorer who dives into any technical issue, finds innovative solutions, and stays updated with the latest tech trends - a true 'Jugadu Technophile'. Since 2016, I've been solving diverse tech issues using creative methods and AI tools, and I'm always exploring new technologies.",
   authorImageUrl: authorImage?.imageUrl || '',
   authorImageHint: authorImage?.imageHint || '',
-  projects: typedData.projects.map((p, index) => ({
+  projects: typedProjects.map((p) => ({
     ...p,
     id: p.id,
     name: p.title,
