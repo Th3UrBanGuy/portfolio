@@ -38,8 +38,9 @@ export default function AdminLayout({
           <SidebarMenu>
             {navItems.map((item) => (
               <SidebarMenuItem key={item.href}>
-                <Link href={item.href}>
+                <Link href={item.href} passHref>
                   <SidebarMenuButton
+                    asChild
                     isActive={pathname.startsWith(item.href)}
                     icon={<item.icon />}
                   >
@@ -53,8 +54,8 @@ export default function AdminLayout({
         <SidebarFooter>
             <SidebarMenu>
                 <SidebarMenuItem>
-                    <Link href="/">
-                        <SidebarMenuButton icon={<Book />}>
+                    <Link href="/" passHref>
+                        <SidebarMenuButton asChild icon={<Book />}>
                             View Portfolio
                         </SidebarMenuButton>
                     </Link>

@@ -555,12 +555,20 @@ const SidebarMenuButton = React.forwardRef<
       size = "default",
       tooltip,
       className,
+      children,
       ...props
     },
     ref
   ) => {
     const Comp = asChild ? Slot : "button"
     const { isMobile, state } = useSidebar()
+    const { icon, ...restChildren } = React.useMemo(() => {
+        const childrenArray = React.Children.toArray(children);
+        const icon = childrenArray.find(child => React.isValidElement(child) && (child.type as any).displayName?.includes('Icon'));
+        const restChildren = childrenArray.filter(child => child !== icon);
+        return { icon, restChildren };
+    }, [children]);
+
 
     const button = (
       <Comp
@@ -570,7 +578,10 @@ const SidebarMenuButton = React.forwardRef<
         data-active={isActive}
         className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
         {...props}
-      />
+      >
+        {icon}
+        <span>{restChildren}</span>
+      </Comp>
     )
 
     if (!tooltip) {
@@ -767,4 +778,3 @@ export {
   SidebarTrigger,
   useSidebar,
 }
-
