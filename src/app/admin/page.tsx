@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, ArrowRight, UserCircle, GraduationCap, Star, Briefcase, Trophy, FolderKanban, Mail } from 'lucide-react';
+import { Users, ArrowRight, UserCircle, GraduationCap, Star, Briefcase, Trophy, FolderKanban, Mail, Shield } from 'lucide-react';
 
 export default function AdminDashboard() {
   return (
@@ -153,6 +153,24 @@ export default function AdminDashboard() {
             <CardContent>
               <CardDescription>
                 See who has been looking at your interactive portfolio.
+              </CardDescription>
+            </CardContent>
+          </Card>
+        </Link>
+         <Link href="/admin/security">
+          <Card className="hover:border-primary transition-colors cursor-pointer group">
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Shield className="h-6 w-6 text-primary" />
+                  <span className="text-lg">Security</span>
+                </div>
+                <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CardDescription>
+                Manage the secret key for accessing the admin panel.
               </CardDescription>
             </CardContent>
           </Card>
