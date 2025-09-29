@@ -109,39 +109,6 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
     navigate('toc');
   };
 
-  const getIpInfo = async () => {
-    const services = [
-        async () => {
-            const response = await fetch('https://ipapi.co/json/');
-            const data = await response.json();
-            return { ip: data.ip, city: data.city, country: data.country_name, isp: data.org, ipType: data.version, region: data.region, postal: data.postal, asn: data.asn, latitude: data.latitude, longitude: data.longitude };
-        },
-        async () => {
-            const response = await fetch('https://ipinfo.io/json');
-            const data = await response.json();
-            const [ip, ipType] = data.ip.includes(':') ? [data.ip, 'IPv6'] : [data.ip, 'IPv4'];
-            const [latitude, longitude] = data.loc ? data.loc.split(',').map(Number) : [null, null];
-            return { ip, city: data.city, country: data.country, isp: data.org, ipType, region: data.region, postal: data.postal, asn: data.asn, latitude, longitude };
-        },
-        async () => {
-            const response = await fetch('https://freeipapi.com/api/json');
-            const data = await response.json();
-            return { ip: data.ipAddress, city: data.cityName, country: data.countryName, isp: data.isp, ipType: data.ipVersion, region: data.regionName, postal: data.zipCode, asn: `AS${data.asNumber}`, latitude: data.latitude, longitude: data.longitude };
-        },
-    ];
-
-    for (const service of services) {
-        try {
-            const result = await service();
-            if (result.ip) return result;
-        } catch (error) {
-            console.warn("IP info service failed, trying next one.", error);
-        }
-    }
-
-    return { ip: 'N/A', city: 'N/A', country: 'N/A', isp: 'N/A', ipType: 'N/A', region: 'N/A', postal: 'N/A', asn: 'N/A', latitude: null, longitude: null };
-  }
-
   const recordViewerData = async () => {
     try {
         const getBrowserInfo = () => {
@@ -168,30 +135,19 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
             return "Unknown";
         }
       
-        const ipData = await getIpInfo();
-
-        const viewerData = {
-            ip: ipData.ip || 'N/A',
-            city: ipData.city || 'N/A',
-            country: ipData.country || 'N/A',
-            isp: ipData.isp || 'N/A',
-            ipType: ipData.ipType || 'N/A',
-            region: ipData.region || 'N/A',
-            postal: ipData.postal || 'N/A',
-            asn: ipData.asn || 'N/A',
-            latitude: ipData.latitude || null,
-            longitude: ipData.longitude || null,
+        const clientInfo = {
             browser: getBrowserInfo(),
             os: getOS(),
             resolution: `${window.screen.width}x${window.screen.height}`,
             deviceMemory: (navigator as any).deviceMemory ? `${(navigator as any).deviceMemory} GB` : 'N/A',
             cpuCores: (navigator.hardwareConcurrency && navigator.hardwareConcurrency !== Infinity) ? navigator.hardwareConcurrency : 'N/A',
+            userAgent: navigator.userAgent,
         };
       
-        await runRecordViewerFlow(viewerData);
+        await runRecordViewerFlow(clientInfo);
 
     } catch (error) {
-      console.error("Failed to record viewer data after all fallbacks:", error);
+      console.error("Failed to record viewer data:", error);
     }
   };
 

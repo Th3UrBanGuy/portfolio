@@ -103,4 +103,5 @@ export type ViewerData = {
     asn: string;
     latitude: number | null;
     longitude: number | null;
+    userAgent: string;
 };

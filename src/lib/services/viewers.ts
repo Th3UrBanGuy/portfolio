@@ -1,10 +1,10 @@
-
 'use server';
 import { db } from '@/lib/firebase';
 import { collection, addDoc, serverTimestamp, getDocs, orderBy, query } from 'firebase/firestore';
 import type { ViewerData } from '@/lib/types';
+import type { RecordViewerInput } from '../schemas/viewer';
 
-export async function recordViewer(viewerData: Omit<ViewerData, 'id' | 'timestamp'>): Promise<void> {
+export async function recordViewer(viewerData: RecordViewerInput): Promise<void> {
     try {
         await addDoc(collection(db, "viewers"), {
             ...viewerData,
