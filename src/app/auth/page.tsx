@@ -19,9 +19,34 @@ function SubmitButton() {
   );
 }
 
-export default function AuthPage() {
-  const [state, formAction] = useActionState(verifySecretKey, null);
+function AuthForm() {
+    const [state, formAction] = useActionState(verifySecretKey, null);
+    
+    return (
+        <form action={formAction} className="space-y-4">
+            <div className="space-y-2">
+                <Input
+                id="secretKey"
+                name="secretKey"
+                type="password"
+                placeholder="Your Secret Key"
+                required
+                />
+            </div>
+            {state?.error && (
+                <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Authentication Failed</AlertTitle>
+                <AlertDescription>{state.error}</AlertDescription>
+                </Alert>
+            )}
+            <SubmitButton />
+        </form>
+    );
+}
 
+
+export default function AuthPage() {
   return (
     <div className="flex min-h-dvh items-center justify-center bg-background p-4">
       <Card className="w-full max-w-sm">
@@ -35,25 +60,7 @@ export default function AuthPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form action={formAction} className="space-y-4">
-            <div className="space-y-2">
-              <Input
-                id="secretKey"
-                name="secretKey"
-                type="password"
-                placeholder="Your Secret Key"
-                required
-              />
-            </div>
-            {state?.error && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Authentication Failed</AlertTitle>
-                <AlertDescription>{state.error}</AlertDescription>
-              </Alert>
-            )}
-            <SubmitButton />
-          </form>
+          <AuthForm />
         </CardContent>
       </Card>
     </div>
