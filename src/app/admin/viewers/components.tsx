@@ -75,7 +75,8 @@ const ViewerDetailDialog = ({ viewer, open, onOpenChange }: ViewerDetailDialogPr
                                 <InfoRow icon={Server} label="ASN" value={viewer.asn} />
                             </CardContent>
                         </Card>
-                        <Card>
+                       {clientDetails && (
+                         <Card>
                             <CardHeader>
                                 <CardTitle className='flex items-center gap-2 text-lg'><Laptop className='h-5 w-5' /> Device & Browser</CardTitle>
                             </CardHeader>
@@ -87,6 +88,7 @@ const ViewerDetailDialog = ({ viewer, open, onOpenChange }: ViewerDetailDialogPr
                                 <InfoRow icon={Cpu} label="CPU Cores" value={String(clientDetails.navigator.hardwareConcurrency) || 'N/A'} />
                             </CardContent>
                         </Card>
+                       )}
                     </div>
                 </ScrollArea>
             </DialogContent>
@@ -134,8 +136,8 @@ const ViewerCard = ({ viewer, onClick }: ViewerCardProps) => {
             <CardContent>
                 <InfoRow icon={Shield} label="IP Address" value={viewer.ip} />
                 <InfoRow icon={Wifi} label="ISP" value={viewer.isp} />
-                <InfoRow icon={Laptop} label="OS" value={viewer.clientDetails.os} />
-                <InfoRow icon={Globe} label="Browser" value={viewer.clientDetails.browser} />
+                <InfoRow icon={Laptop} label="OS" value={viewer.clientDetails?.os || 'N/A'} />
+                <InfoRow icon={Globe} label="Browser" value={viewer.clientDetails?.browser || 'N/A'} />
             </CardContent>
         </Card>
     )
