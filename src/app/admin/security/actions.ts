@@ -6,7 +6,7 @@ import { db } from '@/lib/firebase';
 import { revalidatePath } from 'next/cache';
 
 const securitySchema = z.object({
-  secretKey: z.string().min(8, 'Secret key must be at least 8 characters long.'),
+  secretKey: z.string().min(6, 'Secret key must be at least 6 characters long.'),
 });
 
 export async function updateSecretKey(data: { secretKey: string }): Promise<{ success: boolean; error?: string }> {

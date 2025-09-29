@@ -21,7 +21,7 @@ import { updateSecretKey } from './actions';
 import { useTransition, useState } from 'react';
 
 const securitySchema = z.object({
-  secretKey: z.string().min(8, 'Secret key must be at least 8 characters long.'),
+  secretKey: z.string().min(6, 'Secret key must be at least 6 characters long.'),
 });
 
 type SecurityFormValues = z.infer<typeof securitySchema>;
@@ -89,7 +89,7 @@ export function SecurityForm({ currentKey }: { currentKey: string }) {
                     </Button>
                   </div>
                   <FormDescription>
-                    This key will be required to access the admin panel. Minimum 8 characters.
+                    This key will be required to access the admin panel. Minimum 6 characters.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
