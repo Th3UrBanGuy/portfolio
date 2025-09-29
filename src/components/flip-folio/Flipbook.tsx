@@ -101,11 +101,15 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
     setIsMounted(true);
   }, []);
 
-  const handleOpenBook = () => {
+  const handleFirstInteraction = () => {
     if (!hasRecorded) {
-      recordViewerData();
-      setHasRecorded(true);
+        recordViewerData();
+        setHasRecorded(true);
     }
+  }
+
+  const handleOpenBook = () => {
+    handleFirstInteraction();
     navigate('toc');
   };
 
@@ -357,12 +361,14 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
   };
 
   const nextPage = () => {
+    handleFirstInteraction();
     if (bookRef.current) {
       bookRef.current.pageFlip().flipNext();
     }
   };
 
   const prevPage = () => {
+    handleFirstInteraction();
     if (bookRef.current) {
       bookRef.current.pageFlip().flipPrev();
     }
