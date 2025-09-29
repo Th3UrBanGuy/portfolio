@@ -8,10 +8,38 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Users, ArrowRight, UserCircle, GraduationCap, Star, Briefcase, Trophy, FolderKanban, Mail, Shield } from 'lucide-react';
+import { resetSecretKey } from './security/actions';
+import { redirect } from 'next/navigation';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { KeyRound } from 'lucide-react';
 
-export default function AdminDashboard() {
+type AdminDashboardProps = {
+  searchParams?: {
+    resetkey?: string;
+    reset?: string;
+  };
+};
+
+export default async function AdminDashboard({ searchParams }: AdminDashboardProps) {
+  const resetKey = searchParams?.resetkey;
+  const wasReset = searchParams?.reset === 'success';
+
+  if (resetKey) {
+    await resetSecretKey(resetKey);
+    redirect('/admin?reset=success');
+  }
+
   return (
     <div className="space-y-6">
+      {wasReset && (
+         <Alert>
+            <KeyRound className="h-4 w-4" />
+            <AlertTitle>Success!</AlertTitle>
+            <AlertDescription>
+                The secret key has been successfully reset. Please consider changing it to a more secure value on the Security page.
+            </AlertDescription>
+        </Alert>
+      )}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Link href="/admin/profile">
           <Card className="hover:border-primary transition-colors cursor-pointer group">
