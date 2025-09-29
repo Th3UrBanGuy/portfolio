@@ -15,7 +15,7 @@ const recordViewerFlow = ai.defineFlow(
     },
     async (clientInfo) => {
 
-        const ip = GENKIT_CLIENT_IP.get() || '0.0.0.0';
+        const ip = GENKIT_CLIENT_IP?.get() || '0.0.0.0';
 
         let locationData = {
             city: 'N/A',
@@ -39,7 +39,7 @@ const recordViewerFlow = ai.defineFlow(
                         country: data.country || 'N/A',
                         isp: data.isp || 'N/A',
                         ipType: ip.includes(':') ? 'IPv6' : 'IPv4',
-                        region: data.regionName || 'N/A',
+                        region: data.regionName || 'NA',
                         postal: data.zip || 'N/A',
                         asn: data.as || 'N/A',
                         latitude: data.lat || null,
