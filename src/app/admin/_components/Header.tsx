@@ -9,6 +9,7 @@ const getTitleFromPath = (path: string) => {
   if (path.startsWith('/admin/viewers')) return 'Viewers';
   if (path.startsWith('/admin/profile')) return 'Profile';
   if (path.startsWith('/admin/education')) return 'Education';
+  if (path.startsWith('/admin/skills')) return 'Skills';
   const parts = path.split('/').pop()?.split('-') || [];
   return parts.map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
 };

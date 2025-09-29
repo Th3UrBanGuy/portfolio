@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, ArrowRight, UserCircle, GraduationCap } from 'lucide-react';
+import { Users, ArrowRight, UserCircle, GraduationCap, Star } from 'lucide-react';
 
 export default function AdminDashboard() {
   return (
@@ -45,6 +45,24 @@ export default function AdminDashboard() {
             <CardContent>
               <CardDescription>
                 Manage the educational institutions on your "About Me" page.
+              </CardDescription>
+            </CardContent>
+          </Card>
+        </Link>
+        <Link href="/admin/skills">
+          <Card className="hover:border-primary transition-colors cursor-pointer group">
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Star className="h-6 w-6 text-primary" />
+                  <span className="text-lg">Skills</span>
+                </div>
+                <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CardDescription>
+                Manage the skills and technologies listed on your portfolio.
               </CardDescription>
             </CardContent>
           </Card>
