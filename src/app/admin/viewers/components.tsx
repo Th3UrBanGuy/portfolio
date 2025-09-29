@@ -111,10 +111,17 @@ export function NetworkInfoCard() {
         const fetchIpInfo = async () => {
             setLoading(true);
             try {
-                const response = await fetch('https://ipapi.co/json/');
-                if (!response.ok) throw new Error('Failed to fetch');
-                const data = await response.json();
-                setNetworkInfo(data);
+                const ipResponse = await fetch('https://api.ipify.org?format=json');
+                if (!ipResponse.ok) throw new Error('Failed to fetch IP');
+                const ipData = await ipResponse.json();
+                const ip = ipData.ip;
+                
+                const detailsResponse = await fetch(`https://ipapi.co/${ip}/json/`);
+                if (!detailsResponse.ok) throw new Error('Failed to fetch IP details');
+                const detailsData = await detailsResponse.json();
+                
+                setNetworkInfo(detailsData);
+
             } catch (error) {
                 console.error("Error fetching IP info:", error);
                 setNetworkInfo({ error: "Could not fetch network data." });
