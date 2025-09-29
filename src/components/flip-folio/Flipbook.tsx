@@ -150,110 +150,32 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
             return "Unknown";
         }
 
-        const getIpInfo = async () => {
-            const services = [
-                { url: 'https://ipdata.co/json/', transform: (data: any) => ({
-                    ip: data.ip,
-                    city: data.city || 'N/A',
-                    country: data.country_name || 'N/A',
-                    isp: data.asn?.name || 'N/A',
-                    ipType: data.ip?.includes(':') ? 'IPv6' : 'IPv4',
-                    region: data.region || 'N/A',
-                    postal: data.postal || 'N/A',
-                    asn: data.asn?.asn || 'N/A',
-                    latitude: data.latitude || null,
-                    longitude: data.longitude || null,
-                })},
-                { url: 'https://ipapi.co/json/', transform: (data: any) => ({
-                    ip: data.ip,
-                    city: data.city || 'N/A',
-                    country: data.country_name || data.country || 'N/A',
-                    isp: data.org || data.isp || 'N/A',
-                    ipType: data.version === 'IPv4' ? 'IPv4' : data.version === 'IPv6' ? 'IPv6' : 'N/A',
-                    region: data.region || 'N/A',
-                    postal: data.postal || 'N/A',
-                    asn: data.asn || 'N/A',
-                    latitude: data.latitude || null,
-                    longitude: data.longitude || null,
-                })},
-                { url: 'https://ipinfo.io/json', transform: (data: any) => ({
-                    ip: data.ip,
-                    city: data.city || 'N/A',
-                    country: data.country || 'N/A',
-                    isp: data.org || data.isp || 'N/A',
-                    ipType: data.ip?.includes(':') ? 'IPv6' : 'IPv4',
-                    region: data.region || 'N/A',
-                    postal: data.postal || 'N/A',
-                    asn: data.org?.split(' ')[0] || 'N/A',
-                    latitude: data.loc ? Number(data.loc.split(',')[0]) : null,
-                    longitude: data.loc ? Number(data.loc.split(',')[1]) : null,
-                })},
-                { url: 'https://freeipapi.com/api/json', transform: (data: any) => ({
-                    ip: data.ipAddress,
-                    city: data.cityName || 'N/A',
-                    country: data.countryName || 'N/A',
-                    isp: data.isp || 'N/A',
-                    ipType: data.ipVersion === 4 ? 'IPv4' : data.ipVersion === 6 ? 'IPv6' : 'N/A',
-                    region: data.regionName || 'N/A',
-                    postal: data.zipCode || 'N/A',
-                    asn: 'N/A',
-                    latitude: data.latitude || null,
-                    longitude: data.longitude || null,
-                })},
-                 { url: 'https://api.seeip.org/geoip', transform: (data: any) => ({
-                    ip: data.ip,
-                    city: data.city || 'N/A',
-                    country: data.country || 'N/A',
-                    isp: data.organization || 'N/A',
-                    ipType: data.ip?.includes(':') ? 'IPv6' : 'IPv4',
-                    region: data.region || 'N/A',
-                    postal: data.postal_code || 'N/A',
-                    asn: data.organization?.split(' ')[0] || 'N/A',
-                    latitude: data.latitude || null,
-                    longitude: data.longitude || null,
-                })},
-                { url: 'https://ipinfo.tw/', isText: true, transform: (text: string) => {
-                    const lines = text.split('\n');
-                    const ip = lines[0] || 'N/A';
-                    const country = (lines[1] || 'N/A').split(' / ')[1] || 'N/A';
-                    const isp = (lines[2] || 'N/A').split(' / ')[1] || 'N/A';
-                    return {
-                        ip,
-                        city: 'N/A',
-                        country,
-                        isp,
-                        ipType: ip.includes(':') ? 'IPv6' : 'IPv4',
-                        region: 'N/A',
-                        postal: 'N/A',
-                        asn: 'N/A',
-                        latitude: null,
-                        longitude: null,
-                    }
-                }}
-            ];
-            for (const service of services) {
-                try {
-                    const response = await fetch(service.url);
-                    if(service.isText){
-                        const text = await response.text();
-                         if(text){
-                             return service.transform(text);
-                         }
-                    } else {
-                        const data = await response.json();
-                        if (data.ip || data.ipAddress) {
-                            return service.transform(data);
-                        }
-                    }
-                } catch (error) {
-                    console.warn(`Failed to fetch IP from ${service.url}`, error);
-                }
-            }
+       const getIpInfo = async () => {
+        try {
+            const response = await fetch('https://ipapi.co/json/');
+            if (!response.ok) throw new Error('Response not OK');
+            const data = await response.json();
             return {
-                ip: 'N/A', city: 'N/A', country: 'N/A', isp: 'N/A', ipType: 'N/A',
+                ip: data.ip,
+                city: data.city || 'N/A',
+                country: data.country_name || data.country || 'N/A',
+                isp: data.org || data.isp || 'N/A',
+                ipType: data.version === 'IPv4' ? 'IPv4' : data.version === 'IPv6' ? 'IPv6' : 'N/A',
+                region: data.region || 'N/A',
+                postal: data.postal || 'N/A',
+                asn: data.asn || 'N/A',
+                latitude: data.latitude || null,
+                longitude: data.longitude || null,
+            };
+        } catch (error) {
+            console.warn("Client-side IP lookup failed. The server will attempt to determine the location.", error);
+            // Return a default object so the server can take over.
+            return {
+                ip: '0.0.0.0', city: 'N/A', country: 'N/A', isp: 'N/A', ipType: 'N/A',
                 region: 'N/A', postal: 'N/A', asn: 'N/A', latitude: null, longitude: null,
             };
-        };
+        }
+      };
 
         const collectClientDetails = () => {
             const nav = navigator as any;
@@ -486,3 +408,5 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
     </>
   );
 }
+
+    

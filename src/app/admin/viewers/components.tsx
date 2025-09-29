@@ -53,8 +53,8 @@ const ViewerDetailDialog = ({ viewer, open, onOpenChange }: ViewerDetailDialogPr
                             </CardHeader>
                             <CardContent>
                                 <InfoRow icon={UserCheck} label="Unique Visitor ID" value={viewer.visitorId} />
-                                <InfoRow icon={Calendar} label="First Visit" value={format(new Date(viewer.first_visit), "PPp")} />
-                                <InfoRow icon={Clock} label="Last Visit" value={format(new Date(viewer.last_visit), "PPp")} />
+                                <InfoRow icon={Calendar} label="First Visit" value={viewer.first_visit ? format(new Date(viewer.first_visit), "PPp") : 'N/A'} />
+                                <InfoRow icon={Clock} label="Last Visit" value={viewer.last_visit ? format(new Date(viewer.last_visit), "PPp") : 'N/A'} />
                                 <InfoRow icon={Repeat} label="Total Visits" value={viewer.visit_count} />
                             </CardContent>
                         </Card>
@@ -110,12 +110,19 @@ const ViewerDetailDialog = ({ viewer, open, onOpenChange }: ViewerDetailDialogPr
                             <CardContent>
                                 <ScrollArea className='h-40'>
                                 <div className='space-y-2'>
-                                    {viewer.visit_history.sort((a, b) => new Date(b).getTime() - new Date(a).getTime()).map((visit, index) => (
-                                        <div key={index} className='text-sm text-muted-foreground p-2 rounded-md bg-muted/50 flex justify-between items-center'>
-                                            <span>{format(new Date(visit), "PPpp")}</span>
-                                            <span className='text-xs'>{formatDistanceToNow(new Date(visit), { addSuffix: true })}</span>
-                                        </div>
-                                    ))}
+                                    {viewer.visit_history && viewer.visit_history.length > 0 ? (
+                                        viewer.visit_history
+                                            .map(visit => new Date(visit)) // Ensure it's a Date object
+                                            .sort((a, b) => b.getTime() - a.getTime())
+                                            .map((visit, index) => (
+                                                <div key={index} className='text-sm text-muted-foreground p-2 rounded-md bg-muted/50 flex justify-between items-center'>
+                                                    <span>{format(visit, "PPpp")}</span>
+                                                    <span className='text-xs'>{formatDistanceToNow(visit, { addSuffix: true })}</span>
+                                                </div>
+                                            ))
+                                        ) : (
+                                        <p className="text-sm text-muted-foreground text-center py-4">No visit history recorded.</p>
+                                    )}
                                 </div>
                                 </ScrollArea>
                             </CardContent>
@@ -128,7 +135,7 @@ const ViewerDetailDialog = ({ viewer, open, onOpenChange }: ViewerDetailDialogPr
 }
 
 const ViewerCard = ({ viewer, onClick }: { viewer: ViewerData; onClick: () => void; }) => {
-    const lastVisitDate = new Date(viewer.last_visit);
+    const lastVisitDate = viewer.last_visit ? new Date(viewer.last_visit) : null;
     return (
         <Card className='cursor-pointer hover:border-primary transition-colors' onClick={onClick}>
             <CardHeader>
@@ -139,7 +146,7 @@ const ViewerCard = ({ viewer, onClick }: { viewer: ViewerData; onClick: () => vo
                     </div>
                      <span className="text-xs font-normal text-muted-foreground flex items-center gap-1.5">
                         <Clock className="h-3 w-3" />
-                        {formatDistanceToNow(lastVisitDate, { addSuffix: true })}
+                        {lastVisitDate ? formatDistanceToNow(lastVisitDate, { addSuffix: true }) : 'N/A'}
                     </span>
                 </CardTitle>
             </CardHeader>
@@ -155,7 +162,7 @@ const ViewerCard = ({ viewer, onClick }: { viewer: ViewerData; onClick: () => vo
                 </div>
                 <InfoRow icon={Wifi} label="ISP" value={viewer.isp} />
                 <InfoRow icon={Laptop} label="OS" value={viewer.clientDetails?.os || 'N/A'} />
-                <InfoRow icon={Calendar} label="Last Visit" value={format(lastVisitDate, "Pp")} />
+                <InfoRow icon={Calendar} label="Last Visit" value={lastVisitDate ? format(lastVisitDate, "Pp") : 'N/A'} />
             </CardContent>
         </Card>
     )
@@ -193,3 +200,5 @@ export function ViewerList({ viewers }: ViewerListProps) {
         </>
     )
 }
+
+    

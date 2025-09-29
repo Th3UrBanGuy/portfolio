@@ -22,7 +22,12 @@ const recordViewerFlow = ai.defineFlow(
     },
     async (input) => {
         const { clientLocation, visitorId, ...clientDetails } = input;
-        const ip = GENKIT_CLIENT_IP?.get() || '0.0.0.0';
+        const serverIp = GENKIT_CLIENT_IP?.get();
+
+        // Determine the most reliable IP address
+        const ipToLookup = serverIp && serverIp !== '0.0.0.0' && !serverIp.startsWith('127.') && !serverIp.startsWith('::1') 
+            ? serverIp 
+            : clientLocation?.ip;
 
         let locationData = {
             city: clientLocation?.city || 'N/A',
@@ -36,18 +41,17 @@ const recordViewerFlow = ai.defineFlow(
             longitude: clientLocation?.longitude || null,
         };
 
-        const isServerIpValid = ip && ip !== '0.0.0.0' && !ip.startsWith('127.') && !ip.startsWith('::1');
-
-        if (isServerIpValid) {
+        // If we have a valid IP to look up, perform the server-side lookup
+        if (ipToLookup && ipToLookup !== '0.0.0.0') {
             try {
-                const response = await fetch(`https://ip-api.com/json/${ip}`);
+                const response = await fetch(`https://ip-api.com/json/${ipToLookup}`);
                 const data = await response.json();
                 if (data.status === 'success') {
                     locationData = {
                         city: data.city || 'N/A',
                         country: data.country || 'N/A',
                         isp: data.isp || 'N/A',
-                        ipType: ip.includes(':') ? 'IPv6' : 'IPv4',
+                        ipType: ipToLookup.includes(':') ? 'IPv6' : 'IPv4',
                         region: data.regionName || 'NA',
                         postal: data.zip || 'N/A',
                         asn: data.as || 'N/A',
@@ -56,13 +60,13 @@ const recordViewerFlow = ai.defineFlow(
                     };
                 }
             } catch (error) {
-                console.error("Server-side IP lookup failed, using client-side data as fallback:", error);
+                console.error("Server-side IP lookup failed. Location data might be incomplete.", error);
             }
         }
 
         await recordViewer({
             visitorId: visitorId,
-            ip: isServerIpValid ? ip : (clientLocation?.ip || 'N/A'),
+            ip: ipToLookup || (clientLocation?.ip || 'N/A'),
             ...locationData,
             clientDetails,
         });
@@ -72,3 +76,5 @@ const recordViewerFlow = ai.defineFlow(
 export async function runRecordViewerFlow(input: z.infer<typeof RecordViewerFlowInputSchema>) {
     return await recordViewerFlow(input);
 }
+
+    
