@@ -15,7 +15,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Save, Plus, Trash2, Tag, Link as LinkIcon } from 'lucide-react';
+import { Save, Plus, Trash2, Tag } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { updateProjects } from './actions';
 import { useTransition } from 'react';
@@ -27,6 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from '@/components/ui/separator';
+import type { Project } from '@/lib/types';
 
 const projectLinkSchema = z.object({
   label: z.string().min(1, "Link label is required."),
@@ -39,7 +40,7 @@ const projectSchema = z.object({
   short_description: z.string().min(1, "Short description is required."),
   image_url: z.string().min(1, "Image URL is required."),
   full_description: z.string().min(1, "Full description is required."),
-  technologies: z.array(z.string()).min(1, "At least one technology is required."),
+  technologies: z.array(z.string().min(1, "Technology cannot be empty.")).min(1, "At least one technology is required."),
   links: z.array(projectLinkSchema).min(1, "At least one link is required."),
   category: z.string().min(1, "Category is required."),
 });
@@ -49,8 +50,6 @@ const formSchema = z.object({
 });
 
 type ProjectsFormValues = z.infer<typeof formSchema>;
-type ProjectData = z.infer<typeof projectSchema>;
-
 
 function ProjectLinks({ control, projectIndex }: { control: Control<ProjectsFormValues>, projectIndex: number }) {
   const { fields, append, remove } = useFieldArray({
@@ -118,7 +117,7 @@ function ProjectLinks({ control, projectIndex }: { control: Control<ProjectsForm
 }
 
 
-export function ProjectsForm({ data, bundles }: { data: ProjectData[], bundles: string[] }) {
+export function ProjectsForm({ data, bundles }: { data: Project[], bundles: string[] }) {
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
 
@@ -160,8 +159,8 @@ export function ProjectsForm({ data, bundles }: { data: ProjectData[], bundles: 
       image_url: '',
       full_description: '',
       technologies: [],
-      links: [],
-      category: '',
+      links: [{ label: 'Live Preview', url: '' }],
+      category: bundles[0] || 'New Category',
     });
   };
 
@@ -294,74 +293,31 @@ export function ProjectsForm({ data, bundles }: { data: ProjectData[], bundles: 
   );
 }
 
-const bundleFormSchema = z.object({
-  newBundle: z.string().min(1, 'Bundle name cannot be empty.'),
-});
 
 export function BundleManager({ bundles }: { bundles: string[] }) {
-  const form = useForm({
-    resolver: zodResolver(bundleFormSchema),
-    defaultValues: { newBundle: '' },
-  });
-
-  function onSubmit(values: z.infer<typeof bundleFormSchema>) {
-    console.log('Adding new bundle:', values.newBundle);
-    // Here you would call a server action to add the new bundle
-    form.reset();
-  }
-
-  function onRemove(bundle: string) {
-    console.log('Removing bundle:', bundle);
-    // Here you would call a server action to remove the bundle
-  }
-
-  return (
-    <div className="space-y-6">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-start gap-4">
-          <FormField
-            control={form.control}
-            name="newBundle"
-            render={({ field }) => (
-              <FormItem className="flex-grow">
-                <FormLabel className="sr-only">New Bundle</FormLabel>
-                <FormControl>
-                  <Input {...field} placeholder="Enter new bundle name" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit">
-            <Plus className="mr-2" />
-            Add Bundle
-          </Button>
-        </form>
-      </Form>
-
-      <Separator />
-
-      <div>
-        <h4 className="mb-4 text-lg font-medium">Existing Bundles</h4>
-        {bundles.length > 0 ? (
-          <div className="space-y-2">
-            {bundles.map(bundle => (
-                <div key={bundle} className="flex items-center justify-between rounded-lg border p-3">
-                    <div className="flex items-center gap-2">
-                        <Tag className="h-4 w-4 text-muted-foreground" />
-                        <span className="font-medium">{bundle}</span>
-                    </div>
-                     <Button variant="ghost" size="icon" onClick={() => onRemove(bundle)}>
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                        <span className="sr-only">Remove {bundle}</span>
-                    </Button>
-                </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-sm text-muted-foreground">No bundles found. Add one above to get started.</p>
-        )}
+    return (
+      <div className="space-y-6">
+        <div>
+          <h4 className="mb-4 text-lg font-medium">Existing Bundles</h4>
+           <p className="text-sm text-muted-foreground mb-4">
+            Bundles (or categories) are created automatically when you assign a project to a new bundle name in the Project Management view. To remove a bundle, ensure no projects are assigned to it.
+          </p>
+          {bundles.length > 0 ? (
+            <div className="space-y-2">
+              {bundles.map(bundle => (
+                  <div key={bundle} className="flex items-center justify-between rounded-lg border p-3">
+                      <div className="flex items-center gap-2">
+                          <Tag className="h-4 w-4 text-muted-foreground" />
+                          <span className="font-medium">{bundle}</span>
+                      </div>
+                  </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">No bundles found. Add a project and assign it a bundle to get started.</p>
+          )}
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
+  

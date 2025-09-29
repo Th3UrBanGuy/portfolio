@@ -44,11 +44,6 @@ export type Project = {
   technologies: string[];
   links: ProjectLink[];
   category: string;
-  // These are for compatibility with the old structure
-  name?: string;
-  description?: string;
-  imageUrl?: string;
-  imageHint?: string;
 };
 
 
