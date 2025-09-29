@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { getPortfolioData } from '@/lib/placeholder-data';
 import { SkillsForm, CategoryManager } from './components';
 import {
@@ -19,9 +19,9 @@ import type { Skill } from '@/lib/types';
 export default function SkillsPage() {
     const [portfolioData, setPortfolioData] = useState<Awaited<ReturnType<typeof getPortfolioData>> | null>(null);
 
-    useState(() => {
+    useEffect(() => {
         getPortfolioData().then(data => setPortfolioData(data));
-    });
+    }, []);
 
     if (!portfolioData) {
         return (
