@@ -2,6 +2,7 @@ import { getPortfolioData } from '@/lib/placeholder-data';
 import { SkillsForm, CategoryManager } from './components';
 import {
   Card,
+  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
