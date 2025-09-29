@@ -59,14 +59,6 @@ export async function getPortfolioData(): Promise<PortfolioData> {
         aboutMe: aboutMeDoc?.content || "Default about me text.",
         authorImageUrl: authorImageDoc?.url || '',
         authorImageHint: authorImageDoc?.hint || '',
-        projects: projects.map((p) => {
-           return {
-                ...p,
-                name: p.title,
-                description: p.short_description,
-                imageUrl: p.image_url,
-                imageHint: 'project image',
-            };
-        }),
+        projects: projects,
     };
 }

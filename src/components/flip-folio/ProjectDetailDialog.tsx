@@ -33,17 +33,17 @@ export default function ProjectDetailDialog({
       <DialogContent className="sm:max-w-3xl p-0 !rounded-xl overflow-hidden transform scale-100 transition-all duration-300 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 glass">
         <div className="relative h-64 w-full">
           <Image
-            src={project.imageUrl}
-            alt={project.name}
+            src={project.image_url}
+            alt={project.title}
             fill
             className="object-cover"
-            data-ai-hint={project.imageHint}
+            data-ai-hint={'project image'}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
         </div>
         <div className="p-6 pt-0 -mt-16 relative z-10">
             <DialogHeader className='mb-4'>
-                <DialogTitle className="text-xl font-bold text-white">{project.name}</DialogTitle>
+                <DialogTitle className="text-xl font-bold text-white">{project.title}</DialogTitle>
             </DialogHeader>
 
             <div className="flex flex-wrap gap-2 mb-4">
