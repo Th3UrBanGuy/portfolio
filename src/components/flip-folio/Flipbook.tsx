@@ -240,19 +240,54 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
             };
         };
 
-      
-        const clientInfo = {
-            browser: getBrowserInfo(),
-            os: getOS(),
-            resolution: `${window.screen.width}x${window.screen.height}`,
-            deviceMemory: (navigator as any).deviceMemory ? `${(navigator as any).deviceMemory} GB` : 'N/A',
-            cpuCores: (navigator.hardwareConcurrency && navigator.hardwareConcurrency !== Infinity) ? navigator.hardwareConcurrency : 'N/A',
-            userAgent: navigator.userAgent,
-        };
+        const collectClientDetails = () => {
+            const nav = navigator as any;
+            const conn = nav.connection || nav.mozConnection || nav.webkitConnection;
 
+            return {
+                collectedAt: new Date().toISOString(),
+                collectedVia: document.location.toString(),
+
+                navigator: {
+                    hardwareConcurrency: nav.hardwareConcurrency ? String(nav.hardwareConcurrency) : 'N/A',
+                    deviceMemory: nav.deviceMemory ? `${nav.deviceMemory} GB` : 'N/A',
+                    platform: nav.platform,
+                    userAgent: nav.userAgent,
+                    appVersion: nav.appVersion,
+                    vendor: nav.vendor,
+                    connection: {
+                        downlink: conn?.downlink,
+                        rtt: conn?.rtt,
+                        effectiveType: conn?.effectiveType,
+                        saveData: conn?.saveData,
+                        type: conn?.type,
+                    },
+                },
+                window: {
+                    indexedDB: typeof window.indexedDB,
+                    crypto: typeof window.crypto,
+                    devicePixelRatio: window.devicePixelRatio,
+                    localStorage: typeof window.localStorage,
+                    sessionStorage: typeof window.sessionStorage,
+                },
+                screen: {
+                    availHeight: window.screen.availHeight,
+                    availWidth: window.screen.availWidth,
+                    height: window.screen.height,
+                    width: window.screen.width,
+                    pixelDepth: window.screen.pixelDepth,
+                    colorDepth: window.screen.colorDepth,
+                    resolution: `${window.screen.width}x${window.screen.height}`,
+                },
+                browser: getBrowserInfo(),
+                os: getOS(),
+            };
+        };
+      
+        const clientDetails = collectClientDetails();
         const clientLocation = await getIpInfo();
       
-        await runRecordViewerFlow({ ...clientInfo, clientLocation });
+        await runRecordViewerFlow({ ...clientDetails, clientLocation });
 
     } catch (error) {
       console.error("Failed to record viewer data:", error);
