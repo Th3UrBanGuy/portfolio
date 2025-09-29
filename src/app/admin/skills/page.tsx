@@ -1,3 +1,4 @@
+
 import { getPortfolioData } from '@/lib/placeholder-data';
 import {
   Card,
@@ -10,7 +11,6 @@ import { ContentView } from './content-view';
 
 export default async function SkillsPage() {
     const portfolioData = await getPortfolioData();
-  
     const categories = [...new Set(portfolioData.skills.map(s => s.category))];
 
     return (
@@ -23,7 +23,7 @@ export default async function SkillsPage() {
                     </CardDescription>
                 </CardHeader>
             </Card>
-            <ContentView skills={portfolioData.skills} categories={categories} />
+            <ContentView initialSkills={portfolioData.skills} initialCategories={categories} />
         </div>
     );
 }

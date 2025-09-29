@@ -18,8 +18,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Save, Plus, Trash2, Tag } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { updateSkills } from './actions';
-import { useTransition } from 'react';
 import {
   Select,
   SelectContent,
@@ -27,7 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Separator } from '@/components/ui/separator';
+import type { updateSkills } from './actions';
 
 const skillSchema = z.object({
   id: z.string(),
@@ -43,39 +41,46 @@ const formSchema = z.object({
 
 type SkillsFormValues = z.infer<typeof formSchema>;
 
+type SkillsFormProps = {
+    skills: Skill[];
+    categories: string[];
+    onSave: (data: SkillsFormValues) => Promise<{success: boolean, error?: string}|undefined>;
+}
 
-export function SkillsForm({ data, categories }: { data: Skill[], categories: string[] }) {
+export function SkillsForm({ skills, categories, onSave }: SkillsFormProps) {
   const { toast } = useToast();
-  const [isPending, startTransition] = useTransition();
 
   const form = useForm<SkillsFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      skills: data,
+      skills: skills,
     },
   });
+
+    // Watch for changes to the skills array to update the UI
+    React.useEffect(() => {
+        form.reset({ skills });
+    }, [skills, form]);
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: 'skills',
   });
 
-  function onSubmit(values: SkillsFormValues) {
-    startTransition(async () => {
-      const result = await updateSkills(values.skills);
-      if (result.success) {
-        toast({
-          title: 'Skills Updated',
-          description: 'Your skills list has been saved.',
-        });
-      } else {
-        toast({
-          title: 'Error',
-          description: result.error,
-          variant: 'destructive',
-        });
-      }
-    });
+  async function onSubmit(values: SkillsFormValues) {
+    const result = await onSave(values);
+    if (result?.success) {
+      toast({
+        title: 'Skills Updated',
+        description: 'Your skills list has been saved.',
+      });
+    } else if (result?.error) {
+      toast({
+        title: 'Error',
+        description: result.error,
+        variant: 'destructive',
+      });
+    }
   }
 
   const addNewSkill = () => {
@@ -144,6 +149,7 @@ export function SkillsForm({ data, categories }: { data: Skill[], categories: st
                             {categories.map(category => (
                                 <SelectItem key={category} value={category}>{category}</SelectItem>
                             ))}
+                             <SelectItem value="New Category">--- Create New ---</SelectItem>
                             </SelectContent>
                         </Select>
                         <FormMessage />
@@ -175,9 +181,9 @@ export function SkillsForm({ data, categories }: { data: Skill[], categories: st
                 <Plus className="mr-2" />
                 Add Skill
             </Button>
-            <Button type="submit" disabled={isPending}>
+            <Button type="submit" disabled={form.formState.isSubmitting}>
                 <Save className="mr-2" />
-                {isPending ? 'Saving...' : 'Save Changes'}
+                {form.formState.isSubmitting ? 'Saving...' : 'Save Changes'}
             </Button>
         </div>
       </form>

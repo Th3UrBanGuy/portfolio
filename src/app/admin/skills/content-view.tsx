@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useOptimistic, useTransition } from 'react';
 import { SkillsForm, CategoryManager } from './components';
 import {
   Card,
@@ -12,9 +12,38 @@ import {
 import { Button } from '@/components/ui/button';
 import { ListTree, Star } from 'lucide-react';
 import type { Skill } from '@/lib/types';
+import { updateSkills } from './actions';
 
-export function ContentView({ skills, categories }: { skills: Skill[], categories: string[] }) {
+type ContentViewProps = {
+    initialSkills: Skill[];
+    initialCategories: string[];
+}
+
+export function ContentView({ initialSkills, initialCategories }: ContentViewProps) {
     const [view, setView] = useState<'skills' | 'categories'>('skills');
+    const [isPending, startTransition] = useTransition();
+
+    const [optimisticSkills, setOptimisticSkills] = useOptimistic(
+        initialSkills,
+        (state, newSkills: Skill[]) => newSkills
+    );
+
+    const [optimisticCategories, setOptimisticCategories] = useOptimistic(
+        initialCategories,
+        (state, newCategories: string[]) => newCategories
+    );
+
+    const handleSave = async (data: { skills: Skill[] }) => {
+        const newCategories = [...new Set(data.skills.map(s => s.category))];
+        
+        startTransition(() => {
+            setOptimisticSkills(data.skills);
+            setOptimisticCategories(newCategories);
+        });
+        
+        return await updateSkills(data.skills);
+    };
+
 
     return (
         <div className="space-y-6">
@@ -43,7 +72,11 @@ export function ContentView({ skills, categories }: { skills: Skill[], categorie
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <SkillsForm data={skills} categories={categories} />
+                        <SkillsForm 
+                            skills={optimisticSkills} 
+                            categories={optimisticCategories} 
+                            onSave={handleSave} 
+                        />
                     </CardContent>
                 </Card>
             )}
@@ -53,11 +86,11 @@ export function ContentView({ skills, categories }: { skills: Skill[], categorie
                     <CardHeader>
                         <CardTitle>Edit Categories</CardTitle>
                         <CardDescription>
-                            Add or remove the categories used to group your skills.
+                            Categories are managed automatically based on the skills you create.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <CategoryManager categories={categories} />
+                        <CategoryManager categories={optimisticCategories} />
                     </CardContent>
                 </Card>
             )}
