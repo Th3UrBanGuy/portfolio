@@ -5,6 +5,11 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { revalidatePath } from 'next/cache';
 
+const projectLinkSchema = z.object({
+  label: z.string().min(1, "Link label is required."),
+  url: z.string().url("Must be a valid URL."),
+});
+
 const projectSchema = z.object({
   id: z.string(),
   title: z.string().min(1, "Title is required."),
@@ -12,8 +17,7 @@ const projectSchema = z.object({
   image_url: z.string().min(1, "Image URL is required."),
   full_description: z.string().min(1, "Full description is required."),
   technologies: z.array(z.string().min(1, "Technology cannot be empty.")).min(1, "At least one technology is required."),
-  preview_link: z.string().url("Must be a valid URL."),
-  documentation_link: z.string().url("Must be a valid URL.").optional().or(z.literal('')),
+  links: z.array(projectLinkSchema).min(1, "At least one link is required."),
   category: z.string().min(1, "Category is required."),
 });
 

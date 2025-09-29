@@ -1,4 +1,4 @@
-import type { PortfolioData, Project } from './types';
+import type { PortfolioData, Project, ProjectLink } from './types';
 import { PlaceHolderImages } from './placeholder-images';
 
 import personalInfoData from './data/personal-info.json';
@@ -24,7 +24,7 @@ const projectImageMap = PlaceHolderImages.reduce((acc, img, index) => {
 
 const authorImage = PlaceHolderImages.find(img => img.id === 'author-image');
 
-const typedProjects = projectsData as (Omit<Project, 'imageUrl' | 'imageHint' | 'name' | 'description'> & {title: string, short_description: string})[];
+const typedProjects = projectsData as (Omit<Project, 'imageUrl' | 'imageHint' | 'name' | 'description' | 'links'> & {title: string, short_description: string, links: ProjectLink[]})[];
 
 export const defaultPortfolioData: PortfolioData = {
   personalInfo: personalInfoData,
@@ -47,8 +47,7 @@ export const defaultPortfolioData: PortfolioData = {
     imageHint: projectImageMap[p.id]?.imageHint || 'project image',
     full_description: p.full_description,
     technologies: p.technologies,
-    preview_link: p.preview_link,
-    documentation_link: p.documentation_link,
+    links: p.links,
     category: p.category,
   })),
 };

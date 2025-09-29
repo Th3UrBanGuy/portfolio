@@ -12,24 +12,57 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FolderKanban, ListTree } from 'lucide-react';
-import type { Project } from '@/lib/types';
+import type { Project, ProjectLink } from '@/lib/types';
 
-// We have to do this weird dance because we can't use async components in a client component.
-const mapProjectsToFormData = (projects: Project[]) => {
-  return projects.map(p => ({
-    id: p.id,
-    title: p.name,
-    short_description: p.description,
-    image_url: p.imageUrl,
-    full_description: p.full_description,
-    technologies: p.technologies,
-    preview_link: p.preview_link,
-    documentation_link: p.documentation_link,
-    category: p.category,
-  }));
-}
+// This is the shape of the data coming from projects.json
+type RawProject = Omit<Project, 'name'|'description'|'links'> & {
+  title: string;
+  short_description: string;
+  preview_link?: string;
+  documentation_link?: string;
+  links?: ProjectLink[];
+};
 
-type MappedProject = ReturnType<typeof mapProjectsToFormData>[0];
+// This is the shape of the data the form expects
+type FormProject = {
+  id: string;
+  title: string;
+  short_description: string;
+  image_url: string;
+  full_description: string;
+  technologies: string[];
+  links: ProjectLink[];
+  category: string;
+};
+
+
+const mapProjectsToFormData = (projects: RawProject[]): FormProject[] => {
+  return projects.map(p => {
+    const links = p.links ?? [];
+    if (p.preview_link) {
+      links.unshift({ label: 'Live Preview', url: p.preview_link });
+    }
+    if (p.documentation_link) {
+      links.push({ label: 'Case Study', url: p.documentation_link });
+    }
+
+    return {
+      id: p.id,
+      title: p.title,
+      short_description: p.short_description,
+      image_url: p.imageUrl,
+      full_description: p.full_description,
+      technologies: p.technologies,
+      links: links.filter((link, index, self) => 
+        index === self.findIndex((l) => (
+          l.label === link.label && l.url === link.url
+        ))
+      ),
+      category: p.category,
+    };
+  });
+};
+
 
 export default function ProjectsPage() {
     const [portfolioData, setPortfolioData] = useState<Awaited<ReturnType<typeof getPortfolioData>> | null>(null);
@@ -55,7 +88,7 @@ export default function ProjectsPage() {
         )
     }
 
-    const projectsForForm = mapProjectsToFormData(portfolioData.projects);
+    const projectsForForm = mapProjectsToFormData(portfolioData.projects as unknown as RawProject[]);
     const bundles = [...new Set(portfolioData.projects.map(p => p.category))];
 
     return (

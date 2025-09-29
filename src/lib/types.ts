@@ -1,3 +1,5 @@
+'use client';
+
 import type { ClientDetails } from './schemas/client-details';
 
 export type PersonalInfo = {
@@ -28,16 +30,20 @@ export type Experience = {
   details: string[];
 };
 
+export type ProjectLink = {
+  label: string;
+  url: string;
+};
+
 export type Project = {
   id: string;
-  name: string; // was title
-  description: string; // was short_description
+  name: string;
+  description: string;
   imageUrl: string;
   imageHint: string;
   technologies: string[];
   full_description: string;
-  preview_link: string;
-  documentation_link?: string;
+  links: ProjectLink[];
   category: string;
 };
 

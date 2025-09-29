@@ -1,6 +1,6 @@
 'use client';
 
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm, useFieldArray, Control } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
@@ -15,7 +15,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Save, Plus, Trash2, Tag } from 'lucide-react';
+import { Save, Plus, Trash2, Tag, Link as LinkIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { updateProjects } from './actions';
 import { useTransition } from 'react';
@@ -28,6 +28,11 @@ import {
 } from "@/components/ui/select";
 import { Separator } from '@/components/ui/separator';
 
+const projectLinkSchema = z.object({
+  label: z.string().min(1, "Link label is required."),
+  url: z.string().url("Must be a valid URL."),
+});
+
 const projectSchema = z.object({
   id: z.string(),
   title: z.string().min(1, "Title is required."),
@@ -35,8 +40,7 @@ const projectSchema = z.object({
   image_url: z.string().min(1, "Image URL is required."),
   full_description: z.string().min(1, "Full description is required."),
   technologies: z.array(z.string()).min(1, "At least one technology is required."),
-  preview_link: z.string().url("Must be a valid URL."),
-  documentation_link: z.string().url("Must be a valid URL.").optional().or(z.literal('')),
+  links: z.array(projectLinkSchema).min(1, "At least one link is required."),
   category: z.string().min(1, "Category is required."),
 });
 
@@ -46,6 +50,73 @@ const formSchema = z.object({
 
 type ProjectsFormValues = z.infer<typeof formSchema>;
 type ProjectData = z.infer<typeof projectSchema>;
+
+
+function ProjectLinks({ control, projectIndex }: { control: Control<ProjectsFormValues>, projectIndex: number }) {
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: `projects.${projectIndex}.links`
+  });
+
+  return (
+    <div className='space-y-4 rounded-lg border p-4'>
+      <div className='flex items-center justify-between'>
+        <h4 className="font-medium">Project Links</h4>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => append({ label: '', url: '' })}
+        >
+          <Plus className="mr-2 h-4 w-4" /> Add Link
+        </Button>
+      </div>
+
+      <div className="space-y-4">
+        {fields.map((field, linkIndex) => (
+          <div key={field.id} className="grid grid-cols-1 md:grid-cols-[1fr_2fr_auto] gap-4 items-start">
+            <FormField
+              control={control}
+              name={`projects.${projectIndex}.links.${linkIndex}.label`}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="sr-only">Label</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="Button Label" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={control}
+              name={`projects.${projectIndex}.links.${linkIndex}.url`}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="sr-only">URL</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="https://example.com" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => remove(linkIndex)}
+            >
+              <Trash2 className="h-4 w-4 text-destructive" />
+              <span className='sr-only'>Remove Link</span>
+            </Button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 
 export function ProjectsForm({ data, bundles }: { data: ProjectData[], bundles: string[] }) {
   const { toast } = useToast();
@@ -89,8 +160,7 @@ export function ProjectsForm({ data, bundles }: { data: ProjectData[], bundles: 
       image_url: '',
       full_description: '',
       technologies: [],
-      preview_link: '',
-      documentation_link: '',
+      links: [],
       category: '',
     });
   };
@@ -179,34 +249,9 @@ export function ProjectsForm({ data, bundles }: { data: ProjectData[], bundles: 
                     </FormItem>
                   )}
                 />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                    control={form.control}
-                    name={`projects.${index}.preview_link`}
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Preview Link</FormLabel>
-                        <FormControl>
-                            <Input {...field} placeholder="https://example.com/preview" />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-                    <FormField
-                    control={form.control}
-                    name={`projects.${index}.documentation_link`}
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Documentation Link (Optional)</FormLabel>
-                        <FormControl>
-                            <Input {...field} placeholder="https://example.com/docs" />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-                </div>
+                
+                <ProjectLinks control={form.control} projectIndex={index} />
+                
                  <FormField
                   control={form.control}
                   name={`projects.${index}.category`}
