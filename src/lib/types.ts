@@ -91,6 +91,7 @@ export type PortfolioData = {
   contactDetails: ContactDetails;
   socials: Social[];
   achievements: Achievement[];
+  cvLink: string;
 };
 
 export type ViewerData = {

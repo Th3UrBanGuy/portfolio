@@ -392,7 +392,7 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
         case 'toc':
             return <TableOfContents onNavigate={navigate} />;
         case 'about':
-            return <AboutPage personalInfo={data.personalInfo} imageUrl={data.authorImageUrl} imageHint={data.authorImageHint} aboutMe={data.aboutMe} cvLink={data.contactDetails.contactMeLink} />;
+            return <AboutPage personalInfo={data.personalInfo} imageUrl={data.authorImageUrl} imageHint={data.authorImageHint} aboutMe={data.aboutMe} cvLink={data.cvLink} />;
         case 'education':
             return <EducationPage education={data.education} />;
         case 'skills':

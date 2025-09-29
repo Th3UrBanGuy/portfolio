@@ -55,7 +55,7 @@ export function ProfileForm({ data }: { data: PortfolioData }) {
       hobby: data.personalInfo.hobby,
       aimInLife: data.personalInfo.aimInLife,
       aboutMe: data.aboutMe,
-      cvLink: data.contactDetails.contactMeLink,
+      cvLink: data.cvLink,
     },
   });
 

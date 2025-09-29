@@ -42,6 +42,7 @@ export async function getPortfolioData(): Promise<PortfolioData> {
         projects,
         aboutMeDoc,
         authorImageDoc,
+        cvLinkDoc,
     ] = await Promise.all([
         getDocumentData<PersonalInfo>('site-data', 'personal-info'),
         getCollectionData<Education>('education'),
@@ -53,6 +54,7 @@ export async function getPortfolioData(): Promise<PortfolioData> {
         getCollectionData<Project>('projects'),
         getDocumentData<{ content: string }>('site-data', 'about-me'),
         getDocumentData<{ url: string, hint: string }>('site-data', 'author-image'),
+        getDocumentData<{ url: string }>('site-data', 'cv-link'),
     ]);
 
     const defaultPersonalInfo = { name: '', dob: '', bloodGroup: '', nationality: '', occupation: '', status: '', hobby: '', aimInLife: '' };
@@ -70,5 +72,6 @@ export async function getPortfolioData(): Promise<PortfolioData> {
         authorImageUrl: authorImageDoc?.url || 'https://picsum.photos/seed/author/400/500',
         authorImageHint: authorImageDoc?.hint || 'placeholder image',
         projects: projects || [],
+        cvLink: cvLinkDoc?.url || '',
     };
 }
