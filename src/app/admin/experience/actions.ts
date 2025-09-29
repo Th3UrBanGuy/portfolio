@@ -46,9 +46,16 @@ export async function updateExperience(experienceData: Omit<Experience, 'order'>
     return { success: true };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors.map(e => e.message).join(', ') };
+      // Improved error message to be more specific
+      const errorMessages = error.errors.map(e => {
+        const path = e.path.join('.');
+        return `${path}: ${e.message}`;
+      });
+      return { success: false, error: errorMessages.join('; ') };
     }
     console.error('Error updating experience data:', error);
     return { success: false, error: 'An unexpected error occurred.' };
   }
 }
+
+    

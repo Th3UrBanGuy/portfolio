@@ -1,6 +1,6 @@
 'use client';
 
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm, useFieldArray, Control } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import type { Experience } from '@/lib/types';
@@ -28,7 +28,7 @@ const experienceSchema = z.object({
   location: z.string().min(1, "Location is required."),
   duration: z.string().min(1, "Duration is required."),
   short_description: z.string().min(1, "Short description is required."),
-  details: z.array(z.string()).min(1, "At least one detail point is required."),
+  details: z.array(z.string().min(1, "Detail cannot be empty.")).min(1, "At least one detail point is required."),
 });
 
 const formSchema = z.object({
@@ -36,6 +36,60 @@ const formSchema = z.object({
 });
 
 type ExperienceFormValues = z.infer<typeof formSchema>;
+
+
+function DetailsArray({ control, experienceIndex }: { control: Control<ExperienceFormValues>, experienceIndex: number }) {
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: `experience.${experienceIndex}.details`
+  });
+
+  return (
+    <div className="space-y-4 rounded-lg border p-4">
+       <div className='flex items-center justify-between'>
+        <h4 className="font-medium">Responsibility Details</h4>
+         <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => append('')}
+        >
+            <Plus className="mr-2 h-4 w-4" /> Add Detail
+        </Button>
+      </div>
+
+      <div className="space-y-3">
+        {fields.map((field, detailIndex) => (
+          <div key={field.id} className="flex items-center gap-2">
+            <FormField
+              control={control}
+              name={`experience.${experienceIndex}.details.${detailIndex}`}
+              render={({ field }) => (
+                <FormItem className="flex-grow">
+                  <FormControl>
+                    <Input {...field} placeholder={`Detail #${detailIndex + 1}`} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => remove(detailIndex)}
+              disabled={fields.length <= 1}
+            >
+              <Trash2 className="h-4 w-4 text-destructive" />
+              <span className='sr-only'>Remove Detail</span>
+            </Button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 
 export function ExperienceForm({ data }: { data: Experience[] }) {
   const { toast } = useToast();
@@ -174,24 +228,7 @@ export function ExperienceForm({ data }: { data: Experience[] }) {
                     </FormItem>
                   )}
                 />
-                 <FormField
-                  control={form.control}
-                  name={`experience.${index}.details`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Details (as a comma-separated list)</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                            {...field} 
-                            value={Array.isArray(field.value) ? field.value.join(', ') : ''}
-                            onChange={(e) => field.onChange(e.target.value.split(',').map(s => s.trim()))}
-                            placeholder="Detail one, Detail two, Detail three"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <DetailsArray control={form.control} experienceIndex={index} />
               </CardContent>
             </Card>
           ))}
@@ -211,3 +248,5 @@ export function ExperienceForm({ data }: { data: Experience[] }) {
     </Form>
   );
 }
+
+    
