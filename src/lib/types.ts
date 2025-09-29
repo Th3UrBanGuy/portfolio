@@ -1,3 +1,5 @@
+import type { ClientDetails } from './schemas/client-details';
+
 export type PersonalInfo = {
   name: string;
   dob: string;
@@ -92,16 +94,11 @@ export type ViewerData = {
     city: string;
     country: string;
     isp: string;
-    browser: string;
-    os: string;
-    resolution: string;
-    deviceMemory: string | 'N/A';
-    cpuCores: number | 'N/A';
     ipType: string;
     region: string;
     postal: string;
     asn: string;
     latitude: number | null;
     longitude: number | null;
-    userAgent: string;
+    clientDetails: ClientDetails;
 };

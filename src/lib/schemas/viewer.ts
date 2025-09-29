@@ -1,15 +1,6 @@
 import { z } from 'zod';
+import { ClientDetailsSchema } from './client-details';
 
-export const ClientInfoSchema = z.object({
-    browser: z.string(),
-    os: z.string(),
-    resolution: z.string(),
-    deviceMemory: z.union([z.string(), z.literal('N/A')]),
-    cpuCores: z.union([z.number(), z.string(), z.literal('N/A')]),
-    userAgent: z.string(),
-});
-
-export type ClientInfo = z.infer<typeof ClientInfoSchema>;
 
 export const ClientLocationSchema = z.object({
     ip: z.string().optional(),
@@ -24,7 +15,7 @@ export const ClientLocationSchema = z.object({
     longitude: z.number().nullable().optional(),
 });
 
-export const RecordViewerInputSchema = ClientInfoSchema.extend({
+export const RecordViewerInputSchema = z.object({
     ip: z.string(),
     city: z.string(),
     country: z.string(),
@@ -35,6 +26,7 @@ export const RecordViewerInputSchema = ClientInfoSchema.extend({
     asn: z.string(),
     latitude: z.number().nullable(),
     longitude: z.number().nullable(),
+    clientDetails: ClientDetailsSchema,
 });
 
 export type RecordViewerInput = z.infer<typeof RecordViewerInputSchema>;

@@ -3,10 +3,12 @@
 import { ai } from '@/ai/genkit';
 import { recordViewer } from '@/lib/services/viewers';
 import { z } from 'zod';
-import { ClientInfoSchema, type ClientInfo, ClientLocationSchema } from '@/lib/schemas/viewer';
+import { ClientLocationSchema } from '@/lib/schemas/viewer';
 import { GENKIT_CLIENT_IP } from 'genkit';
+import { ClientDetailsSchema } from '@/lib/schemas/client-details';
 
-const RecordViewerFlowInputSchema = ClientInfoSchema.extend({
+
+const RecordViewerFlowInputSchema = ClientDetailsSchema.extend({
     clientLocation: ClientLocationSchema.optional(),
 });
 
@@ -18,7 +20,7 @@ const recordViewerFlow = ai.defineFlow(
         outputSchema: z.void(),
     },
     async (input) => {
-        const { clientLocation, ...clientInfo } = input;
+        const { clientLocation, ...clientDetails } = input;
         const ip = GENKIT_CLIENT_IP?.get() || '0.0.0.0';
 
         let locationData = {
@@ -60,7 +62,7 @@ const recordViewerFlow = ai.defineFlow(
         await recordViewer({
             ip: isServerIpValid ? ip : (clientLocation?.ip || 'N/A'),
             ...locationData,
-            ...clientInfo,
+            clientDetails,
         });
     }
 );
