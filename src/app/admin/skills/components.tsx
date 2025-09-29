@@ -16,7 +16,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Save, Plus, Trash2 } from 'lucide-react';
+import { Save, Plus, Trash2, Tag, GripVertical } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { updateSkills } from './actions';
 import { useTransition } from 'react';
@@ -26,7 +26,9 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 
 const skillSchema = z.object({
   id: z.string(),
@@ -42,18 +44,8 @@ const formSchema = z.object({
 
 type SkillsFormValues = z.infer<typeof formSchema>;
 
-const skillCategories = [
-    'Cyber Security',
-    'System Administration',
-    'Web Development',
-    'Design & Branding',
-    'Programming',
-    'Deployment',
-    'Tools',
-    'Soft Skills'
-];
 
-export function SkillsForm({ data }: { data: Skill[] }) {
+export function SkillsForm({ data, categories }: { data: Skill[], categories: string[] }) {
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
 
@@ -150,7 +142,7 @@ export function SkillsForm({ data }: { data: Skill[] }) {
                             </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                            {skillCategories.map(category => (
+                            {categories.map(category => (
                                 <SelectItem key={category} value={category}>{category}</SelectItem>
                             ))}
                             </SelectContent>
@@ -191,5 +183,77 @@ export function SkillsForm({ data }: { data: Skill[] }) {
         </div>
       </form>
     </Form>
+  );
+}
+
+const categoryFormSchema = z.object({
+  newCategory: z.string().min(1, 'Category name cannot be empty.'),
+});
+
+export function CategoryManager({ categories }: { categories: string[] }) {
+  const form = useForm({
+    resolver: zodResolver(categoryFormSchema),
+    defaultValues: { newCategory: '' },
+  });
+
+  function onSubmit(values: z.infer<typeof categoryFormSchema>) {
+    console.log('Adding new category:', values.newCategory);
+    // Here you would call a server action to add the new category
+    form.reset();
+  }
+
+  function onRemove(category: string) {
+    console.log('Removing category:', category);
+    // Here you would call a server action to remove the category
+  }
+
+  return (
+    <div className="space-y-6">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-start gap-4">
+          <FormField
+            control={form.control}
+            name="newCategory"
+            render={({ field }) => (
+              <FormItem className="flex-grow">
+                <FormLabel className="sr-only">New Category</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="Enter new category name" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button type="submit">
+            <Plus className="mr-2" />
+            Add Category
+          </Button>
+        </form>
+      </Form>
+
+      <Separator />
+
+      <div>
+        <h4 className="mb-4 text-lg font-medium">Existing Categories</h4>
+        {categories.length > 0 ? (
+          <div className="space-y-2">
+            {categories.map(category => (
+                <div key={category} className="flex items-center justify-between rounded-lg border p-3">
+                    <div className="flex items-center gap-2">
+                        <Tag className="h-4 w-4 text-muted-foreground" />
+                        <span className="font-medium">{category}</span>
+                    </div>
+                     <Button variant="ghost" size="icon" onClick={() => onRemove(category)}>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                        <span className="sr-only">Remove {category}</span>
+                    </Button>
+                </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">No categories found. Add one above to get started.</p>
+        )}
+      </div>
+    </div>
   );
 }
