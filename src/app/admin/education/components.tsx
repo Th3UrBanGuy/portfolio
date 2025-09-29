@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Save, Plus, Trash2 } from 'lucide-react';
+import { Save, Plus, Trash2, ArrowUp, ArrowDown } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { updateEducation } from './actions';
 import { useTransition } from 'react';
@@ -44,7 +44,7 @@ export function EducationForm({ data }: { data: Education[] }) {
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, swap } = useFieldArray({
     control: form.control,
     name: 'education',
   });
@@ -84,10 +84,20 @@ export function EducationForm({ data }: { data: Education[] }) {
             <Card key={field.id}>
                 <CardHeader className='flex-row items-center justify-between'>
                     <CardTitle>Institution #{index + 1}</CardTitle>
-                    <Button variant="ghost" size="icon" type="button" onClick={() => remove(index)}>
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                        <span className="sr-only">Remove</span>
-                    </Button>
+                    <div className="flex items-center gap-2">
+                        <Button variant="ghost" size="icon" type="button" onClick={() => swap(index, index - 1)} disabled={index === 0}>
+                            <ArrowUp className="h-4 w-4" />
+                            <span className="sr-only">Move Up</span>
+                        </Button>
+                        <Button variant="ghost" size="icon" type="button" onClick={() => swap(index, index + 1)} disabled={index === fields.length - 1}>
+                            <ArrowDown className="h-4 w-4" />
+                            <span className="sr-only">Move Down</span>
+                        </Button>
+                        <Button variant="ghost" size="icon" type="button" onClick={() => remove(index)}>
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                            <span className="sr-only">Remove</span>
+                        </Button>
+                    </div>
                 </CardHeader>
               <CardContent className="space-y-4">
                 <FormField
