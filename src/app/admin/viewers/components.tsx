@@ -1,12 +1,12 @@
 'use client';
 import type { ViewerData } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Globe, Laptop, Wifi, Shield, Cpu, MemoryStick, Clock, MapPin, Network, Server, Map } from 'lucide-react';
-import React, { useState, useEffect } from 'react';
-import { formatDistanceToNow } from 'date-fns';
+import { Globe, Laptop, Wifi, Shield, Cpu, MemoryStick, Clock, MapPin, Network, Server, Map, Calendar } from 'lucide-react';
+import React, { useState } from 'react';
+import { format, formatDistanceToNow } from 'date-fns';
 
 const InfoRow = ({ icon, label, value }: { icon: React.ElementType, label: string, value: React.ReactNode }) => (
     <div className="flex items-center justify-between py-2 border-b border-border last:border-b-0">
@@ -96,32 +96,8 @@ const ViewerDetailDialog = ({ viewer, open, onOpenChange }: ViewerDetailDialogPr
     )
 }
 
-const RelativeTimestamp = ({ timestamp }: { timestamp: Date }) => {
-    const [relativeTime, setRelativeTime] = useState('');
-
-    useEffect(() => {
-        setRelativeTime(formatDistanceToNow(new Date(timestamp), { addSuffix: true }));
-    }, [timestamp]);
-
-    if (!relativeTime) {
-        return null;
-    }
-
-    return (
-        <span className="text-xs font-normal text-muted-foreground flex items-center gap-1.5">
-            <Clock className="h-3 w-3" />
-            {relativeTime}
-        </span>
-    );
-};
-
-
-type ViewerCardProps = {
-    viewer: ViewerData;
-    onClick: () => void;
-}
-
-const ViewerCard = ({ viewer, onClick }: ViewerCardProps) => {
+const ViewerCard = ({ viewer, onClick }: { viewer: ViewerData; onClick: () => void; }) => {
+    const visitDate = new Date(viewer.timestamp);
     return (
         <Card className='cursor-pointer hover:border-primary transition-colors' onClick={onClick}>
             <CardHeader>
@@ -130,18 +106,22 @@ const ViewerCard = ({ viewer, onClick }: ViewerCardProps) => {
                         <Globe className="h-5 w-5" />
                         <span>{viewer.city}, {viewer.country}</span>
                     </div>
-                     <RelativeTimestamp timestamp={viewer.timestamp} />
+                     <span className="text-xs font-normal text-muted-foreground flex items-center gap-1.5">
+                        <Clock className="h-3 w-3" />
+                        {formatDistanceToNow(visitDate, { addSuffix: true })}
+                    </span>
                 </CardTitle>
             </CardHeader>
             <CardContent>
                 <InfoRow icon={Shield} label="IP Address" value={viewer.ip} />
                 <InfoRow icon={Wifi} label="ISP" value={viewer.isp} />
                 <InfoRow icon={Laptop} label="OS" value={viewer.clientDetails?.os || 'N/A'} />
-                <InfoRow icon={Globe} label="Browser" value={viewer.clientDetails?.browser || 'N/A'} />
+                <InfoRow icon={Calendar} label="Visit Time" value={format(visitDate, "Pp")} />
             </CardContent>
         </Card>
     )
 }
+
 
 type ViewerListProps = {
     viewers: ViewerData[];
@@ -153,8 +133,8 @@ export function ViewerList({ viewers }: ViewerListProps) {
     if (viewers.length === 0) {
         return (
             <div className="text-center text-muted-foreground py-12">
-                <p>No viewer data has been recorded yet.</p>
-                <p className="text-sm">Visit the public portfolio to record the first view!</p>
+                <p>No viewers match the current filters.</p>
+                <p className="text-sm">Try adjusting your search or clearing the filters.</p>
             </div>
         )
     }
