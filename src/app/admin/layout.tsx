@@ -24,11 +24,13 @@ import {
   Home,
   LogOut,
   Book,
+  Users,
 } from 'lucide-react';
 import Header from './_components/Header';
 
 const navItems = [
   { href: '/admin', label: 'Dashboard', icon: Home },
+  { href: '/admin/viewers', label: 'Viewers', icon: Users },
   { href: '/admin/personal-info', label: 'Personal Info', icon: User },
   { href: '/admin/education', label: 'Education', icon: GraduationCap },
   { href: '/admin/skills', label: 'Skills', icon: Star },
