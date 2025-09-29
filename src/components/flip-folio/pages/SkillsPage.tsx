@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator';
 type SkillsPageProps = {
   skills: Skill[];
   onSkillSelect: (skill: Skill) => void;
+  title: string;
 };
 
 const Icon = ({ name, ...props }: { name: string } & LucideIcons.LucideProps) => {
@@ -21,7 +22,7 @@ const Icon = ({ name, ...props }: { name: string } & LucideIcons.LucideProps) =>
 };
 
 
-export default function SkillsPage({ skills, onSkillSelect }: SkillsPageProps) {
+export default function SkillsPage({ skills, onSkillSelect, title }: SkillsPageProps) {
   const categories = [
     'Cyber Security',
     'System Administration',
@@ -41,7 +42,7 @@ export default function SkillsPage({ skills, onSkillSelect }: SkillsPageProps) {
   return (
     <div className="h-full flex flex-col">
       <h2 className="font-headline text-2xl mb-4 flex-shrink-0 text-page-foreground">
-        Skills & Arcana
+        {title}
       </h2>
       <ScrollArea className="flex-grow -mr-6">
         <div className="space-y-6 pr-6">

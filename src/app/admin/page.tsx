@@ -1,208 +1,100 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Book, UserCircle, GraduationCap, Star, Briefcase, Trophy, FolderKanban, Mail, Shield, LayoutDashboard } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
-import { Users, ArrowRight, UserCircle, GraduationCap, Star, Briefcase, Trophy, FolderKanban, Mail, Shield } from 'lucide-react';
-import { resetSecretKey } from './security/actions';
-import { redirect } from 'next/navigation';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { KeyRound } from 'lucide-react';
+import Header from './_components/Header';
+import Dashboard from './_components/Dashboard';
+import ProfilePage from './_components/profile/ProfilePage';
+import EducationPage from './_components/education/EducationPage';
+import SkillsPage from './_components/skills/SkillsPage';
+import ExperiencePage from './_components/experience/ExperiencePage';
+import AchievementsPage from './_components/achievements/AchievementsPage';
+import ProjectsPage from './_components/projects/ProjectsPage';
+import ContactPage from './_components/contact/ContactPage';
+import SecurityPage from './_components/security/SecurityPage';
 
-type AdminDashboardProps = {
-  searchParams?: {
-    resetkey?: string;
-    reset?: string;
+type AdminView =
+  | 'dashboard'
+  | 'profile'
+  | 'education'
+  | 'skills'
+  | 'experience'
+  | 'achievements'
+  | 'projects'
+  | 'contact'
+  | 'security';
+
+export default function AdminPage() {
+  const [activeView, setActiveView] = useState<AdminView>('dashboard');
+
+  const renderView = () => {
+    const props = { setActiveView };
+    switch (activeView) {
+      case 'profile':
+        return <ProfilePage {...props} />;
+      case 'education':
+        return <EducationPage {...props} />;
+      case 'skills':
+        return <SkillsPage {...props} />;
+      case 'experience':
+        return <ExperiencePage {...props} />;
+      case 'achievements':
+        return <AchievementsPage {...props} />;
+      case 'projects':
+        return <ProjectsPage {...props} />;
+      case 'contact':
+        return <ContactPage {...props} />;
+      case 'security':
+        return <SecurityPage {...props} />;
+      default:
+        return <Dashboard setActiveView={setActiveView} />;
+    }
   };
-};
 
-export default async function AdminDashboard({ searchParams }: AdminDashboardProps) {
-  const resetKey = searchParams?.resetkey;
-  const wasReset = searchParams?.reset === 'success';
-
-  if (resetKey) {
-    await resetSecretKey(resetKey);
-    redirect('/admin?reset=success');
-  }
+  const NavLink = ({ view, icon: Icon, label }: { view: AdminView; icon: React.ElementType; label: string }) => (
+    <Button
+      variant={activeView === view ? 'secondary' : 'ghost'}
+      onClick={() => setActiveView(view)}
+      className="w-full justify-start"
+    >
+      <Icon className="mr-2 h-4 w-4" />
+      {label}
+    </Button>
+  );
 
   return (
-    <div className="space-y-6">
-      {wasReset && (
-         <Alert>
-            <KeyRound className="h-4 w-4" />
-            <AlertTitle>Success!</AlertTitle>
-            <AlertDescription>
-                The secret key has been successfully reset. Please consider changing it to a more secure value on the Security page.
-            </AlertDescription>
-        </Alert>
-      )}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Link href="/admin/profile">
-          <Card className="hover:border-primary transition-colors cursor-pointer group">
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <UserCircle className="h-6 w-6 text-primary" />
-                  <span className="text-lg">Profile Details</span>
-                </div>
-                <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription>
-                Manage your name, image, personal details, and CV link.
-              </CardDescription>
-            </CardContent>
-          </Card>
-        </Link>
-        <Link href="/admin/education">
-          <Card className="hover:border-primary transition-colors cursor-pointer group">
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <GraduationCap className="h-6 w-6 text-primary" />
-                  <span className="text-lg">Education</span>
-                </div>
-                <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription>
-                Manage the educational institutions on your "About Me" page.
-              </CardDescription>
-            </CardContent>
-          </Card>
-        </Link>
-        <Link href="/admin/skills">
-          <Card className="hover:border-primary transition-colors cursor-pointer group">
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Star className="h-6 w-6 text-primary" />
-                  <span className="text-lg">Skills</span>
-                </div>
-                <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription>
-                Manage the skills and technologies listed on your portfolio.
-              </CardDescription>
-            </CardContent>
-          </Card>
-        </Link>
-        <Link href="/admin/experience">
-          <Card className="hover:border-primary transition-colors cursor-pointer group">
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Briefcase className="h-6 w-6 text-primary" />
-                  <span className="text-lg">Experience</span>
-                </div>
-                <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription>
-                Manage your professional experience and job history.
-              </CardDescription>
-            </CardContent>
-          </Card>
-        </Link>
-        <Link href="/admin/achievements">
-          <Card className="hover:border-primary transition-colors cursor-pointer group">
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Trophy className="h-6 w-6 text-primary" />
-                  <span className="text-lg">Achievements</span>
-                </div>
-                <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription>
-                Manage your awards, publications, and other achievements.
-              </CardDescription>
-            </CardContent>
-          </Card>
-        </Link>
-        <Link href="/admin/projects">
-          <Card className="hover:border-primary transition-colors cursor-pointer group">
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <FolderKanban className="h-6 w-6 text-primary" />
-                  <span className="text-lg">Projects</span>
-                </div>
-                <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription>
-                Manage the projects, bundles, and creations on your portfolio.
-              </CardDescription>
-            </CardContent>
-          </Card>
-        </Link>
-        <Link href="/admin/contact">
-          <Card className="hover:border-primary transition-colors cursor-pointer group">
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Mail className="h-6 w-6 text-primary" />
-                  <span className="text-lg">Contact & Socials</span>
-                </div>
-                <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription>
-                Manage your email, phone, and social media links.
-              </CardDescription>
-            </CardContent>
-          </Card>
-        </Link>
-        <Link href="/admin/viewers">
-          <Card className="hover:border-primary transition-colors cursor-pointer group">
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Users className="h-6 w-6 text-primary" />
-                  <span className="text-lg">Portfolio Viewers</span>
-                </div>
-                <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription>
-                See who has been looking at your interactive portfolio.
-              </CardDescription>
-            </CardContent>
-          </Card>
-        </Link>
-         <Link href="/admin/security">
-          <Card className="hover:border-primary transition-colors cursor-pointer group">
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Shield className="h-6 w-6 text-primary" />
-                  <span className="text-lg">Security</span>
-                </div>
-                <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription>
-                Manage the secret key for accessing the admin panel.
-              </CardDescription>
-            </CardContent>
-          </Card>
-        </Link>
+    <div className="grid min-h-screen w-full lg:grid-cols-[280px_1fr]">
+      <div className="hidden border-r bg-gray-100/40 lg:block dark:bg-gray-800/40">
+        <div className="flex h-full max-h-screen flex-col gap-2">
+          <div className="flex h-[60px] items-center border-b px-6">
+            <Link href="#" className="flex items-center gap-2 font-semibold" onClick={() => setActiveView('dashboard')}>
+              <Book className="h-6 w-6" />
+              <span>Admin Panel</span>
+            </Link>
+          </div>
+          <div className="flex-1 overflow-auto py-2">
+            <nav className="grid items-start px-4 text-sm font-medium">
+              <NavLink view="dashboard" icon={LayoutDashboard} label="Dashboard" />
+              <NavLink view="profile" icon={UserCircle} label="Profile" />
+              <NavLink view="education" icon={GraduationCap} label="Education" />
+              <NavLink view="skills" icon={Star} label="Skills" />
+              <NavLink view="experience" icon={Briefcase} label="Experience" />
+              <NavLink view="achievements" icon={Trophy} label="Achievements" />
+              <NavLink view="projects" icon={FolderKanban} label="Projects" />
+              <NavLink view="contact" icon={Mail} label="Contact & Socials" />
+              <NavLink view="security" icon={Shield} label="Security" />
+            </nav>
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-col">
+        <Header />
+        <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
+          {renderView()}
+        </main>
       </div>
     </div>
   );

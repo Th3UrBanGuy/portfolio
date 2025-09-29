@@ -1,0 +1,284 @@
+"upstream image response failed for https://storage.googleapis.com/aai-web-samples/app-prototyper/uranusx-logo.png 403
+ ○ Compiling /admin ...
+ ⨯ ./src/app/admin/_components/Dashboard.tsx
+NonErrorEmittedError: (Emitted value instead of an instance of Error)   x Unexpected token `div`. Expected jsx identifier
+    ,-[/data/data/com.termux/files/home/portfolio/src/app/admin/_components/Dashboard.tsx:35:1]
+ 32 |   // const wasReset = false;
+ 33 |
+ 34 |   return (
+ 35 |     <div className="space-y-6">
+    :      ^^^
+ 36 |       {/* {wasReset && (
+ 37 |          <Alert>
+ 38 |             <KeyRound className="h-4 w-4" />
+    `----
+
+Caused by:
+    0: failed to process js file
+    1: Syntax Error
+Import trace for requested module:
+./src/app/admin/_components/Dashboard.tsx
+./src/app/admin/page.tsx
+ ⨯ ./src/app/admin/_components/Dashboard.tsx
+NonErrorEmittedError: (Emitted value instead of an instance of Error)   x Unexpected token `div`. Expected jsx identifier
+    ,-[/data/data/com.termux/files/home/portfolio/src/app/admin/_components/Dashboard.tsx:35:1]
+ 32 |   // const wasReset = false;
+ 33 |
+ 34 |   return (
+ 35 |     <div className="space-y-6">
+    :      ^^^
+ 36 |       {/* {wasReset && (
+ 37 |          <Alert>
+ 38 |             <KeyRound className="h-4 w-4" />
+    `----
+
+Caused by:
+    0: failed to process js file
+    1: Syntax Error
+Import trace for requested module:
+./src/app/admin/_components/Dashboard.tsx
+./src/app/admin/page.tsx
+<w> [webpack.cache.PackFileCacheStrategy] Restoring pack failed from /data/data/com.termux/files/home/portfolio/.next/cache/webpack/client-development-fallback.pack.gz: Error: incorrect header check
+Watchpack Error (watcher): Error: EACCES: permission denied, watch '/data/data'
+Watchpack Error (watcher): Error: EACCES: permission denied, watch '/data'
+Watchpack Error (watcher): Error: EACCES: permission denied, watch '/'
+Watchpack Error (initial scan): Error: EACCES: permission denied, scandir '/data/data'
+Watchpack Error (initial scan): Error: EACCES: permission denied, scandir '/data'
+Watchpack Error (initial scan): Error: EACCES: permission denied, scandir '/'
+ ⨯ ./src/app/admin/_components/Dashboard.tsx
+NonErrorEmittedError: (Emitted value instead of an instance of Error)   x Unexpected token `div`. Expected jsx identifier
+    ,-[/data/data/com.termux/files/home/portfolio/src/app/admin/_components/Dashboard.tsx:35:1]
+ 32 |   // const wasReset = false;
+ 33 |
+ 34 |   return (
+ 35 |     <div className="space-y-6">
+    :      ^^^
+ 36 |       {/* {wasReset && (
+ 37 |          <Alert>
+ 38 |             <KeyRound className="h-4 w-4" />
+    `----
+
+Caused by:
+    0: failed to process js file
+    1: Syntax Error
+Import trace for requested module:
+./src/app/admin/_components/Dashboard.tsx
+./src/app/admin/page.tsx
+ GET /admin 500 in 67176ms
+ GET / 500 in 5114ms
+ GET / 200 in 13ms
+ ⨯ ./src/app/admin/_components/Dashboard.tsx
+NonErrorEmittedError: (Emitted value instead of an instance of Error)   x Unexpected token `div`. Expected jsx identifier
+    ,-[/data/data/com.termux/files/home/portfolio/src/app/admin/_components/Dashboard.tsx:35:1]
+ 32 |   // const wasReset = false;
+ 33 |
+ 34 |   return (
+ 35 |     <div className="space-y-6">
+    :      ^^^
+ 36 |
+ 37 |       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+ 38 |         <Card onClick={() => setActiveView('profile')} className="hover:border-primary transition-colors cursor-pointer group">
+    `----
+
+Caused by:
+    0: failed to process js file
+    1: Syntax Error
+Import trace for requested module:
+./src/app/admin/_components/Dashboard.tsx
+./src/app/admin/page.tsx
+ GET /admin 500 in 237ms
+ ⨯ ./src/app/admin/_components/Dashboard.tsx
+NonErrorEmittedError: (Emitted value instead of an instance of Error)   x Unexpected token `div`. Expected jsx identifier
+    ,-[/data/data/com.termux/files/home/portfolio/src/app/admin/_components/Dashboard.tsx:35:1]
+ 32 |   // const wasReset = false;
+ 33 |
+ 34 |   return (
+ 35 |     <div className="space-y-6">
+    :      ^^^
+ 36 |
+ 37 |       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+ 38 |         <Card onClick={() => setActiveView('profile')} className="hover:border-primary transition-colors cursor-pointer group">
+    `----
+
+Caused by:
+    0: failed to process js file
+    1: Syntax Error
+Import trace for requested module:
+./src/app/admin/_components/Dashboard.tsx
+./src/app/admin/page.tsx
+ GET /admin 500 in 48ms
+ ⨯ ./src/app/admin/_components/Dashboard.tsx
+NonErrorEmittedError: (Emitted value instead of an instance of Error)   x Expected '}', got '<eof>'
+     ,-[/data/data/com.termux/files/home/portfolio/src/app/admin/_components/Dashboard.tsx:187:1]
+ 184 |         </Card>
+ 185 |       </div>
+ 186 |     </div>
+ 187 |   );
+     :    ^
+     `----
+
+Caused by:
+    0: failed to process js file
+    1: Syntax Error
+Import trace for requested module:
+./src/app/admin/_components/Dashboard.tsx
+./src/app/admin/page.tsx
+ ⨯ ./src/app/admin/_components/Dashboard.tsx
+NonErrorEmittedError: (Emitted value instead of an instance of Error)   x Expected '}', got '<eof>'
+     ,-[/data/data/com.termux/files/home/portfolio/src/app/admin/_components/Dashboard.tsx:187:1]
+ 184 |         </Card>
+ 185 |       </div>
+ 186 |     </div>
+ 187 |   );
+     :    ^
+     `----
+
+Caused by:
+    0: failed to process js file
+    1: Syntax Error
+Import trace for requested module:
+./src/app/admin/_components/Dashboard.tsx
+./src/app/admin/page.tsx
+ ⨯ ./src/app/admin/_components/Dashboard.tsx
+NonErrorEmittedError: (Emitted value instead of an instance of Error)   x Expected '}', got '<eof>'
+     ,-[/data/data/com.termux/files/home/portfolio/src/app/admin/_components/Dashboard.tsx:187:1]
+ 184 |         </Card>
+ 185 |       </div>
+ 186 |     </div>
+ 187 |   );
+     :    ^
+     `----
+
+Caused by:
+    0: failed to process js file
+    1: Syntax Error
+Import trace for requested module:
+./src/app/admin/_components/Dashboard.tsx
+./src/app/admin/page.tsx
+ GET /admin 500 in 3943ms
+~/portfolio $
+^C^C
+~/portfolio $ ^C
+~/portfolio $  npm run dev
+
+> nextn@0.1.0 dev
+> next dev -p 9002
+
+   ▲ Next.js 15.3.3
+   - Local:        http://localhost:9002
+   - Network:      http://192.168.10.123:9002
+
+ ✓ Starting...
+ ✓ Ready in 6.7s
+ ○ Compiling /middleware ...
+ ✓ Compiled /middleware in 11.6s (927 modules)
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET /_next/static/webpack/e05c3720005bce93.webpack.hot-update.json 404 in 13168ms
+ ○ Compiling /admin ...
+ ⨯ ./src/app/admin/_components/Dashboard.tsx
+NonErrorEmittedError: (Emitted value instead of an instance of Error)   x Expected '}', got '<eof>'
+     ,-[/data/data/com.termux/files/home/portfolio/src/app/admin/_components/Dashboard.tsx:187:1]
+ 184 |         </Card>
+ 185 |       </div>
+ 186 |     </div>
+ 187 |   );
+     :    ^
+     `----
+
+Caused by:
+    0: failed to process js file
+    1: Syntax Error
+Import trace for requested module:
+./src/app/admin/_components/Dashboard.tsx
+./src/app/admin/page.tsx
+Watchpack Error (watcher): Error: EACCES: permission denied, watch '/data/data'
+Watchpack Error (watcher): Error: EACCES: permission denied, watch '/data'
+Watchpack Error (watcher): Error: EACCES: permission denied, watch '/'
+Watchpack Error (initial scan): Error: EACCES: permission denied, scandir '/data/data'
+Watchpack Error (initial scan): Error: EACCES: permission denied, scandir '/data'
+Watchpack Error (initial scan): Error: EACCES: permission denied, scandir '/'
+Watchpack Error (watcher): Error: EACCES: permission denied, watch '/data/data'
+Watchpack Error (watcher): Error: EACCES: permission denied, watch '/data'
+Watchpack Error (watcher): Error: EACCES: permission denied, watch '/'
+Watchpack Error (initial scan): Error: EACCES: permission denied, scandir '/data/data'
+Watchpack Error (initial scan): Error: EACCES: permission denied, scandir '/data'
+Watchpack Error (initial scan): Error: EACCES: permission denied, scandir '/'
+Watchpack Error (watcher): Error: EACCES: permission denied, watch '/data/data'
+Watchpack Error (watcher): Error: EACCES: permission denied, watch '/data'
+Watchpack Error (watcher): Error: EACCES: permission denied, watch '/'
+Watchpack Error (initial scan): Error: EACCES: permission denied, scandir '/data/data'
+Watchpack Error (initial scan): Error: EACCES: permission denied, scandir '/'
+Watchpack Error (initial scan): Error: EACCES: permission denied, scandir '/data'
+ ⨯ ./src/app/admin/_components/Dashboard.tsx
+NonErrorEmittedError: (Emitted value instead of an instance of Error)   x Expected '}', got '<eof>'
+     ,-[/data/data/com.termux/files/home/portfolio/src/app/admin/_components/Dashboard.tsx:187:1]
+ 184 |         </Card>
+ 185 |       </div>
+ 186 |     </div>
+ 187 |   );
+     :    ^
+     `----
+
+Caused by:
+    0: failed to process js file
+    1: Syntax Error
+Import trace for requested module:
+./src/app/admin/_components/Dashboard.tsx
+./src/app/admin/page.tsx
+Watchpack Error (watcher): Error: EACCES: permission denied, watch '/data/data'
+Watchpack Error (watcher): Error: EACCES: permission denied, watch '/data'
+Watchpack Error (watcher): Error: EACCES: permission denied, watch '/'
+Watchpack Error (initial scan): Error: EACCES: permission denied, scandir '/data/data'
+Watchpack Error (initial scan): Error: EACCES: permission denied, scandir '/data'
+Watchpack Error (initial scan): Error: EACCES: permission denied, scandir '/'
+ GET /_next/static/webpack/e05c3720005bce93.webpack.hot-update.json 500 in 18760ms
+ GET /admin 500 in 19258ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⨯ ./src/app/admin/_components/Dashboard.tsx
+NonErrorEmittedError: (Emitted value instead of an instance of Error)   x Expected '}', got '<eof>'
+     ,-[/data/data/com.termux/files/home/portfolio/src/app/admin/_components/Dashboard.tsx:187:1]
+ 184 |         </Card>
+ 185 |       </div>
+ 186 |     </div>
+ 187 |   );
+     :    ^
+     `----
+
+Caused by:
+    0: failed to process js file
+    1: Syntax Error
+Import trace for requested module:
+./src/app/admin/_components/Dashboard.tsx
+./src/app/admin/page.tsx
+ ⨯ ./src/app/admin/_components/Dashboard.tsx
+NonErrorEmittedError: (Emitted value instead of an instance of Error)   x Expected '}', got '<eof>'
+     ,-[/data/data/com.termux/files/home/portfolio/src/app/admin/_components/Dashboard.tsx:187:1]
+ 184 |         </Card>
+ 185 |       </div>
+ 186 |     </div>
+ 187 |   );
+     :    ^
+     `----
+
+Caused by:
+    0: failed to process js file
+    1: Syntax Error
+Import trace for requested module:
+./src/app/admin/_components/Dashboard.tsx
+./src/app/admin/page.tsx
+ ⨯ ./src/app/admin/_components/Dashboard.tsx
+NonErrorEmittedError: (Emitted value instead of an instance of Error)   x Expected '}', got '<eof>'
+     ,-[/data/data/com.termux/files/home/portfolio/src/app/admin/_components/Dashboard.tsx:187:1]
+ 184 |         </Card>
+ 185 |       </div>
+ 186 |     </div>
+ 187 |   );
+     :    ^
+     `----
+
+Caused by:
+    0: failed to process js file
+    1: Syntax Error
+Import trace for requested module:
+./src/app/admin/_components/Dashboard.tsx
+./src/app/admin/page.tsx"

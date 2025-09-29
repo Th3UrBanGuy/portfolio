@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 
 const getTitleFromPath = (path: string) => {
   if (path === '/admin') return 'Dashboard';
-  if (path.startsWith('/admin/viewers')) return 'Viewers';
+
   if (path.startsWith('/admin/profile')) return 'Profile';
   if (path.startsWith('/admin/education')) return 'Education';
   if (path.startsWith('/admin/skills')) return 'Skills';

@@ -97,6 +97,11 @@ export type Skill = {
   order?: number;
 };
 
+export type PageTitle = {
+  id: string;
+  title: string;
+};
+
 export type PortfolioData = {
   personalInfo: PersonalInfo;
   education: Education[];
@@ -109,10 +114,10 @@ export type PortfolioData = {
   contactDetails: ContactDetails;
   socials: Social[];
   achievements: Achievement[];
-cvLink: string;
+  cvLink: string;
   customLinks: CustomLink[];
+  pageTitles: PageTitle[];
 };
-
 export type ViewerData = {
     id: string;
     visitorId: string;

@@ -22,7 +22,6 @@ import BackCoverPage from './pages/BackCoverPage';
 import Preloader from '../Preloader';
 import StaticIntroPage from './pages/StaticIntroPage';
 import StaticOutroPage from './pages/StaticOutroPage';
-import { runRecordViewerFlow } from '@/ai/flows/record-viewer-flow';
 
 
 type Page = 'cover' | 'toc' | 'about' | 'education' | 'skills' | 'experience' | 'achievements' | 'projects' | 'contact' | 'back-cover';
@@ -73,164 +72,13 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [bookDimensions, setBookDimensions] = useState({ width: 0, height: 0 });
 
-  const [hasIntroPlayed, setHasIntroPlayed] = useState(false);
-  const [showFire, setShowFire] = useState(true);
-  const [showContent, setShowContent] = useState(false);
-  const [isClosing, setIsClosing] = useState(false);
-  const [hasRecorded, setHasRecorded] = useState(false);
-
-
-  useEffect(() => {
-    if (hasIntroPlayed) {
-        setShowFire(false);
-        setShowContent(true);
-        return;
-    }
-
-    const introTimer = setTimeout(() => {
-        setShowFire(false);
-        setShowContent(true);
-        setHasIntroPlayed(true);
-    }, 3000);
-
-    return () => clearTimeout(introTimer);
-  }, [hasIntroPlayed]);
-
-
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  const handleFirstInteraction = () => {
-    if (!hasRecorded) {
-        recordViewerData();
-        setHasRecorded(true);
-    }
-  }
-
   const handleOpenBook = () => {
-    handleFirstInteraction();
     navigate('toc');
   };
-
-  const getOrCreateVisitorId = (): string => {
-    const KEY = 'visitorId';
-    let visitorId = localStorage.getItem(KEY);
-    if (!visitorId) {
-        visitorId = crypto.randomUUID();
-        localStorage.setItem(KEY, visitorId);
-    }
-    return visitorId;
-  }
-
-  const recordViewerData = async () => {
-    try {
-        const visitorId = getOrCreateVisitorId();
-        const getBrowserInfo = () => {
-            const userAgent = navigator.userAgent;
-            let browserName = "Unknown";
-            if (userAgent.includes("Firefox")) browserName = "Firefox";
-            else if (userAgent.includes("SamsungBrowser")) browserName = "Samsung Browser";
-            else if (userAgent.includes("Opera") || userAgent.includes("OPR")) browserName = "Opera";
-            else if (userAgent.includes("Trident")) browserName = "Internet Explorer";
-            else if (userAgent.includes("Edge")) browserName = "Edge";
-            else if (userAgent.includes("Chrome")) browserName = "Chrome";
-            else if (userAgent.includes("Safari")) browserName = "Safari";
-            return browserName;
-        }
-
-        const getOS = () => {
-            const userAgent = navigator.userAgent;
-            if (userAgent.includes("Win")) return "Windows";
-            if (userAgent.includes("Mac")) return "MacOS";
-            if (userAgent.includes("X11")) return "UNIX";
-            if (userAgent.includes("Linux")) return "Linux";
-            if (userAgent.includes("Android")) return "Android";
-            if (userAgent.includes("like Mac")) return "iOS";
-            return "Unknown";
-        }
-
-       const getIpInfo = async () => {
-        try {
-            const response = await fetch('https://ipapi.co/json/');
-            if (!response.ok) throw new Error('Response not OK');
-            const data = await response.json();
-            return {
-                ip: data.ip,
-                city: data.city || 'N/A',
-                country: data.country_name || data.country || 'N/A',
-                isp: data.org || data.isp || 'N/A',
-                ipType: data.version === 'IPv4' ? 'IPv4' : data.version === 'IPv6' ? 'IPv6' : 'N/A',
-                region: data.region || 'N/A',
-                postal: data.postal || 'N/A',
-                asn: data.asn || 'N/A',
-                latitude: data.latitude || null,
-                longitude: data.longitude || null,
-            };
-        } catch (error) {
-            console.warn("Client-side IP lookup failed. The server will attempt to determine the location.", error);
-            // Return a default object so the server can take over.
-            return {
-                ip: '0.0.0.0', city: 'N/A', country: 'N/A', isp: 'N/A', ipType: 'N/A',
-                region: 'N/A', postal: 'N/A', asn: 'N/A', latitude: null, longitude: null,
-            };
-        }
-      };
-
-        const collectClientDetails = () => {
-            const nav = navigator as any;
-            const conn = nav.connection || nav.mozConnection || nav.webkitConnection;
-
-            return {
-                collectedAt: new Date().toISOString(),
-                collectedVia: document.location.toString(),
-
-                navigator: {
-                    hardwareConcurrency: nav.hardwareConcurrency ? String(nav.hardwareConcurrency) : 'N/A',
-                    deviceMemory: nav.deviceMemory ? `${nav.deviceMemory} GB` : 'N/A',
-                    platform: nav.platform,
-                    userAgent: nav.userAgent,
-                    appVersion: nav.appVersion,
-                    vendor: nav.vendor,
-                    connection: {
-                        downlink: conn?.downlink,
-                        rtt: conn?.rtt,
-                        effectiveType: conn?.effectiveType,
-                        saveData: conn?.saveData,
-                        type: conn?.type,
-                    },
-                },
-                window: {
-                    indexedDB: typeof window.indexedDB,
-                    crypto: typeof window.crypto,
-                    devicePixelRatio: window.devicePixelRatio,
-                    localStorage: typeof window.localStorage,
-                    sessionStorage: typeof window.sessionStorage,
-                },
-                screen: {
-                    availHeight: window.screen.availHeight,
-                    availWidth: window.screen.availWidth,
-                    height: window.screen.height,
-                    width: window.screen.width,
-                    pixelDepth: window.screen.pixelDepth,
-                    colorDepth: window.screen.colorDepth,
-                    resolution: `${window.screen.width}x${window.screen.height}`,
-                },
-                browser: getBrowserInfo(),
-                os: getOS(),
-            };
-        };
-      
-        const clientDetails = collectClientDetails();
-        const clientLocation = await getIpInfo();
-      
-        await runRecordViewerFlow({ visitorId, ...clientDetails, clientLocation });
-
-    } catch (error) {
-      console.error("Failed to record viewer data:", error);
-    }
-  };
-
 
   useEffect(() => {
     if (!isMounted) return;
@@ -274,15 +122,7 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
 
   const onFlip = useCallback((e: { data: number }) => {
     setCurrentPageIndex(e.data);
-    if (isClosing) {
-        if (isMobile && e.data === totalPages - 1) {
-            setTimeout(() => bookRef.current.pageFlip().turnToPage(0), 500);
-        } else if (e.data === 0) {
-            setShowContent(false);
-            setShowFire(true);
-        }
-    }
-  }, [isClosing, isMobile, totalPages]);
+  }, []);
 
 
   const navigate = (page: Page) => {
@@ -294,20 +134,19 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
   };
 
   const nextPage = () => {
-    handleFirstInteraction();
     if (bookRef.current) {
-      bookRef.current.pageFlip().flipNext();
+        bookRef.current.pageFlip().flipNext();
     }
   };
 
   const prevPage = () => {
-    handleFirstInteraction();
     if (bookRef.current) {
       bookRef.current.pageFlip().flipPrev();
     }
   };
 
   const renderPageContent = (page: Page, pageNumber: number) => {
+    const pageTitle = data.pageTitles.find(p => p.id === page)?.title;
     switch (page) {
         case 'cover':
             return <CoverPage onOpen={handleOpenBook} />;
@@ -316,17 +155,17 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
         case 'about':
             return <AboutPage personalInfo={data.personalInfo} imageUrl={data.authorImageUrl} imageHint={data.authorImageHint} aboutMe={data.aboutMe} cvLink={data.cvLink} />;
         case 'education':
-            return <EducationPage education={data.education} />;
+            return <EducationPage education={data.education} title={pageTitle ?? 'Education'} />;
         case 'skills':
-            return <SkillsPage skills={data.skills} onSkillSelect={setSelectedSkill} />;
+            return <SkillsPage skills={data.skills} onSkillSelect={setSelectedSkill} title={pageTitle ?? 'Skills'} />;
         case 'experience':
-            return <ExperiencePage experience={data.experience} />;
+            return <ExperiencePage experience={data.experience} title={pageTitle ?? 'Experience'} />;
         case 'achievements':
-            return <AchievementsPage achievements={data.achievements} />;
+            return <AchievementsPage achievements={data.achievements} title={pageTitle ?? 'Achievements'} />;
         case 'projects':
-            return <ProjectsPage projects={data.projects} onProjectSelect={setSelectedProject} />;
+            return <ProjectsPage projects={data.projects} onProjectSelect={setSelectedProject} title={pageTitle ?? 'Projects'} />;
         case 'contact':
-            return <ContactPage contactDetails={data.contactDetails} socials={data.socials} customLinks={data.customLinks}/>;
+            return <ContactPage contactDetails={data.contactDetails} socials={data.socials} customLinks={data.customLinks} title={pageTitle ?? 'Contact'}/>;
         case 'back-cover':
             return <BackCoverPage />;
         default:
@@ -351,8 +190,7 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
 
   return (
     <>
-        <Preloader showFire={showFire} isClosing={isClosing} />
-        <main className={cn("flex h-dvh w-full flex-col items-center justify-center bg-background p-4 overflow-hidden transition-opacity duration-500", showContent ? "opacity-100" : "opacity-0")}>
+        <main className="flex h-dvh w-full flex-col items-center justify-center bg-background p-4 overflow-hidden">
         <div ref={containerRef} className="relative flex-grow w-full flex items-center justify-center">
             {bookDimensions.width > 0 && (
                 <div style={{ width: bookDimensions.width, height: bookDimensions.height }} className='relative'>
@@ -397,7 +235,7 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
                 <ArrowLeft />
             </Button>
             <span className="text-sm text-foreground/70">{currentPageIndex === 0 ? 'Cover' : currentPageIndex === totalPages - 1 ? 'Back Cover' : `${currentPageIndex} / ${totalPages - 2}`}</span>
-            <Button onClick={nextPage} disabled={currentPageIndex >= totalPages -1} variant="outline" size="icon" className="bg-background/50">
+            <Button onClick={nextPage} disabled={currentPageIndex >= totalPages - 1} variant="outline" size="icon" className="bg-background/50">
                 <ArrowRight />
             </Button>
         </div>
@@ -408,5 +246,3 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
     </>
   );
 }
-
-    

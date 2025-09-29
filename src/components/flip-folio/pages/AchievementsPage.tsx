@@ -8,13 +8,14 @@ import Image from 'next/image';
 
 type AchievementsPageProps = {
   achievements: Achievement[];
+  title: string;
 };
 
-export default function AchievementsPage({ achievements }: AchievementsPageProps) {
+export default function AchievementsPage({ achievements, title }: AchievementsPageProps) {
   return (
     <div className="h-full flex flex-col">
       <h2 className="font-headline text-2xl mb-4 flex-shrink-0 text-page-foreground">
-        Deeds of Valor
+        {title}
       </h2>
       <ScrollArea className="flex-grow -mr-6">
         <div className="space-y-6 pr-6">

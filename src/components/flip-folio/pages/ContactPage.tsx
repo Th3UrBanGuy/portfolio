@@ -17,12 +17,12 @@ const DynamicIcon = ({ name, ...props }: { name: string } & LucideIcons.LucidePr
 };
 
 
-export default function ContactPage({ contactDetails, socials, customLinks }: { contactDetails: PortfolioData['contactDetails'], socials: PortfolioData['socials'], customLinks: PortfolioData['customLinks'] }) {
+export default function ContactPage({ contactDetails, socials, customLinks, title }: { contactDetails: PortfolioData['contactDetails'], socials: PortfolioData['socials'], customLinks: PortfolioData['customLinks'], title: string }) {
   
   return (
     <div className="flex h-full flex-col">
        <h2 className="font-headline text-2xl mb-4 text-page-foreground">
-        Connect with the Scribe
+        {title}
       </h2>
       
       <p className="text-sm text-page-foreground/80 mb-6">

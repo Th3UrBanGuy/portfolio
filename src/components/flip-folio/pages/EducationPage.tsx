@@ -7,13 +7,14 @@ import { GraduationCap, School, Calendar, CheckCircle } from 'lucide-react';
 
 type EducationPageProps = {
   education: Education[];
+  title: string;
 };
 
-export default function EducationPage({ education }: EducationPageProps) {
+export default function EducationPage({ education, title }: EducationPageProps) {
   return (
     <div className="h-full flex flex-col">
       <h2 className="font-headline text-2xl mb-4 flex-shrink-0 text-page-foreground">
-        Scrolls of Knowledge
+        {title}
       </h2>
       <ScrollArea className="flex-grow -mr-6">
         <div className="space-y-4 pr-6">
