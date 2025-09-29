@@ -1,11 +1,11 @@
 'use client';
 import type { ViewerData } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Globe, Laptop, Wifi, Shield, Cpu, MemoryStick, Clock, MapPin, Network, Server, Map } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 
 const InfoRow = ({ icon, label, value }: { icon: React.ElementType, label: string, value: React.ReactNode }) => (
@@ -33,17 +33,19 @@ const ViewerDetailDialog = ({ viewer, open, onOpenChange }: ViewerDetailDialogPr
         }
     }
 
+    const { clientDetails } = viewer;
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-3xl p-0">
+            <DialogContent className="sm:max-w-4xl p-0">
                 <DialogHeader className='p-6 pb-0'>
                     <DialogTitle>Viewer Details</DialogTitle>
                     <DialogDescription>
                         Detailed information for the visit from {viewer.city}, {viewer.country}.
                     </DialogDescription>
                 </DialogHeader>
-                <ScrollArea className="max-h-[70vh]">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+                <ScrollArea className="max-h-[70vh] p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <Card>
                             <CardHeader>
                                 <CardTitle className='flex items-center justify-between text-lg'>
@@ -78,11 +80,11 @@ const ViewerDetailDialog = ({ viewer, open, onOpenChange }: ViewerDetailDialogPr
                                 <CardTitle className='flex items-center gap-2 text-lg'><Laptop className='h-5 w-5' /> Device & Browser</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <InfoRow icon={Globe} label="Browser" value={viewer.browser} />
-                                <InfoRow icon={Laptop} label="Operating System" value={viewer.os} />
-                                <InfoRow icon={Laptop} label="Resolution" value={viewer.resolution} />
-                                <InfoRow icon={MemoryStick} label="Device Memory" value={viewer.deviceMemory} />
-                                <InfoRow icon={Cpu} label="CPU Cores" value={String(viewer.cpuCores)} />
+                                <InfoRow icon={Globe} label="Browser" value={clientDetails.browser} />
+                                <InfoRow icon={Laptop} label="Operating System" value={clientDetails.os} />
+                                <InfoRow icon={Laptop} label="Resolution" value={clientDetails.screen.resolution} />
+                                <InfoRow icon={MemoryStick} label="Device Memory" value={String(clientDetails.navigator.deviceMemory) || 'N/A'} />
+                                <InfoRow icon={Cpu} label="CPU Cores" value={String(clientDetails.navigator.hardwareConcurrency) || 'N/A'} />
                             </CardContent>
                         </Card>
                     </div>
@@ -91,6 +93,26 @@ const ViewerDetailDialog = ({ viewer, open, onOpenChange }: ViewerDetailDialogPr
         </Dialog>
     )
 }
+
+const RelativeTimestamp = ({ timestamp }: { timestamp: Date }) => {
+    const [relativeTime, setRelativeTime] = useState('');
+
+    useEffect(() => {
+        setRelativeTime(formatDistanceToNow(new Date(timestamp), { addSuffix: true }));
+    }, [timestamp]);
+
+    if (!relativeTime) {
+        return null;
+    }
+
+    return (
+        <span className="text-xs font-normal text-muted-foreground flex items-center gap-1.5">
+            <Clock className="h-3 w-3" />
+            {relativeTime}
+        </span>
+    );
+};
+
 
 type ViewerCardProps = {
     viewer: ViewerData;
@@ -106,17 +128,14 @@ const ViewerCard = ({ viewer, onClick }: ViewerCardProps) => {
                         <Globe className="h-5 w-5" />
                         <span>{viewer.city}, {viewer.country}</span>
                     </div>
-                     <span className="text-xs font-normal text-muted-foreground flex items-center gap-1.5">
-                        <Clock className="h-3 w-3" />
-                        {formatDistanceToNow(new Date(viewer.timestamp), { addSuffix: true })}
-                    </span>
+                     <RelativeTimestamp timestamp={viewer.timestamp} />
                 </CardTitle>
             </CardHeader>
             <CardContent>
                 <InfoRow icon={Shield} label="IP Address" value={viewer.ip} />
                 <InfoRow icon={Wifi} label="ISP" value={viewer.isp} />
-                <InfoRow icon={Laptop} label="OS" value={viewer.os} />
-                <InfoRow icon={Globe} label="Browser" value={viewer.browser} />
+                <InfoRow icon={Laptop} label="OS" value={viewer.clientDetails.os} />
+                <InfoRow icon={Globe} label="Browser" value={viewer.clientDetails.browser} />
             </CardContent>
         </Card>
     )
