@@ -38,7 +38,7 @@ export default function AdminLayout({
           <SidebarMenu>
             {navItems.map((item) => (
               <SidebarMenuItem key={item.href}>
-                <Link href={item.href} legacyBehavior passHref>
+                <Link href={item.href}>
                   <SidebarMenuButton
                     isActive={pathname.startsWith(item.href)}
                     icon={<item.icon />}
@@ -53,7 +53,7 @@ export default function AdminLayout({
         <SidebarFooter>
             <SidebarMenu>
                 <SidebarMenuItem>
-                    <Link href="/" legacyBehavior passHref>
+                    <Link href="/">
                         <SidebarMenuButton icon={<Book />}>
                             View Portfolio
                         </SidebarMenuButton>
@@ -71,5 +71,3 @@ export default function AdminLayout({
     </SidebarProvider>
   );
 }
-
-    
