@@ -54,10 +54,21 @@ export type Social = {
     icon_name: string;
 }
 
+export type CustomLink = {
+    id: string;
+    label: string;
+    url: string;
+    icon_name: string;
+}
+
+export type PhoneNumber = {
+    id: string;
+    number: string;
+}
+
 export type ContactDetails = {
-    contactMeLink: string;
-    phone: string;
     emails: string[];
+    phoneNumbers: PhoneNumber[];
 }
 
 export type Achievement = {
@@ -92,6 +103,7 @@ export type PortfolioData = {
   socials: Social[];
   achievements: Achievement[];
   cvLink: string;
+  customLinks: CustomLink[];
 };
 
 export type ViewerData = {

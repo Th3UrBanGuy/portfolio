@@ -23,6 +23,7 @@ export default async function ContactPage() {
       <ContactForm
         contactDetails={portfolioData.contactDetails}
         socials={portfolioData.socials}
+        customLinks={portfolioData.customLinks}
       />
     </div>
   );

@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { collection, writeBatch, doc, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { revalidatePath } from 'next/cache';
-import type { Social } from '@/lib/types';
+import type { Social, CustomLink } from '@/lib/types';
 import { getCollectionData } from '@/lib/placeholder-data';
 
 
@@ -16,16 +16,28 @@ const socialSchema = z.object({
 });
 const socialsArraySchema = z.array(socialSchema);
 
+const customLinkSchema = z.object({
+    id: z.string(),
+    label: z.string().min(1, 'Label is required.'),
+    url: z.string().url('Must be a valid URL.'),
+    icon_name: z.string().min(1, 'Icon name is required.'),
+});
+const customLinksArraySchema = z.array(customLinkSchema);
+
+const phoneNumberSchema = z.object({
+    id: z.string(),
+    number: z.string().min(1, 'Phone number is required.'),
+});
 
 const contactDetailsSchema = z.object({
-  contactMeLink: z.string().url('Must be a valid URL.'),
-  phone: z.string().min(1, 'Phone number is required.'),
+  phoneNumbers: z.array(phoneNumberSchema),
   emails: z.array(z.string().email('Must be a valid email.')),
 });
 
 const combinedSchema = z.object({
     contactDetails: contactDetailsSchema,
-    socials: socialsArraySchema
+    socials: socialsArraySchema,
+    customLinks: customLinksArraySchema,
 })
 
 export async function updateContactAndSocials(
@@ -34,8 +46,9 @@ export async function updateContactAndSocials(
   try {
     const validatedData = combinedSchema.parse(data);
 
-    // Update socials collection
     const batch = writeBatch(db);
+
+    // Update socials collection
     const socialsCollection = collection(db, 'socials');
     const existingSocials = await getCollectionData<Social>('socials');
     existingSocials.forEach(docToDelete => {
@@ -45,6 +58,18 @@ export async function updateContactAndSocials(
       const docRef = doc(socialsCollection, social.id);
       batch.set(docRef, social);
     });
+
+    // Update custom-links collection
+    const customLinksCollection = collection(db, 'custom-links');
+    const existingCustomLinks = await getCollectionData<CustomLink>('custom-links');
+    existingCustomLinks.forEach(docToDelete => {
+        batch.delete(doc(customLinksCollection, docToDelete.id));
+    });
+    validatedData.customLinks.forEach(link => {
+        const docRef = doc(customLinksCollection, link.id);
+        batch.set(docRef, link);
+    });
+    
     await batch.commit();
 
     // Update contact-details document

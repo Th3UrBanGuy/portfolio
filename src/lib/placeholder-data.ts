@@ -1,5 +1,5 @@
 
-import type { PortfolioData, Project, PersonalInfo, Education, Skill, Experience, ContactDetails, Social, Achievement } from './types';
+import type { PortfolioData, Project, PersonalInfo, Education, Skill, Experience, ContactDetails, Social, Achievement, CustomLink } from './types';
 import { db } from './firebase';
 import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 
@@ -43,6 +43,7 @@ export async function getPortfolioData(): Promise<PortfolioData> {
         aboutMeDoc,
         authorImageDoc,
         cvLinkDoc,
+        customLinks,
     ] = await Promise.all([
         getDocumentData<PersonalInfo>('site-data', 'personal-info'),
         getCollectionData<Education>('education'),
@@ -55,10 +56,11 @@ export async function getPortfolioData(): Promise<PortfolioData> {
         getDocumentData<{ content: string }>('site-data', 'about-me'),
         getDocumentData<{ url: string, hint: string }>('site-data', 'author-image'),
         getDocumentData<{ url: string }>('site-data', 'cv-link'),
+        getCollectionData<CustomLink>('custom-links'),
     ]);
 
     const defaultPersonalInfo = { name: '', dob: '', bloodGroup: '', nationality: '', occupation: '', status: '', hobby: '', aimInLife: '' };
-    const defaultContactDetails = { contactMeLink: '', phone: '', emails: [] };
+    const defaultContactDetails = { emails: [], phoneNumbers: [] };
 
     return {
         personalInfo: personalInfo || defaultPersonalInfo,
@@ -73,5 +75,6 @@ export async function getPortfolioData(): Promise<PortfolioData> {
         authorImageHint: authorImageDoc?.hint || 'placeholder image',
         projects: projects || [],
         cvLink: cvLinkDoc?.url || '',
+        customLinks: customLinks || [],
     };
 }

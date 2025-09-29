@@ -17,7 +17,7 @@ const DynamicIcon = ({ name, ...props }: { name: string } & LucideIcons.LucidePr
 };
 
 
-export default function ContactPage({ contactDetails, socials }: { contactDetails: PortfolioData['contactDetails'], socials: PortfolioData['socials'] }) {
+export default function ContactPage({ contactDetails, socials, customLinks }: { contactDetails: PortfolioData['contactDetails'], socials: PortfolioData['socials'], customLinks: PortfolioData['customLinks'] }) {
   
   return (
     <div className="flex h-full flex-col">
@@ -40,12 +40,18 @@ export default function ContactPage({ contactDetails, socials }: { contactDetail
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4 text-sm">
-                         <div className="flex items-center gap-3">
-                            <Phone className="h-4 w-4 text-primary/80 flex-shrink-0" />
-                            <a href={`tel:${contactDetails.phone}`} className="font-medium text-page-foreground/90 hover:text-primary break-all">
-                                {contactDetails.phone}
-                            </a>
-                        </div>
+                         {contactDetails.phoneNumbers && contactDetails.phoneNumbers.length > 0 && (
+                            <div className="flex items-start gap-3">
+                                <Phone className="h-4 w-4 text-primary/80 flex-shrink-0 mt-1" />
+                                <div className="flex flex-col space-y-1">
+                                {contactDetails.phoneNumbers.map(phone => (
+                                    <a key={phone.id} href={`tel:${phone.number}`} className="font-medium text-page-foreground/90 hover:text-primary break-all">
+                                        {phone.number}
+                                    </a>
+                                ))}
+                                </div>
+                            </div>
+                         )}
                         
                         <Separator className='bg-stone-400/30' />
 
@@ -63,21 +69,24 @@ export default function ContactPage({ contactDetails, socials }: { contactDetail
                     </CardContent>
                 </Card>
 
-                {contactDetails.contactMeLink && (
-                 <a href={contactDetails.contactMeLink} target="_blank" rel="noopener noreferrer" className="block">
-                    <Card className='bg-transparent border-stone-400/50 hover:border-primary/50 hover:bg-black/5 transition-colors'>
-                        <CardHeader className="flex-row items-center gap-3 space-y-0 p-4">
-                            <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-primary/10 border border-primary/20">
-                                <Globe className="h-5 w-5 text-primary"/>
-                            </div>
-                            <div>
-                                <CardTitle className="text-sm text-page-foreground">Find All My Links</CardTitle>
-                                <CardDescription className="text-xs">bio.link</CardDescription>
-                            </div>
-                            <ExternalLink className="h-4 w-4 text-page-foreground/50 ml-auto" />
-                        </CardHeader>
-                    </Card>
-                 </a>
+                 {customLinks && customLinks.length > 0 && (
+                    <div className="space-y-2">
+                        {customLinks.map(link => (
+                             <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" className="block">
+                                <Card className='bg-transparent border-stone-400/50 hover:border-primary/50 hover:bg-black/5 transition-colors'>
+                                    <CardHeader className="flex-row items-center gap-3 space-y-0 p-4">
+                                        <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-primary/10 border border-primary/20">
+                                            <DynamicIcon name={link.icon_name} className="h-5 w-5 text-primary"/>
+                                        </div>
+                                        <div>
+                                            <CardTitle className="text-sm text-page-foreground">{link.label}</CardTitle>
+                                        </div>
+                                        <ExternalLink className="h-4 w-4 text-page-foreground/50 ml-auto" />
+                                    </CardHeader>
+                                </Card>
+                            </a>
+                        ))}
+                    </div>
                 )}
             </div>
             

@@ -3,7 +3,7 @@
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import type { ContactDetails, Social } from '@/lib/types';
+import type { ContactDetails, Social, CustomLink } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Save, Plus, Trash2, Mail, Users } from 'lucide-react';
+import { Save, Plus, Trash2, Mail, Users, Link as LinkIcon, Phone } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { updateContactAndSocials } from './actions';
 import { useTransition } from 'react';
@@ -28,15 +28,27 @@ const socialSchema = z.object({
   icon_name: z.string().min(1, 'Icon name is required.'),
 });
 
+const customLinkSchema = z.object({
+    id: z.string(),
+    label: z.string().min(1, 'Label is required.'),
+    url: z.string().url('Must be a valid URL.'),
+    icon_name: z.string().min(1, 'Icon name is required.'),
+});
+
+const phoneNumberSchema = z.object({
+    id: z.string(),
+    number: z.string().min(1, 'Phone number is required.'),
+});
+
 const contactDetailsSchema = z.object({
-  contactMeLink: z.string().url('Must be a valid URL.'),
-  phone: z.string().min(1, 'Phone number is required.'),
+  phoneNumbers: z.array(phoneNumberSchema),
   emails: z.array(z.object({ value: z.string().email('Must be a valid email.') })),
 });
 
 const formSchema = z.object({
   contactDetails: contactDetailsSchema,
   socials: z.array(socialSchema),
+  customLinks: z.array(customLinkSchema),
 });
 
 type ContactFormValues = z.infer<typeof formSchema>;
@@ -44,9 +56,11 @@ type ContactFormValues = z.infer<typeof formSchema>;
 export function ContactForm({
   contactDetails,
   socials,
+  customLinks,
 }: {
   contactDetails: ContactDetails;
   socials: Social[];
+  customLinks: CustomLink[];
 }) {
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
@@ -55,10 +69,11 @@ export function ContactForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       contactDetails: {
-        ...contactDetails,
         emails: contactDetails.emails.map(email => ({ value: email })),
+        phoneNumbers: contactDetails.phoneNumbers || [],
       },
       socials,
+      customLinks,
     },
   });
 
@@ -71,6 +86,15 @@ export function ContactForm({
     name: 'contactDetails.emails',
   });
 
+   const {
+    fields: phoneFields,
+    append: appendPhone,
+    remove: removePhone,
+  } = useFieldArray({
+    control: form.control,
+    name: 'contactDetails.phoneNumbers',
+  });
+
   const {
     fields: socialFields,
     append: appendSocial,
@@ -80,13 +104,23 @@ export function ContactForm({
     name: 'socials',
   });
 
+    const {
+    fields: customLinkFields,
+    append: appendCustomLink,
+    remove: removeCustomLink,
+  } = useFieldArray({
+    control: form.control,
+    name: 'customLinks',
+  });
+
   function onSubmit(values: ContactFormValues) {
     const dataToSave = {
         contactDetails: {
             ...values.contactDetails,
             emails: values.contactDetails.emails.map(e => e.value)
         },
-        socials: values.socials
+        socials: values.socials,
+        customLinks: values.customLinks,
     };
 
     startTransition(async () => {
@@ -117,32 +151,43 @@ export function ContactForm({
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <FormField
-                control={form.control}
-                name="contactDetails.phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Phone Number</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="contactDetails.contactMeLink"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Bio Link</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="e.g., https://bio.link/yourname" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+               <div>
+                <FormLabel>Phone Numbers</FormLabel>
+                <div className="space-y-3 mt-2">
+                  {phoneFields.map((field, index) => (
+                    <div key={field.id} className="flex items-center gap-2">
+                      <FormField
+                        control={form.control}
+                        name={`contactDetails.phoneNumbers.${index}.number`}
+                        render={({ field }) => (
+                          <FormItem className="flex-grow">
+                            <FormControl>
+                              <Input {...field} placeholder="+1234567890" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => removePhone(index)}
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
+                  ))}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => appendPhone({ id: `new-phone-${Date.now()}`, number: '' })}
+                  >
+                    <Plus className="mr-2" /> Add Phone
+                  </Button>
+                </div>
+              </div>
 
               <Separator />
 
@@ -186,91 +231,147 @@ export function ContactForm({
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users /> Social Media
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {socialFields.map((field, index) => (
-                <div key={field.id} className="p-4 border rounded-lg space-y-4 relative">
-                   <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="absolute top-2 right-2"
-                        onClick={() => removeSocial(index)}
-                      >
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
-                    <div className="grid grid-cols-2 gap-4">
-                         <FormField
-                            control={form.control}
-                            name={`socials.${index}.name`}
-                            render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Platform</FormLabel>
-                                <FormControl>
-                                <Input {...field} placeholder="e.g., LinkedIn" />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                            )}
-                        />
-                         <FormField
-                            control={form.control}
-                            name={`socials.${index}.id`}
-                            render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>ID (Unique)</FormLabel>
-                                <FormControl>
-                                <Input {...field} placeholder="e.g., linkedin" />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                            )}
-                        />
-                    </div>
-                  <FormField
-                    control={form.control}
-                    name={`socials.${index}.url`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>URL</FormLabel>
-                        <FormControl>
-                          <Input {...field} placeholder="https://linkedin.com/in/..." />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name={`socials.${index}.icon_name`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Icon Name</FormLabel>
-                        <FormControl>
-                          <Input {...field} placeholder="e.g., Linkedin (from lucide-react)" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              ))}
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() =>
-                  appendSocial({ id: `new-${Date.now()}`, name: '', url: '', icon_name: '' })
-                }
-              >
-                <Plus className="mr-2" /> Add Social Link
-              </Button>
-            </CardContent>
-          </Card>
+            <div className="space-y-8">
+                 <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Users /> Social Media
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        {socialFields.map((field, index) => (
+                            <div key={field.id} className="p-4 border rounded-lg space-y-4 relative">
+                            <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="absolute top-2 right-2"
+                                    onClick={() => removeSocial(index)}
+                                >
+                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                </Button>
+                                <FormField
+                                    control={form.control}
+                                    name={`socials.${index}.name`}
+                                    render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Platform</FormLabel>
+                                        <FormControl>
+                                        <Input {...field} placeholder="e.g., LinkedIn" />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                    )}
+                                />
+                            <FormField
+                                control={form.control}
+                                name={`socials.${index}.url`}
+                                render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>URL</FormLabel>
+                                    <FormControl>
+                                    <Input {...field} placeholder="https://linkedin.com/in/..." />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name={`socials.${index}.icon_name`}
+                                render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Icon Name (from Lucide)</FormLabel>
+                                    <FormControl>
+                                    <Input {...field} placeholder="e.g., Linkedin" />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                                )}
+                            />
+                            </div>
+                        ))}
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() =>
+                            appendSocial({ id: `new-${Date.now()}`, name: '', url: '', icon_name: '' })
+                            }
+                        >
+                            <Plus className="mr-2" /> Add Social Link
+                        </Button>
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <LinkIcon /> Custom Links
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                         {customLinkFields.map((field, index) => (
+                            <div key={field.id} className="p-4 border rounded-lg space-y-4 relative">
+                            <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="absolute top-2 right-2"
+                                    onClick={() => removeCustomLink(index)}
+                                >
+                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                </Button>
+                                <FormField
+                                    control={form.control}
+                                    name={`customLinks.${index}.label`}
+                                    render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Label</FormLabel>
+                                        <FormControl>
+                                        <Input {...field} placeholder="e.g., My Portfolio" />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                    )}
+                                />
+                            <FormField
+                                control={form.control}
+                                name={`customLinks.${index}.url`}
+                                render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>URL</FormLabel>
+                                    <FormControl>
+                                    <Input {...field} placeholder="https://example.com" />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name={`customLinks.${index}.icon_name`}
+                                render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Icon Name (from Lucide)</FormLabel>
+                                    <FormControl>
+                                    <Input {...field} placeholder="e.g., Globe" />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                                )}
+                            />
+                            </div>
+                        ))}
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => appendCustomLink({ id: `new-custom-${Date.now()}`, label: '', url: '', icon_name: '' })}
+                        >
+                            <Plus className="mr-2" /> Add Custom Link
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
         </div>
 
         <div className="flex justify-end">
