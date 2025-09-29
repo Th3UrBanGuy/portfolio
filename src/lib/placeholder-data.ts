@@ -3,12 +3,21 @@ import type { PortfolioData, Project, PersonalInfo, Education, Skill, Experience
 import { db } from './firebase';
 import { collection, getDocs, doc, getDoc, query, orderBy } from 'firebase/firestore';
 
-export async function getCollectionData<T>(collectionName: string, orderByField?: string): Promise<T[]> {
+export async function getCollectionData<T extends { order?: number }>(collectionName: string, orderByField?: string): Promise<T[]> {
   try {
     const collectionRef = collection(db, collectionName);
     const q = orderByField ? query(collectionRef, orderBy(orderByField)) : collectionRef;
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as T));
+    
+    // Assign order if it's missing (for backward compatibility)
+    return querySnapshot.docs.map((doc, index) => {
+        const data = doc.data();
+        return {
+            id: doc.id,
+            ...data,
+            order: data.order !== undefined ? data.order : index,
+        } as T;
+    });
   } catch (e) {
     console.error(`Error fetching collection ${collectionName}:`, e);
     return [];

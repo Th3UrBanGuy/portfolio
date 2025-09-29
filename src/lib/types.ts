@@ -46,6 +46,7 @@ export type Project = {
   technologies: string[];
   links: ProjectLink[];
   category: string;
+  order?: number;
 };
 
 
@@ -54,6 +55,7 @@ export type Social = {
     name: string;
     url: string;
     icon_name: string;
+    order?: number;
 }
 
 export type CustomLink = {
@@ -61,6 +63,7 @@ export type CustomLink = {
     label: string;
     url: string;
     icon_name: string;
+    order?: number;
 }
 
 export type PhoneNumber = {
@@ -91,6 +94,7 @@ export type Skill = {
   icon: string;
   description: string;
   category: string;
+  order?: number;
 };
 
 export type PortfolioData = {
