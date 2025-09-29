@@ -1,74 +1,27 @@
 'use client';
 
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarProvider,
-  SidebarInset,
-  SidebarFooter,
-} from '@/components/ui/sidebar';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import {
-  Book,
-  Users,
-} from 'lucide-react';
+import { Book } from 'lucide-react';
 import Header from './_components/Header';
-
-const navItems = [
-  { href: '/admin/viewers', label: 'Viewers', icon: Users },
-];
+import { Button } from '@/components/ui/button';
 
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
-
   return (
-    <SidebarProvider>
-      <Sidebar>
-        <SidebarHeader />
-        <SidebarContent>
-          <SidebarMenu>
-            {navItems.map((item) => (
-              <SidebarMenuItem key={item.href}>
-                <Link href={item.href} passHref>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname.startsWith(item.href)}
-                    icon={<item.icon />}
-                  >
-                    {item.label}
-                  </SidebarMenuButton>
+      <div className="p-4 md:p-6">
+        <Header />
+        <main className="mt-4">{children}</main>
+        <div className="mt-8 text-center">
+            <Button asChild variant="outline">
+                <Link href="/">
+                    <Book className="mr-2 h-4 w-4" />
+                    View Portfolio
                 </Link>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarContent>
-        <SidebarFooter>
-            <SidebarMenu>
-                <SidebarMenuItem>
-                    <Link href="/" passHref>
-                        <SidebarMenuButton asChild icon={<Book />}>
-                            View Portfolio
-                        </SidebarMenuButton>
-                    </Link>
-                </SidebarMenuItem>
-            </SidebarMenu>
-        </SidebarFooter>
-      </Sidebar>
-      <SidebarInset>
-        <div className="p-4 md:p-6">
-          <Header />
-          <main className="mt-4">{children}</main>
+            </Button>
         </div>
-      </SidebarInset>
-    </SidebarProvider>
+      </div>
   );
 }
