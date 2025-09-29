@@ -109,6 +109,37 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
     navigate('toc');
   };
 
+  const getIpInfo = async () => {
+    const services = [
+        async () => {
+            const response = await fetch('https://ipapi.co/json/');
+            const data = await response.json();
+            return { ip: data.ip, city: data.city, country: data.country_name, isp: data.org };
+        },
+        async () => {
+            const response = await fetch('https://ipinfo.io/json');
+            const data = await response.json();
+            return { ip: data.ip, city: data.city, country: data.country, isp: data.org };
+        },
+        async () => {
+            const response = await fetch('https://freeipapi.com/api/json');
+            const data = await response.json();
+            return { ip: data.ipAddress, city: data.cityName, country: data.countryName, isp: data.isp };
+        },
+    ];
+
+    for (const service of services) {
+        try {
+            const result = await service();
+            if (result.ip) return result;
+        } catch (error) {
+            console.warn("IP info service failed, trying next one.", error);
+        }
+    }
+
+    return { ip: 'N/A', city: 'N/A', country: 'N/A', isp: 'N/A' };
+  }
+
   const recordViewerData = async () => {
     try {
         const getBrowserInfo = () => {
@@ -135,14 +166,13 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
             return "Unknown";
         }
       
-        const ipResponse = await fetch('https://ipapi.co/json/');
-        const ipData = await ipResponse.json();
+        const ipData = await getIpInfo();
 
         const viewerData = {
             ip: ipData.ip || 'N/A',
             city: ipData.city || 'N/A',
-            country: ipData.country_name || 'N/A',
-            isp: ipData.org || 'N/A',
+            country: ipData.country || 'N/A',
+            isp: ipData.isp || 'N/A',
             browser: getBrowserInfo(),
             os: getOS(),
             resolution: `${window.screen.width}x${window.screen.height}`,
@@ -153,7 +183,7 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
         await runRecordViewerFlow(viewerData);
 
     } catch (error) {
-      console.error("Failed to record viewer data", error);
+      console.error("Failed to record viewer data after all fallbacks:", error);
     }
   };
 
@@ -332,3 +362,5 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
     </>
   );
 }
+
+    
