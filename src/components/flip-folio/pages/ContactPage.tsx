@@ -39,23 +39,27 @@ export default function ContactPage({ contactDetails, socials }: { contactDetail
                             Direct Channels
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-3 text-sm">
-                         <div className="flex items-center">
+                    <CardContent className="space-y-4 text-sm">
+                         <div className="flex items-center gap-3">
                             <Phone className="h-4 w-4 text-primary/80 flex-shrink-0" />
-                            <a href={`tel:${contactDetails.phone}`} className="ml-3 font-medium text-page-foreground/90 hover:text-primary break-all">
+                            <a href={`tel:${contactDetails.phone}`} className="font-medium text-page-foreground/90 hover:text-primary break-all">
                                 {contactDetails.phone}
                             </a>
                         </div>
+                        
                         <Separator className='bg-stone-400/30' />
-                        <div className="flex items-start">
+
+                        <div className="flex items-start gap-3">
+                            <Mail className="h-4 w-4 text-primary/80 flex-shrink-0 mt-1" />
                             <div className="flex flex-col space-y-1">
-                                {contactDetails.emails.slice(0, 2).map(email => (
+                                {contactDetails.emails.map(email => (
                                     <a key={email} href={`mailto:${email}`} className="font-medium text-page-foreground/90 hover:text-primary break-all">
                                         {email}
                                     </a>
                                 ))}
                             </div>
                         </div>
+
                     </CardContent>
                 </Card>
 
