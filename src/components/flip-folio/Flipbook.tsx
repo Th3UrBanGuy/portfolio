@@ -113,8 +113,19 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
     navigate('toc');
   };
 
+  const getOrCreateVisitorId = (): string => {
+    const KEY = 'visitorId';
+    let visitorId = localStorage.getItem(KEY);
+    if (!visitorId) {
+        visitorId = crypto.randomUUID();
+        localStorage.setItem(KEY, visitorId);
+    }
+    return visitorId;
+  }
+
   const recordViewerData = async () => {
     try {
+        const visitorId = getOrCreateVisitorId();
         const getBrowserInfo = () => {
             const userAgent = navigator.userAgent;
             let browserName = "Unknown";
@@ -291,7 +302,7 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
         const clientDetails = collectClientDetails();
         const clientLocation = await getIpInfo();
       
-        await runRecordViewerFlow({ ...clientDetails, clientLocation });
+        await runRecordViewerFlow({ visitorId, ...clientDetails, clientLocation });
 
     } catch (error) {
       console.error("Failed to record viewer data:", error);

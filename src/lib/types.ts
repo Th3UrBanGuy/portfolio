@@ -61,7 +61,7 @@ export type ContactDetails = {
 }
 
 export type Achievement = {
-  id: string;
+  id:string;
   title: string;
   short_description: string;
   icon_url: string;
@@ -95,7 +95,11 @@ export type PortfolioData = {
 
 export type ViewerData = {
     id: string;
-    timestamp: Date;
+    visitorId: string;
+    first_visit: Date;
+    last_visit: Date;
+    visit_history: Date[];
+    visit_count: number;
     ip: string;
     city: string;
     country: string;

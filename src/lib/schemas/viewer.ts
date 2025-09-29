@@ -16,6 +16,7 @@ export const ClientLocationSchema = z.object({
 });
 
 export const RecordViewerInputSchema = z.object({
+    visitorId: z.string(),
     ip: z.string(),
     city: z.string(),
     country: z.string(),

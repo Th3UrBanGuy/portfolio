@@ -9,6 +9,7 @@ import { ClientDetailsSchema } from '@/lib/schemas/client-details';
 
 
 const RecordViewerFlowInputSchema = ClientDetailsSchema.extend({
+    visitorId: z.string(),
     clientLocation: ClientLocationSchema.optional(),
 });
 
@@ -20,7 +21,7 @@ const recordViewerFlow = ai.defineFlow(
         outputSchema: z.void(),
     },
     async (input) => {
-        const { clientLocation, ...clientDetails } = input;
+        const { clientLocation, visitorId, ...clientDetails } = input;
         const ip = GENKIT_CLIENT_IP?.get() || '0.0.0.0';
 
         let locationData = {
@@ -60,6 +61,7 @@ const recordViewerFlow = ai.defineFlow(
         }
 
         await recordViewer({
+            visitorId: visitorId,
             ip: isServerIpValid ? ip : (clientLocation?.ip || 'N/A'),
             ...locationData,
             clientDetails,

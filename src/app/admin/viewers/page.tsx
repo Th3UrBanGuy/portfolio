@@ -37,7 +37,7 @@ export default function ViewersPage() {
     let viewers = allViewers;
 
     if (date) {
-      viewers = viewers.filter(viewer => isSameDay(new Date(viewer.timestamp), date));
+      viewers = viewers.filter(viewer => isSameDay(new Date(viewer.last_visit), date));
     }
 
     if (location) {
@@ -75,7 +75,7 @@ export default function ViewersPage() {
                     )}
                 >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? format(date, "PPP") : <span>Pick a date</span>}
+                    {date ? format(date, "PPP") : <span>Filter by last visit date</span>}
                 </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
