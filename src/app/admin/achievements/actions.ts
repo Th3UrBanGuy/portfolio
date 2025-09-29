@@ -1,10 +1,11 @@
 'use server';
 
 import { z } from 'zod';
-import { promises as fs } from 'fs';
-import path from 'path';
+import { collection, writeBatch, doc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 import { revalidatePath } from 'next/cache';
 import type { Achievement } from '@/lib/types';
+import { getCollectionData } from '@/lib/placeholder-data';
 
 const achievementSchema = z.object({
   id: z.string(),
@@ -23,8 +24,20 @@ export async function updateAchievements(achievementsData: Achievement[]): Promi
   try {
     const validatedData = achievementsArraySchema.parse(achievementsData);
     
-    const filePath = path.join(process.cwd(), 'src/lib/data/achievements.json');
-    await fs.writeFile(filePath, JSON.stringify(validatedData, null, 2), 'utf8');
+    const batch = writeBatch(db);
+    const achievementsCollection = collection(db, 'achievements');
+
+    const existingDocs = await getCollectionData<Achievement>('achievements');
+    existingDocs.forEach(docToDelete => {
+      batch.delete(doc(achievementsCollection, docToDelete.id));
+    });
+    
+    validatedData.forEach(ach => {
+      const docRef = doc(achievementsCollection, ach.id);
+      batch.set(docRef, ach);
+    });
+
+    await batch.commit();
 
     revalidatePath('/');
     revalidatePath('/admin/achievements');

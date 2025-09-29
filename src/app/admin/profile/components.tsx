@@ -19,10 +19,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Save } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { updateProfile } from './actions';
+import { useTransition } from 'react';
 
 const profileFormSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
   authorImageUrl: z.string().url('Please enter a valid URL.'),
+  authorImageHint: z.string(),
   dob: z.string(),
   bloodGroup: z.string(),
   nationality: z.string(),
@@ -37,12 +40,14 @@ type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
 export function ProfileForm({ data }: { data: PortfolioData }) {
   const { toast } = useToast();
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
       name: data.personalInfo.name,
       authorImageUrl: data.authorImageUrl,
+      authorImageHint: data.authorImageHint,
       dob: data.personalInfo.dob,
       bloodGroup: data.personalInfo.bloodGroup,
       nationality: data.personalInfo.nationality,
@@ -50,19 +55,25 @@ export function ProfileForm({ data }: { data: PortfolioData }) {
       hobby: data.personalInfo.hobby,
       aimInLife: data.personalInfo.aimInLife,
       aboutMe: data.aboutMe,
-      // Assuming a CV link needs to be added to the data structure.
-      // For now, let's use a placeholder or add it to contactDetails.
-      // Let's assume a placeholder link for now.
-      cvLink: 'https://alahimajnurosama.github.io/resume',
+      cvLink: data.contactDetails.contactMeLink,
     },
   });
 
   function onSubmit(values: ProfileFormValues) {
-    console.log(values);
-    // Here you would typically call an action to save the data.
-    toast({
-      title: 'Profile Updated',
-      description: 'Your profile details have been saved.',
+     startTransition(async () => {
+      const result = await updateProfile(values);
+      if (result.success) {
+        toast({
+          title: 'Profile Updated',
+          description: 'Your profile details have been saved.',
+        });
+      } else {
+        toast({
+          title: 'Error',
+          description: result.error,
+          variant: 'destructive',
+        });
+      }
     });
   }
 
@@ -97,6 +108,20 @@ export function ProfileForm({ data }: { data: PortfolioData }) {
                     <Input placeholder="https://example.com/your-image.png" {...field} />
                   </FormControl>
                   <FormDescription>The main image used on the "About Me" page.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="authorImageHint"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Image AI Hint</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g. author portrait" {...field} />
+                  </FormControl>
+                  <FormDescription>A hint for AI to understand the image content.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -233,9 +258,9 @@ export function ProfileForm({ data }: { data: PortfolioData }) {
         </Card>
         
         <div className="flex justify-end">
-            <Button type="submit">
+            <Button type="submit" disabled={isPending}>
                 <Save className="mr-2" />
-                Save Changes
+                 {isPending ? 'Saving...' : 'Save Changes'}
             </Button>
         </div>
       </form>

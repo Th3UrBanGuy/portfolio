@@ -1,9 +1,6 @@
 import type { PortfolioData, Project, ProjectLink, PersonalInfo, Education, Skill, Experience, ContactDetails, Social, Achievement } from './types';
-import { PlaceHolderImages } from './placeholder-images';
 import { db } from './firebase';
 import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
-
-const authorImage = PlaceHolderImages.find(img => img.id === 'author-image');
 
 async function getCollectionData<T>(collectionName: string): Promise<T[]> {
   const querySnapshot = await getDocs(collection(db, collectionName));
@@ -14,7 +11,12 @@ async function getDocumentData<T>(collectionName: string, docId: string): Promis
     const docRef = doc(db, collectionName, docId);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
-        return docSnap.data() as T;
+        const data = docSnap.data();
+        // If the document itself is the entity, return it.
+        // This is useful for singleton documents like 'personal-info'
+        if(Object.keys(data).length > 0) return data as T;
+        // Otherwise, it might be a wrapper, so we return the content if it exists
+        return { id: docSnap.id, ...data } as T;
     }
     return null;
 }
@@ -41,23 +43,9 @@ export async function getPortfolioData(): Promise<PortfolioData> {
     ]);
 
     const aboutMeDoc = await getDocumentData<{ content: string }>('site-data', 'about-me');
-    const cvLinkDoc = await getDocumentData<{ url: string }>('site-data', 'cv-link');
+    const authorImageDoc = await getDocumentData<{ url: string, hint: string }>('site-data', 'author-image');
 
-    const projectImageMap = PlaceHolderImages.reduce((acc, img, index) => {
-        if (img.id.startsWith('project-')) {
-            const projectId = projects.find(p => p.image_url.includes(img.id))?.id || projects[index]?.id;
-            if (projectId) {
-                acc[projectId] = {
-                    imageUrl: img.imageUrl,
-                    imageHint: img.imageHint
-                };
-            }
-        }
-        return acc;
-    }, {} as Record<string, {imageUrl: string, imageHint: string}>);
-
-
-    const typedProjects = projects as (Omit<Project, 'imageUrl' | 'imageHint' | 'name' | 'description'> & {title: string, short_description: string})[];
+    const typedProjects = projects as (Omit<Project, 'imageUrl' | 'imageHint'> & {image_url: string})[];
 
     return {
         personalInfo: personalInfo!,
@@ -68,14 +56,11 @@ export async function getPortfolioData(): Promise<PortfolioData> {
         socials: socials,
         achievements: achievements,
         aboutMe: aboutMeDoc?.content || "Default about me text.",
-        authorImageUrl: authorImage?.imageUrl || '',
-        authorImageHint: authorImage?.imageHint || '',
+        authorImageUrl: authorImageDoc?.url || '',
+        authorImageHint: authorImageDoc?.hint || '',
         projects: typedProjects.map((p) => {
-           const mappedImage = Object.values(projectImageMap).find(val => val.imageUrl.includes(p.id));
            return {
                 ...p,
-                name: p.title,
-                description: p.short_description,
                 imageUrl: p.image_url,
                 imageHint: 'project image',
             };

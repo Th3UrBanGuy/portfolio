@@ -1,9 +1,11 @@
 'use server';
 
 import { z } from 'zod';
-import { promises as fs } from 'fs';
-import path from 'path';
+import { collection, writeBatch, doc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 import { revalidatePath } from 'next/cache';
+import { getCollectionData } from '@/lib/placeholder-data';
+import type { Project } from '@/lib/types';
 
 const projectLinkSchema = z.object({
   label: z.string().min(1, "Link label is required."),
@@ -29,8 +31,20 @@ export async function updateProjects(projectsData: ProjectData): Promise<{ succe
   try {
     const validatedData = projectsArraySchema.parse(projectsData);
     
-    const filePath = path.join(process.cwd(), 'src/lib/data/projects.json');
-    await fs.writeFile(filePath, JSON.stringify(validatedData, null, 2), 'utf8');
+    const batch = writeBatch(db);
+    const projectsCollection = collection(db, 'projects');
+
+    const existingDocs = await getCollectionData<Project>('projects');
+    existingDocs.forEach(docToDelete => {
+      batch.delete(doc(projectsCollection, docToDelete.id));
+    });
+    
+    validatedData.forEach(proj => {
+      const docRef = doc(projectsCollection, proj.id);
+      batch.set(docRef, proj);
+    });
+
+    await batch.commit();
 
     revalidatePath('/');
     revalidatePath('/admin/projects');
@@ -38,7 +52,7 @@ export async function updateProjects(projectsData: ProjectData): Promise<{ succe
     return { success: true };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors.map(e => e.message).join(', ') };
+      return { success: false, error: error.errors.map(e => `${e.path.join('.')} - ${e.message}`).join(', ') };
     }
     console.error('Error updating projects data:', error);
     return { success: false, error: 'An unexpected error occurred.' };

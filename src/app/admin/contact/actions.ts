@@ -1,12 +1,13 @@
 'use server';
 
 import { z } from 'zod';
-import { promises as fs } from 'fs';
-import path from 'path';
+import { collection, writeBatch, doc, setDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 import { revalidatePath } from 'next/cache';
-import type { ContactDetails, Social } from '@/lib/types';
+import type { Social } from '@/lib/types';
+import { getCollectionData } from '@/lib/placeholder-data';
 
-// Schema for updating socials
+
 const socialSchema = z.object({
   id: z.string(),
   name: z.string().min(1, 'Social media platform name is required.'),
@@ -15,7 +16,7 @@ const socialSchema = z.object({
 });
 const socialsArraySchema = z.array(socialSchema);
 
-// Schema for updating contact details
+
 const contactDetailsSchema = z.object({
   contactMeLink: z.string().url('Must be a valid URL.'),
   phone: z.string().min(1, 'Phone number is required.'),
@@ -33,13 +34,21 @@ export async function updateContactAndSocials(
   try {
     const validatedData = combinedSchema.parse(data);
 
-    // Update socials.json
-    const socialsFilePath = path.join(process.cwd(), 'src/lib/data/socials.json');
-    await fs.writeFile(socialsFilePath, JSON.stringify(validatedData.socials, null, 2), 'utf8');
+    // Update socials collection
+    const batch = writeBatch(db);
+    const socialsCollection = collection(db, 'socials');
+    const existingSocials = await getCollectionData<Social>('socials');
+    existingSocials.forEach(docToDelete => {
+      batch.delete(doc(socialsCollection, docToDelete.id));
+    });
+    validatedData.socials.forEach(social => {
+      const docRef = doc(socialsCollection, social.id);
+      batch.set(docRef, social);
+    });
+    await batch.commit();
 
-    // Update contact-details.json
-    const contactDetailsFilePath = path.join(process.cwd(), 'src/lib/data/contact-details.json');
-    await fs.writeFile(contactDetailsFilePath, JSON.stringify(validatedData.contactDetails, null, 2), 'utf8');
+    // Update contact-details document
+    await setDoc(doc(db, 'site-data', 'contact-details'), validatedData.contactDetails, { merge: true });
 
     revalidatePath('/');
     revalidatePath('/admin/contact');

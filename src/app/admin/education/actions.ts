@@ -1,10 +1,11 @@
 'use server';
 
 import { z } from 'zod';
-import { promises as fs } from 'fs';
-import path from 'path';
+import { collection, writeBatch, doc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 import { revalidatePath } from 'next/cache';
 import type { Education } from '@/lib/types';
+import { getCollectionData } from '@/lib/placeholder-data';
 
 const educationSchema = z.object({
   id: z.string(),
@@ -19,8 +20,22 @@ export async function updateEducation(educationData: Education[]): Promise<{ suc
   try {
     const validatedData = educationArraySchema.parse(educationData);
     
-    const filePath = path.join(process.cwd(), 'src/lib/data/education.json');
-    await fs.writeFile(filePath, JSON.stringify(validatedData, null, 2), 'utf8');
+    const batch = writeBatch(db);
+    const educationCollection = collection(db, 'education');
+
+    // Simple strategy: delete all existing docs and add the new ones.
+    // For large collections, a more sophisticated diff-and-update would be better.
+    const existingDocs = await getCollectionData<Education>('education');
+    existingDocs.forEach(docToDelete => {
+      batch.delete(doc(educationCollection, docToDelete.id));
+    });
+    
+    validatedData.forEach(edu => {
+      const docRef = doc(educationCollection, edu.id);
+      batch.set(docRef, edu);
+    });
+
+    await batch.commit();
 
     revalidatePath('/');
     revalidatePath('/admin/education');

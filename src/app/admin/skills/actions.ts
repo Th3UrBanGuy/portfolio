@@ -1,10 +1,11 @@
 'use server';
 
 import { z } from 'zod';
-import { promises as fs } from 'fs';
-import path from 'path';
+import { collection, writeBatch, doc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 import { revalidatePath } from 'next/cache';
 import type { Skill } from '@/lib/types';
+import { getCollectionData } from '@/lib/placeholder-data';
 
 const skillSchema = z.object({
   id: z.string(),
@@ -20,8 +21,20 @@ export async function updateSkills(skillsData: Skill[]): Promise<{ success: bool
   try {
     const validatedData = skillsArraySchema.parse(skillsData);
     
-    const filePath = path.join(process.cwd(), 'src/lib/data/skills.json');
-    await fs.writeFile(filePath, JSON.stringify(validatedData, null, 2), 'utf8');
+    const batch = writeBatch(db);
+    const skillsCollection = collection(db, 'skills');
+
+    const existingDocs = await getCollectionData<Skill>('skills');
+    existingDocs.forEach(docToDelete => {
+      batch.delete(doc(skillsCollection, docToDelete.id));
+    });
+    
+    validatedData.forEach(skill => {
+      const docRef = doc(skillsCollection, skill.id);
+      batch.set(docRef, skill);
+    });
+
+    await batch.commit();
 
     revalidatePath('/');
     revalidatePath('/admin/skills');
