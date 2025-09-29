@@ -3,18 +3,19 @@
 import type { PortfolioData } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Mail, Phone, ExternalLink, Github, Linkedin, Twitter, Facebook, Send, Smartphone, Globe, Users } from 'lucide-react';
+import { Mail, Phone, ExternalLink, Globe, Users } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 
-const iconMap: { [key: string]: React.ComponentType<any> } = {
-  linkedin: Linkedin,
-  github: Github,
-  twitter: Twitter,
-  facebook: Facebook,
-  telegram: Send,
-  whatsapp: Smartphone,
+const DynamicIcon = ({ name, ...props }: { name: string } & LucideIcons.LucideProps) => {
+  const LucideIcon = LucideIcons[name as keyof typeof LucideIcons] as LucideIcons.LucideIcon;
+  if (!LucideIcon) {
+    return <ExternalLink {...props} />;
+  }
+  return <LucideIcon {...props} />;
 };
+
 
 export default function ContactPage({ contactDetails, socials }: { contactDetails: PortfolioData['contactDetails'], socials: PortfolioData['socials'] }) {
   
@@ -87,7 +88,6 @@ export default function ContactPage({ contactDetails, socials }: { contactDetail
                     <CardContent>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {socials.map((social) => {
-                            const Icon = iconMap[social.id] || ExternalLink;
                             return (
                                 <Button
                                     key={social.id}
@@ -96,7 +96,7 @@ export default function ContactPage({ contactDetails, socials }: { contactDetail
                                     asChild
                                 >
                                 <a href={social.url} target="_blank" rel="noopener noreferrer">
-                                    <Icon className="mr-2.5 h-4 w-4 text-primary" />
+                                    <DynamicIcon name={social.icon_name} className="mr-2.5 h-4 w-4 text-primary" />
                                     <span className="font-semibold text-sm">{social.name}</span>
                                 </a>
                                 </Button>

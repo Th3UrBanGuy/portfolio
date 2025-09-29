@@ -12,7 +12,7 @@ const socialSchema = z.object({
   id: z.string(),
   name: z.string().min(1, 'Social media platform name is required.'),
   url: z.string().url('Must be a valid URL.'),
-  icon_class: z.string().min(1, 'Icon class is required.'),
+  icon_name: z.string().min(1, 'Icon name is required.'),
 });
 const socialsArraySchema = z.array(socialSchema);
 

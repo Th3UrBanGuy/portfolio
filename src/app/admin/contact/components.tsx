@@ -25,7 +25,7 @@ const socialSchema = z.object({
   id: z.string(),
   name: z.string().min(1, 'Social media platform name is required.'),
   url: z.string().url('Must be a valid URL.'),
-  icon_class: z.string().min(1, 'Icon class is required.'),
+  icon_name: z.string().min(1, 'Icon name is required.'),
 });
 
 const contactDetailsSchema = z.object({
@@ -247,7 +247,7 @@ export function ContactForm({
                   />
                   <FormField
                     control={form.control}
-                    name={`socials.${index}.icon_class`}
+                    name={`socials.${index}.icon_name`}
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Icon Name</FormLabel>
@@ -264,7 +264,7 @@ export function ContactForm({
                 type="button"
                 variant="outline"
                 onClick={() =>
-                  appendSocial({ id: `new-${Date.now()}`, name: '', url: '', icon_class: '' })
+                  appendSocial({ id: `new-${Date.now()}`, name: '', url: '', icon_name: '' })
                 }
               >
                 <Plus className="mr-2" /> Add Social Link

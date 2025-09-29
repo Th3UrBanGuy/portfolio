@@ -51,7 +51,7 @@ export type Social = {
     id: string;
     name: string;
     url: string;
-    icon_class: string;
+    icon_name: string;
 }
 
 export type ContactDetails = {

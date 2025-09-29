@@ -4,36 +4,36 @@
       "id": "linkedin",
       "name": "LinkedIn",
       "url": "https://www.linkedin.com/in/alahimajnurosama",
-      "icon_class": "fab fa-linkedin-in"
+      "icon_name": "Linkedin"
     },
     {
       "id": "github",
       "name": "GitHub",
       "url": "https://github.com/alahimajnurosama",
-      "icon_class": "fab fa-github"
+      "icon_name": "Github"
     },
     {
       "id": "twitter",
       "name": "Twitter",
       "url": "https://x.com/alahimajnur",
-      "icon_class": "fab fa-twitter"
+      "icon_name": "Twitter"
     },
     {
       "id": "facebook",
       "name": "Facebook",
       "url": "https://www.facebook.com/AlahiMajnurOsama.official/",
-      "icon_class": "fab fa-facebook-f"
+      "icon_name": "Facebook"
     },
     {
       "id": "telegram",
       "name": "Telegram",
       "url": "https://t.me/MarkAtorny",
-      "icon_class": "fab fa-telegram-plane"
+      "icon_name": "Send"
     },
     {
       "id": "whatsapp",
       "name": "WhatsApp",
       "url": "https://api.whatsapp.com/send/?phone=%2B8801642778252&text&type=phone_number&app_absent=0",
-      "icon_class": "fab fa-whatsapp"
+      "icon_name": "Smartphone"
     }
 ]
