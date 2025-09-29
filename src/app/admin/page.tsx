@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, ArrowRight, UserCircle, GraduationCap, Star, Briefcase } from 'lucide-react';
+import { Users, ArrowRight, UserCircle, GraduationCap, Star, Briefcase, Trophy } from 'lucide-react';
 
 export default function AdminDashboard() {
   return (
@@ -81,6 +81,24 @@ export default function AdminDashboard() {
             <CardContent>
               <CardDescription>
                 Manage your professional experience and job history.
+              </CardDescription>
+            </CardContent>
+          </Card>
+        </Link>
+        <Link href="/admin/achievements">
+          <Card className="hover:border-primary transition-colors cursor-pointer group">
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Trophy className="h-6 w-6 text-primary" />
+                  <span className="text-lg">Achievements</span>
+                </div>
+                <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CardDescription>
+                Manage your awards, publications, and other achievements.
               </CardDescription>
             </CardContent>
           </Card>

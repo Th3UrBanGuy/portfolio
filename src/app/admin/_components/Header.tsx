@@ -11,6 +11,7 @@ const getTitleFromPath = (path: string) => {
   if (path.startsWith('/admin/education')) return 'Education';
   if (path.startsWith('/admin/skills')) return 'Skills';
   if (path.startsWith('/admin/experience')) return 'Experience';
+  if (path.startsWith('/admin/achievements')) return 'Achievements';
   const parts = path.split('/').pop()?.split('-') || [];
   return parts.map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
 };
