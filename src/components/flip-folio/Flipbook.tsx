@@ -134,6 +134,41 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
             if (userAgent.includes("like Mac")) return "iOS";
             return "Unknown";
         }
+
+        const getIpInfo = async () => {
+            const services = [
+                'https://ipapi.co/json/',
+                'https://ipinfo.io/json',
+                'https://freeipapi.com/api/json'
+            ];
+            for (const service of services) {
+                try {
+                    const response = await fetch(service);
+                    const data = await response.json();
+                    if (data.ip) {
+                        return {
+                            ip: data.ip,
+                            city: data.city || 'N/A',
+                            country: data.country_name || data.country || 'N/A',
+                            isp: data.org || data.isp || 'N/A',
+                            ipType: data.version === 'IPv4' ? 'IPv4' : data.version === 'IPv6' ? 'IPv6' : 'N/A',
+                            region: data.region || 'N/A',
+                            postal: data.postal || 'N/A',
+                            asn: data.asn || 'N/A',
+                            latitude: data.latitude || null,
+                            longitude: data.longitude || null,
+                        };
+                    }
+                } catch (error) {
+                    console.warn(`Failed to fetch IP from ${service}`, error);
+                }
+            }
+            return {
+                ip: 'N/A', city: 'N/A', country: 'N/A', isp: 'N/A', ipType: 'N/A',
+                region: 'N/A', postal: 'N/A', asn: 'N/A', latitude: null, longitude: null,
+            };
+        };
+
       
         const clientInfo = {
             browser: getBrowserInfo(),
@@ -143,8 +178,10 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
             cpuCores: (navigator.hardwareConcurrency && navigator.hardwareConcurrency !== Infinity) ? navigator.hardwareConcurrency : 'N/A',
             userAgent: navigator.userAgent,
         };
+
+        const clientLocation = await getIpInfo();
       
-        await runRecordViewerFlow(clientInfo);
+        await runRecordViewerFlow({ ...clientInfo, clientLocation });
 
     } catch (error) {
       console.error("Failed to record viewer data:", error);

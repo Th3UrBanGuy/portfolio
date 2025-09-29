@@ -3,33 +3,39 @@
 import { ai } from '@/ai/genkit';
 import { recordViewer } from '@/lib/services/viewers';
 import { z } from 'zod';
-import { ClientInfoSchema, type ClientInfo } from '@/lib/schemas/viewer';
+import { ClientInfoSchema, type ClientInfo, ClientLocationSchema } from '@/lib/schemas/viewer';
 import { GENKIT_CLIENT_IP } from 'genkit';
+
+const RecordViewerFlowInputSchema = ClientInfoSchema.extend({
+    clientLocation: ClientLocationSchema.optional(),
+});
 
 
 const recordViewerFlow = ai.defineFlow(
     {
         name: 'recordViewerFlow',
-        inputSchema: ClientInfoSchema,
+        inputSchema: RecordViewerFlowInputSchema,
         outputSchema: z.void(),
     },
-    async (clientInfo) => {
-
+    async (input) => {
+        const { clientLocation, ...clientInfo } = input;
         const ip = GENKIT_CLIENT_IP?.get() || '0.0.0.0';
 
         let locationData = {
-            city: 'N/A',
-            country: 'N/A',
-            isp: 'N/A',
-            ipType: 'N/A',
-            region: 'N/A',
-            postal: 'N/A',
-            asn: 'N/A',
-            latitude: null,
-            longitude: null,
+            city: clientLocation?.city || 'N/A',
+            country: clientLocation?.country || 'N/A',
+            isp: clientLocation?.isp || 'N/A',
+            ipType: clientLocation?.ipType || 'N/A',
+            region: clientLocation?.region || 'NA',
+            postal: clientLocation?.postal || 'N/A',
+            asn: clientLocation?.asn || 'N/A',
+            latitude: clientLocation?.latitude || null,
+            longitude: clientLocation?.longitude || null,
         };
 
-        if (ip && ip !== '0.0.0.0' && !ip.startsWith('127.')) {
+        const isServerIpValid = ip && ip !== '0.0.0.0' && !ip.startsWith('127.') && !ip.startsWith('::1');
+
+        if (isServerIpValid) {
             try {
                 const response = await fetch(`http://ip-api.com/json/${ip}`);
                 const data = await response.json();
@@ -47,18 +53,18 @@ const recordViewerFlow = ai.defineFlow(
                     };
                 }
             } catch (error) {
-                console.error("Server-side IP lookup failed:", error);
+                console.error("Server-side IP lookup failed, using client-side data as fallback:", error);
             }
         }
 
         await recordViewer({
-            ip,
+            ip: isServerIpValid ? ip : (clientLocation?.ip || 'N/A'),
             ...locationData,
             ...clientInfo,
         });
     }
 );
 
-export async function runRecordViewerFlow(input: ClientInfo) {
+export async function runRecordViewerFlow(input: z.infer<typeof RecordViewerFlowInputSchema>) {
     return await recordViewerFlow(input);
 }
