@@ -6,6 +6,7 @@ export default async function ViewersPage() {
   
   return (
     <div className="space-y-6">
+      <h2 className="text-2xl font-bold">Portfolio Viewers ({viewers.length})</h2>
       <ViewerList viewers={viewers} />
     </div>
   );

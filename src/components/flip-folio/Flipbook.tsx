@@ -114,17 +114,18 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
         async () => {
             const response = await fetch('https://ipapi.co/json/');
             const data = await response.json();
-            return { ip: data.ip, city: data.city, country: data.country_name, isp: data.org };
+            return { ip: data.ip, city: data.city, country: data.country_name, isp: data.org, ipType: data.version, region: data.region, postal: data.postal, asn: data.asn };
         },
         async () => {
             const response = await fetch('https://ipinfo.io/json');
             const data = await response.json();
-            return { ip: data.ip, city: data.city, country: data.country, isp: data.org };
+            const [ip, ipType] = data.ip.includes(':') ? [data.ip, 'IPv6'] : [data.ip, 'IPv4'];
+            return { ip, city: data.city, country: data.country, isp: data.org, ipType, region: data.region, postal: data.postal, asn: data.asn };
         },
         async () => {
             const response = await fetch('https://freeipapi.com/api/json');
             const data = await response.json();
-            return { ip: data.ipAddress, city: data.cityName, country: data.countryName, isp: data.isp };
+            return { ip: data.ipAddress, city: data.cityName, country: data.countryName, isp: data.isp, ipType: data.ipVersion, region: data.regionName, postal: data.zipCode, asn: `AS${data.asNumber}` };
         },
     ];
 
@@ -137,7 +138,7 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
         }
     }
 
-    return { ip: 'N/A', city: 'N/A', country: 'N/A', isp: 'N/A' };
+    return { ip: 'N/A', city: 'N/A', country: 'N/A', isp: 'N/A', ipType: 'N/A', region: 'N/A', postal: 'N/A', asn: 'N/A' };
   }
 
   const recordViewerData = async () => {
@@ -173,6 +174,10 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
             city: ipData.city || 'N/A',
             country: ipData.country || 'N/A',
             isp: ipData.isp || 'N/A',
+            ipType: ipData.ipType || 'N/A',
+            region: ipData.region || 'N/A',
+            postal: ipData.postal || 'N/A',
+            asn: ipData.asn || 'N/A',
             browser: getBrowserInfo(),
             os: getOS(),
             resolution: `${window.screen.width}x${window.screen.height}`,
@@ -362,5 +367,3 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
     </>
   );
 }
-
-    

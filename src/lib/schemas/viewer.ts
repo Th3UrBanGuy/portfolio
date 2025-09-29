@@ -10,6 +10,10 @@ export const RecordViewerInputSchema = z.object({
     resolution: z.string(),
     deviceMemory: z.union([z.string(), z.literal('N/A')]),
     cpuCores: z.union([z.number(), z.literal('N/A')]),
+    ipType: z.string(),
+    region: z.string(),
+    postal: z.string(),
+    asn: z.string(),
 });
 
 export type RecordViewerInput = z.infer<typeof RecordViewerInputSchema>;

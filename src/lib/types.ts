@@ -97,4 +97,8 @@ export type ViewerData = {
     resolution: string;
     deviceMemory: string | 'N/A';
     cpuCores: number | 'N/A';
+    ipType: string;
+    region: string;
+    postal: string;
+    asn: string;
 };
