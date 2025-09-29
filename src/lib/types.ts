@@ -101,4 +101,6 @@ export type ViewerData = {
     region: string;
     postal: string;
     asn: string;
+    latitude: number | null;
+    longitude: number | null;
 };

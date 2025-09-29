@@ -114,18 +114,19 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
         async () => {
             const response = await fetch('https://ipapi.co/json/');
             const data = await response.json();
-            return { ip: data.ip, city: data.city, country: data.country_name, isp: data.org, ipType: data.version, region: data.region, postal: data.postal, asn: data.asn };
+            return { ip: data.ip, city: data.city, country: data.country_name, isp: data.org, ipType: data.version, region: data.region, postal: data.postal, asn: data.asn, latitude: data.latitude, longitude: data.longitude };
         },
         async () => {
             const response = await fetch('https://ipinfo.io/json');
             const data = await response.json();
             const [ip, ipType] = data.ip.includes(':') ? [data.ip, 'IPv6'] : [data.ip, 'IPv4'];
-            return { ip, city: data.city, country: data.country, isp: data.org, ipType, region: data.region, postal: data.postal, asn: data.asn };
+            const [latitude, longitude] = data.loc ? data.loc.split(',').map(Number) : [null, null];
+            return { ip, city: data.city, country: data.country, isp: data.org, ipType, region: data.region, postal: data.postal, asn: data.asn, latitude, longitude };
         },
         async () => {
             const response = await fetch('https://freeipapi.com/api/json');
             const data = await response.json();
-            return { ip: data.ipAddress, city: data.cityName, country: data.countryName, isp: data.isp, ipType: data.ipVersion, region: data.regionName, postal: data.zipCode, asn: `AS${data.asNumber}` };
+            return { ip: data.ipAddress, city: data.cityName, country: data.countryName, isp: data.isp, ipType: data.ipVersion, region: data.regionName, postal: data.zipCode, asn: `AS${data.asNumber}`, latitude: data.latitude, longitude: data.longitude };
         },
     ];
 
@@ -138,7 +139,7 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
         }
     }
 
-    return { ip: 'N/A', city: 'N/A', country: 'N/A', isp: 'N/A', ipType: 'N/A', region: 'N/A', postal: 'N/A', asn: 'N/A' };
+    return { ip: 'N/A', city: 'N/A', country: 'N/A', isp: 'N/A', ipType: 'N/A', region: 'N/A', postal: 'N/A', asn: 'N/A', latitude: null, longitude: null };
   }
 
   const recordViewerData = async () => {
@@ -178,6 +179,8 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
             region: ipData.region || 'N/A',
             postal: ipData.postal || 'N/A',
             asn: ipData.asn || 'N/A',
+            latitude: ipData.latitude || null,
+            longitude: ipData.longitude || null,
             browser: getBrowserInfo(),
             os: getOS(),
             resolution: `${window.screen.width}x${window.screen.height}`,

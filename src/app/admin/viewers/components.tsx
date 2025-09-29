@@ -2,7 +2,9 @@
 import type { ViewerData } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Globe, Laptop, Wifi, Shield, Cpu, MemoryStick, Clock, MapPin, Network, Server } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Globe, Laptop, Wifi, Shield, Cpu, MemoryStick, Clock, MapPin, Network, Server, Map } from 'lucide-react';
 import React, { useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -25,44 +27,66 @@ type ViewerDetailDialogProps = {
 }
 
 const ViewerDetailDialog = ({ viewer, open, onOpenChange }: ViewerDetailDialogProps) => {
+    const handleViewOnMap = () => {
+        if (viewer.latitude && viewer.longitude) {
+            window.open(`https://www.google.com/maps/search/?api=1&query=${viewer.latitude},${viewer.longitude}`, '_blank');
+        }
+    }
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-2xl">
-                <DialogHeader>
+            <DialogContent className="sm:max-w-3xl p-0">
+                <DialogHeader className='p-6 pb-0'>
                     <DialogTitle>Viewer Details</DialogTitle>
                     <DialogDescription>
                         Detailed information for the visit from {viewer.city}, {viewer.country}.
                     </DialogDescription>
                 </DialogHeader>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className='flex items-center gap-2 text-lg'><Globe className='h-5 w-5' /> IP & Location</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <InfoRow icon={Shield} label="IP Address" value={viewer.ip} />
-                             <InfoRow icon={Network} label="IP Type" value={viewer.ipType} />
-                            <InfoRow icon={Wifi} label="ISP" value={viewer.isp} />
-                            <InfoRow icon={MapPin} label="Country" value={viewer.country} />
-                            <InfoRow icon={MapPin} label="Region" value={viewer.region} />
-                            <InfoRow icon={MapPin} label="City" value={viewer.city} />
-                            <InfoRow icon={MapPin} label="Postal" value={viewer.postal} />
-                            <InfoRow icon={Server} label="ASN" value={viewer.asn} />
-                        </CardContent>
-                    </Card>
-                     <Card>
-                        <CardHeader>
-                            <CardTitle className='flex items-center gap-2 text-lg'><Laptop className='h-5 w-5' /> Device & Browser</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <InfoRow icon={Globe} label="Browser" value={viewer.browser} />
-                            <InfoRow icon={Laptop} label="Operating System" value={viewer.os} />
-                            <InfoRow icon={Laptop} label="Resolution" value={viewer.resolution} />
-                            <InfoRow icon={MemoryStick} label="Device Memory" value={viewer.deviceMemory} />
-                            <InfoRow icon={Cpu} label="CPU Cores" value={String(viewer.cpuCores)} />
-                        </CardContent>
-                    </Card>
-                </div>
+                <ScrollArea className="max-h-[70vh]">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className='flex items-center justify-between text-lg'>
+                                    <div className='flex items-center gap-2'>
+                                      <Globe className='h-5 w-5' /> IP & Location
+                                    </div>
+                                    <Button 
+                                        size="sm" 
+                                        variant="ghost" 
+                                        onClick={handleViewOnMap} 
+                                        disabled={!viewer.latitude || !viewer.longitude}
+                                        className="gap-1.5"
+                                    >
+                                        <Map className="h-4 w-4" />
+                                        View on Map
+                                    </Button>
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <InfoRow icon={Shield} label="IP Address" value={viewer.ip} />
+                                <InfoRow icon={Network} label="IP Type" value={viewer.ipType} />
+                                <InfoRow icon={Wifi} label="ISP" value={viewer.isp} />
+                                <InfoRow icon={MapPin} label="Country" value={viewer.country} />
+                                <InfoRow icon={MapPin} label="Region" value={viewer.region} />
+                                <InfoRow icon={MapPin} label="City" value={viewer.city} />
+                                <InfoRow icon={MapPin} label="Postal" value={viewer.postal} />
+                                <InfoRow icon={Server} label="ASN" value={viewer.asn} />
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className='flex items-center gap-2 text-lg'><Laptop className='h-5 w-5' /> Device & Browser</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <InfoRow icon={Globe} label="Browser" value={viewer.browser} />
+                                <InfoRow icon={Laptop} label="Operating System" value={viewer.os} />
+                                <InfoRow icon={Laptop} label="Resolution" value={viewer.resolution} />
+                                <InfoRow icon={MemoryStick} label="Device Memory" value={viewer.deviceMemory} />
+                                <InfoRow icon={Cpu} label="CPU Cores" value={String(viewer.cpuCores)} />
+                            </CardContent>
+                        </Card>
+                    </div>
+                </ScrollArea>
             </DialogContent>
         </Dialog>
     )

@@ -14,6 +14,8 @@ export const RecordViewerInputSchema = z.object({
     region: z.string(),
     postal: z.string(),
     asn: z.string(),
+    latitude: z.number().nullable(),
+    longitude: z.number().nullable(),
 });
 
 export type RecordViewerInput = z.infer<typeof RecordViewerInputSchema>;
