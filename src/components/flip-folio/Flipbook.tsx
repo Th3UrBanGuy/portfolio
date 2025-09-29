@@ -137,30 +137,64 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
 
         const getIpInfo = async () => {
             const services = [
-                'https://ipapi.co/json/',
-                'https://ipinfo.io/json',
-                'https://freeipapi.com/api/json'
+                { url: 'https://ipapi.co/json/', transform: (data: any) => ({
+                    ip: data.ip,
+                    city: data.city || 'N/A',
+                    country: data.country_name || data.country || 'N/A',
+                    isp: data.org || data.isp || 'N/A',
+                    ipType: data.version === 'IPv4' ? 'IPv4' : data.version === 'IPv6' ? 'IPv6' : 'N/A',
+                    region: data.region || 'N/A',
+                    postal: data.postal || 'N/A',
+                    asn: data.asn || 'N/A',
+                    latitude: data.latitude || null,
+                    longitude: data.longitude || null,
+                })},
+                { url: 'https://ipinfo.io/json', transform: (data: any) => ({
+                    ip: data.ip,
+                    city: data.city || 'N/A',
+                    country: data.country || 'N/A',
+                    isp: data.org || data.isp || 'N/A',
+                    ipType: data.ip?.includes(':') ? 'IPv6' : 'IPv4',
+                    region: data.region || 'N/A',
+                    postal: data.postal || 'N/A',
+                    asn: data.org?.split(' ')[0] || 'N/A',
+                    latitude: data.loc ? Number(data.loc.split(',')[0]) : null,
+                    longitude: data.loc ? Number(data.loc.split(',')[1]) : null,
+                })},
+                { url: 'https://freeipapi.com/api/json', transform: (data: any) => ({
+                    ip: data.ipAddress,
+                    city: data.cityName || 'N/A',
+                    country: data.countryName || 'N/A',
+                    isp: data.isp || 'N/A',
+                    ipType: data.ipVersion === 4 ? 'IPv4' : data.ipVersion === 6 ? 'IPv6' : 'N/A',
+                    region: data.regionName || 'N/A',
+                    postal: data.zipCode || 'N/A',
+                    asn: 'N/A',
+                    latitude: data.latitude || null,
+                    longitude: data.longitude || null,
+                })},
+                 { url: 'https://api.seeip.org/geoip', transform: (data: any) => ({
+                    ip: data.ip,
+                    city: data.city || 'N/A',
+                    country: data.country || 'N/A',
+                    isp: data.organization || 'N/A',
+                    ipType: data.ip?.includes(':') ? 'IPv6' : 'IPv4',
+                    region: data.region || 'N/A',
+                    postal: data.postal_code || 'N/A',
+                    asn: data.organization?.split(' ')[0] || 'N/A',
+                    latitude: data.latitude || null,
+                    longitude: data.longitude || null,
+                })}
             ];
             for (const service of services) {
                 try {
-                    const response = await fetch(service);
+                    const response = await fetch(service.url);
                     const data = await response.json();
-                    if (data.ip) {
-                        return {
-                            ip: data.ip,
-                            city: data.city || 'N/A',
-                            country: data.country_name || data.country || 'N/A',
-                            isp: data.org || data.isp || 'N/A',
-                            ipType: data.version === 'IPv4' ? 'IPv4' : data.version === 'IPv6' ? 'IPv6' : 'N/A',
-                            region: data.region || 'N/A',
-                            postal: data.postal || 'N/A',
-                            asn: data.asn || 'N/A',
-                            latitude: data.latitude || null,
-                            longitude: data.longitude || null,
-                        };
+                    if (data.ip || data.ipAddress) {
+                        return service.transform(data);
                     }
                 } catch (error) {
-                    console.warn(`Failed to fetch IP from ${service}`, error);
+                    console.warn(`Failed to fetch IP from ${service.url}`, error);
                 }
             }
             return {
@@ -363,3 +397,5 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
     </>
   );
 }
+
+    
