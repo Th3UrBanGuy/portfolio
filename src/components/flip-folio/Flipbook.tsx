@@ -196,14 +196,39 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
                     asn: data.organization?.split(' ')[0] || 'N/A',
                     latitude: data.latitude || null,
                     longitude: data.longitude || null,
-                })}
+                })},
+                { url: 'https://ipinfo.tw/', isText: true, transform: (text: string) => {
+                    const lines = text.split('\n');
+                    const ip = lines[0] || 'N/A';
+                    const country = (lines[1] || 'N/A').split(' / ')[1] || 'N/A';
+                    const isp = (lines[2] || 'N/A').split(' / ')[1] || 'N/A';
+                    return {
+                        ip,
+                        city: 'N/A',
+                        country,
+                        isp,
+                        ipType: ip.includes(':') ? 'IPv6' : 'IPv4',
+                        region: 'N/A',
+                        postal: 'N/A',
+                        asn: 'N/A',
+                        latitude: null,
+                        longitude: null,
+                    }
+                }}
             ];
             for (const service of services) {
                 try {
                     const response = await fetch(service.url);
-                    const data = await response.json();
-                    if (data.ip || data.ipAddress) {
-                        return service.transform(data);
+                    if(service.isText){
+                        const text = await response.text();
+                         if(text){
+                             return service.transform(text);
+                         }
+                    } else {
+                        const data = await response.json();
+                        if (data.ip || data.ipAddress) {
+                            return service.transform(data);
+                        }
                     }
                 } catch (error) {
                     console.warn(`Failed to fetch IP from ${service.url}`, error);
@@ -409,5 +434,3 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
     </>
   );
 }
-
-    
