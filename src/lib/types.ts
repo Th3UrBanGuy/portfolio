@@ -84,3 +84,17 @@ export type PortfolioData = {
   socials: Social[];
   achievements: Achievement[];
 };
+
+export type ViewerData = {
+    id: string;
+    timestamp: Date;
+    ip: string;
+    city: string;
+    country: string;
+    isp: string;
+    browser: string;
+    os: string;
+    resolution: string;
+    deviceMemory: string | 'N/A';
+    cpuCores: number | 'N/A';
+};

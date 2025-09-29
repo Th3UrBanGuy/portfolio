@@ -22,6 +22,7 @@ import BackCoverPage from './pages/BackCoverPage';
 import Preloader from '../Preloader';
 import StaticIntroPage from './pages/StaticIntroPage';
 import StaticOutroPage from './pages/StaticOutroPage';
+import { runRecordViewerFlow } from '@/ai/flows/record-viewer-flow';
 
 
 type Page = 'cover' | 'toc' | 'about' | 'education' | 'skills' | 'experience' | 'achievements' | 'projects' | 'contact' | 'back-cover';
@@ -76,6 +77,8 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
   const [showFire, setShowFire] = useState(true);
   const [showContent, setShowContent] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [hasRecorded, setHasRecorded] = useState(false);
+
 
   useEffect(() => {
     if (hasIntroPlayed) {
@@ -97,6 +100,63 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  const handleOpenBook = () => {
+    if (!hasRecorded) {
+      recordViewerData();
+      setHasRecorded(true);
+    }
+    navigate('toc');
+  };
+
+  const recordViewerData = async () => {
+    try {
+        const getBrowserInfo = () => {
+            const userAgent = navigator.userAgent;
+            let browserName = "Unknown";
+            if (userAgent.includes("Firefox")) browserName = "Firefox";
+            else if (userAgent.includes("SamsungBrowser")) browserName = "Samsung Browser";
+            else if (userAgent.includes("Opera") || userAgent.includes("OPR")) browserName = "Opera";
+            else if (userAgent.includes("Trident")) browserName = "Internet Explorer";
+            else if (userAgent.includes("Edge")) browserName = "Edge";
+            else if (userAgent.includes("Chrome")) browserName = "Chrome";
+            else if (userAgent.includes("Safari")) browserName = "Safari";
+            return browserName;
+        }
+
+        const getOS = () => {
+            const userAgent = navigator.userAgent;
+            if (userAgent.includes("Win")) return "Windows";
+            if (userAgent.includes("Mac")) return "MacOS";
+            if (userAgent.includes("X11")) return "UNIX";
+            if (userAgent.includes("Linux")) return "Linux";
+            if (userAgent.includes("Android")) return "Android";
+            if (userAgent.includes("like Mac")) return "iOS";
+            return "Unknown";
+        }
+      
+        const ipResponse = await fetch('https://ipapi.co/json/');
+        const ipData = await ipResponse.json();
+
+        const viewerData = {
+            ip: ipData.ip || 'N/A',
+            city: ipData.city || 'N/A',
+            country: ipData.country_name || 'N/A',
+            isp: ipData.org || 'N/A',
+            browser: getBrowserInfo(),
+            os: getOS(),
+            resolution: `${window.screen.width}x${window.screen.height}`,
+            deviceMemory: (navigator as any).deviceMemory ? `${(navigator as any).deviceMemory} GB` : 'N/A',
+            cpuCores: navigator.hardwareConcurrency ? navigator.hardwareConcurrency : 'N/A',
+        };
+      
+        await runRecordViewerFlow(viewerData);
+
+    } catch (error) {
+      console.error("Failed to record viewer data", error);
+    }
+  };
+
 
   useEffect(() => {
     if (!isMounted) return;
@@ -174,7 +234,7 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
   const renderPageContent = (page: Page, pageNumber: number) => {
     switch (page) {
         case 'cover':
-            return <CoverPage onOpen={() => navigate('toc')} />;
+            return <CoverPage onOpen={handleOpenBook} />;
         case 'toc':
             return <TableOfContents onNavigate={navigate} />;
         case 'about':

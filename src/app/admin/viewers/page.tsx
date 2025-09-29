@@ -1,10 +1,12 @@
-import { DeviceInfoCard, NetworkInfoCard } from './components';
+import { getViewers } from '@/lib/services/viewers';
+import { ViewerList } from './components';
 
-export default function ViewersPage() {
+export default async function ViewersPage() {
+  const viewers = await getViewers();
+  
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <DeviceInfoCard />
-        <NetworkInfoCard />
+    <div className="space-y-6">
+      <ViewerList viewers={viewers} />
     </div>
   );
 }

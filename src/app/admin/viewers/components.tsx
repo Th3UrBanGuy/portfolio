@@ -1,9 +1,9 @@
 'use client';
-
+import type { ViewerData } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Laptop, Wifi, Shield, Cpu, MemoryStick, Monitor, MousePointer, Power, Globe } from 'lucide-react';
-import React, { useState, useEffect } from 'react';
+import { Globe, Laptop, Wifi, Shield, Cpu, MemoryStick, Clock } from 'lucide-react';
+import React from 'react';
+import { formatDistanceToNow } from 'date-fns';
 
 const InfoRow = ({ icon, label, value }: { icon: React.ElementType, label: string, value: React.ReactNode }) => (
     <div className="flex items-center justify-between py-2 border-b border-border last:border-b-0">
@@ -17,152 +17,55 @@ const InfoRow = ({ icon, label, value }: { icon: React.ElementType, label: strin
     </div>
 );
 
-const SkeletonRow = () => (
-     <div className="flex items-center justify-between py-2 border-b border-border last:border-b-0">
-        <div className="flex items-center gap-3">
-            <Skeleton className="h-7 w-7 rounded-md" />
-            <Skeleton className="h-4 w-24" />
-        </div>
-        <Skeleton className="h-4 w-32" />
-    </div>
-)
-
-
-export function DeviceInfoCard() {
-  const [deviceInfo, setDeviceInfo] = useState<any>(null);
-
-  useEffect(() => {
-    const getBrowserInfo = () => {
-        const userAgent = navigator.userAgent;
-        let browserName = "Unknown";
-        let browserVersion = "";
-        
-        if (userAgent.includes("Firefox")) browserName = "Firefox";
-        else if (userAgent.includes("SamsungBrowser")) browserName = "Samsung Browser";
-        else if (userAgent.includes("Opera") || userAgent.includes("OPR")) browserName = "Opera";
-        else if (userAgent.includes("Trident")) browserName = "Internet Explorer";
-        else if (userAgent.includes("Edge")) browserName = "Edge";
-        else if (userAgent.includes("Chrome")) browserName = "Chrome";
-        else if (userAgent.includes("Safari")) browserName = "Safari";
-
-        const versionMatch = userAgent.match(/(?:Chrome|Firefox|Edge|Version|MSIE|Trident.*rv:|OPR)\/([\d._]+)/);
-        if(versionMatch) browserVersion = versionMatch[1];
-        
-        return `${browserName} ${browserVersion}`;
-    }
-
-    const getOS = () => {
-        const userAgent = navigator.userAgent;
-        if (userAgent.includes("Win")) return "Windows";
-        if (userAgent.includes("Mac")) return "MacOS";
-        if (userAgent.includes("X11")) return "UNIX";
-        if (userAgent.includes("Linux")) return "Linux";
-        if (userAgent.includes("Android")) return "Android";
-        if (userAgent.includes("like Mac")) return "iOS";
-        return "Unknown";
-    }
-
-    const info = {
-        browser: getBrowserInfo(),
-        os: getOS(),
-        resolution: `${window.screen.width} x ${window.screen.height}`,
-        viewport: `${window.innerWidth} x ${window.innerHeight}`,
-        colorDepth: `${window.screen.colorDepth}-bit`,
-        language: navigator.language,
-        deviceMemory: (navigator as any).deviceMemory ? `${(navigator as any).deviceMemory} GB` : 'N/A',
-        cpuCores: navigator.hardwareConcurrency ? `${navigator.hardwareConcurrency} Cores` : 'N/A',
-        touchPoints: navigator.maxTouchPoints > 0 ? `Yes (${navigator.maxTouchPoints} points)` : 'No',
-    };
-    setDeviceInfo(info);
-  }, []);
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Laptop className="h-5 w-5" />
-          Device Information
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        {deviceInfo ? (
-            <>
-                <InfoRow icon={Globe} label="Browser" value={deviceInfo.browser} />
-                <InfoRow icon={Laptop} label="Operating System" value={deviceInfo.os} />
-                <InfoRow icon={Monitor} label="Screen Resolution" value={deviceInfo.resolution} />
-                <InfoRow icon={Monitor} label="Viewport" value={deviceInfo.viewport} />
-                <InfoRow icon={MemoryStick} label="Device Memory" value={deviceInfo.deviceMemory} />
-                <InfoRow icon={Cpu} label="CPU Cores" value={deviceInfo.cpuCores} />
-                <InfoRow icon={MousePointer} label="Touch Support" value={deviceInfo.touchPoints} />
-            </>
-        ) : (
-            Array.from({ length: 7 }).map((_, i) => <SkeletonRow key={i} />)
-        )}
-      </CardContent>
-    </Card>
-  );
+type ViewerCardProps = {
+    viewer: ViewerData;
 }
 
-export function NetworkInfoCard() {
-    const [networkInfo, setNetworkInfo] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
+const ViewerCard = ({ viewer }: ViewerCardProps) => {
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center justify-between text-base">
+                    <div className="flex items-center gap-2">
+                        <Globe className="h-5 w-5" />
+                        <span>{viewer.city}, {viewer.country}</span>
+                    </div>
+                     <span className="text-xs font-normal text-muted-foreground flex items-center gap-1.5">
+                        <Clock className="h-3 w-3" />
+                        {formatDistanceToNow(new Date(viewer.timestamp), { addSuffix: true })}
+                    </span>
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <InfoRow icon={Shield} label="IP Address" value={viewer.ip} />
+                <InfoRow icon={Wifi} label="ISP" value={viewer.isp} />
+                <InfoRow icon={Globe} label="Browser" value={viewer.browser} />
+                <InfoRow icon={Laptop} label="Operating System" value={viewer.os} />
+                <InfoRow icon={Laptop} label="Resolution" value={viewer.resolution} />
+                <InfoRow icon={MemoryStick} label="Device Memory" value={viewer.deviceMemory} />
+                <InfoRow icon={Cpu} label="CPU Cores" value={String(viewer.cpuCores)} />
+            </CardContent>
+        </Card>
+    )
+}
 
-    useEffect(() => {
-        const fetchIpInfo = async () => {
-            setLoading(true);
-            try {
-                const ipResponse = await fetch('https://api.ipify.org?format=json');
-                if (!ipResponse.ok) throw new Error('Failed to fetch IP');
-                const ipData = await ipResponse.json();
-                const ip = ipData.ip;
-                
-                const detailsResponse = await fetch(`https://ipapi.co/${ip}/json/`);
-                if (!detailsResponse.ok) throw new Error('Failed to fetch IP details');
-                const detailsData = await detailsResponse.json();
-                
-                setNetworkInfo(detailsData);
+type ViewerListProps = {
+    viewers: ViewerData[];
+}
 
-            } catch (error) {
-                console.error("Error fetching IP info:", error);
-                setNetworkInfo({ error: "Could not fetch network data." });
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchIpInfo();
-    }, []);
-
-    const renderContent = () => {
-        if (loading) {
-            return Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />);
-        }
-        if (networkInfo?.error) {
-            return <p className="text-destructive text-sm">{networkInfo.error}</p>;
-        }
-        if (networkInfo) {
-            return (
-                <>
-                    <InfoRow icon={Shield} label="IP Address" value={networkInfo.ip} />
-                    <InfoRow icon={Globe} label="Location" value={`${networkInfo.city}, ${networkInfo.country_name}`} />
-                    <InfoRow icon={Wifi} label="ISP" value={networkInfo.org} />
-                    <InfoRow icon={Power} label="ASN" value={networkInfo.asn} />
-                </>
-            );
-        }
-        return null;
+export function ViewerList({ viewers }: ViewerListProps) {
+    if (viewers.length === 0) {
+        return (
+            <div className="text-center text-muted-foreground py-12">
+                <p>No viewer data has been recorded yet.</p>
+                <p className="text-sm">Visit the public portfolio to record the first view!</p>
+            </div>
+        )
     }
 
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Wifi className="h-5 w-5" />
-          Network Information
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        {renderContent()}
-      </CardContent>
-    </Card>
-  );
+    return (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {viewers.map(viewer => <ViewerCard key={viewer.id} viewer={viewer} />)}
+        </div>
+    )
 }
