@@ -11,6 +11,7 @@ type AchievementsPageProps = {
 };
 
 export default function AchievementsPage({ achievements }: AchievementsPageProps) {
+  const sortedAchievements = [...achievements].sort((a, b) => a.id.localeCompare(b.id));
   return (
     <div className="h-full flex flex-col">
       <h2 className="font-headline text-2xl mb-4 flex-shrink-0 text-page-foreground">
