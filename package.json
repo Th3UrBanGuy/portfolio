@@ -11,7 +11,8 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "seed": "tsx src/seed.ts"
+    "seed": "tsx src/seed.ts",
+    "reset-password": "tsx src/reset-password.ts"
   },
   "dependencies": {
     "@genkit-ai/googleai": "^1.14.1",
