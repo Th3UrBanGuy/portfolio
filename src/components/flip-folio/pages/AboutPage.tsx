@@ -11,6 +11,8 @@ type AboutPageProps = {
   personalInfo: PersonalInfo;
   imageUrl: string;
   imageHint: string;
+  aboutMe: string;
+  cvLink: string;
 };
 
 const personalInfoIcons = {
@@ -22,9 +24,9 @@ const personalInfoIcons = {
   aimInLife: Target,
 };
 
-export default function AboutPage({ personalInfo, imageUrl, imageHint }: AboutPageProps) {
+export default function AboutPage({ personalInfo, imageUrl, imageHint, aboutMe, cvLink }: AboutPageProps) {
   const personalDetails = [
-    { label: 'Born', value: new Date(personalInfo.dob).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), icon: personalInfoIcons.dob },
+    { label: 'Born', value: personalInfo.dob ? new Date(personalInfo.dob).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A', icon: personalInfoIcons.dob },
     { label: 'Blood Group', value: personalInfo.bloodGroup, icon: personalInfoIcons.bloodGroup },
     { label: 'Nationality', value: personalInfo.nationality, icon: personalInfoIcons.nationality },
     { label: 'Occupation', value: personalInfo.occupation, icon: personalInfoIcons.occupation },
@@ -48,8 +50,8 @@ export default function AboutPage({ personalInfo, imageUrl, imageHint }: AboutPa
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
             </div>
             <div className="mt-4 hidden md:block">
-              <Button asChild className="w-full">
-                <a href="https://alahimajnurosama.github.io/resume" target="_blank" rel="noopener noreferrer">
+              <Button asChild className="w-full" disabled={!cvLink}>
+                <a href={cvLink} target="_blank" rel="noopener noreferrer">
                   <Download className="mr-2 h-4 w-4" />
                   View CV
                 </a>
@@ -71,8 +73,8 @@ export default function AboutPage({ personalInfo, imageUrl, imageHint }: AboutPa
               ))}
             </div>
              <div className="mt-4 md:hidden">
-              <Button asChild className="w-full">
-                <a href="https://alahimajnurosama.github.io/resume" target="_blank" rel="noopener noreferrer">
+              <Button asChild className="w-full" disabled={!cvLink}>
+                <a href={cvLink} target="_blank" rel="noopener noreferrer">
                   <Download className="mr-2 h-4 w-4" />
                   View CV
                 </a>
@@ -90,7 +92,7 @@ export default function AboutPage({ personalInfo, imageUrl, imageHint }: AboutPa
           </CardHeader>
           <CardContent>
             <p className="text-sm leading-relaxed text-page-foreground/80">
-              I'm a hands-on tech explorer who dives into any technical issue, finds innovative solutions, and stays updated with the latest tech trends - a true 'Jugadu Technophile'. Since 2016, I've been solving diverse tech issues using creative methods and AI tools, and I'm always exploring new technologies.
+              {aboutMe}
             </p>
           </CardContent>
         </Card>

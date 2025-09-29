@@ -1,4 +1,4 @@
-import { defaultPortfolioData, getPortfolioData } from '@/lib/placeholder-data';
+import { getPortfolioData } from '@/lib/placeholder-data';
 import Flipbook from '@/components/flip-folio/Flipbook';
 
 export default async function Home() {

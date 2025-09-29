@@ -4,19 +4,30 @@ import { db } from './firebase';
 import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 
 export async function getCollectionData<T>(collectionName: string): Promise<T[]> {
-  const querySnapshot = await getDocs(collection(db, collectionName));
-  return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as T));
+  try {
+    const querySnapshot = await getDocs(collection(db, collectionName));
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as T));
+  } catch (e) {
+    console.error(`Error fetching collection ${collectionName}:`, e);
+    return [];
+  }
 }
 
 export async function getDocumentData<T>(collectionName: string, docId: string): Promise<T | null> {
-    const docRef = doc(db, collectionName, docId);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-        const data = docSnap.data();
-        if(Object.keys(data).length > 0) return data as T;
-        return { id: docSnap.id, ...data } as T;
+    try {
+        const docRef = doc(db, collectionName, docId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            // This check handles both empty documents and documents that might just have an ID property from a bad merge
+            if(Object.keys(data).length > 0) return data as T;
+            return { id: docSnap.id, ...data } as T;
+        }
+        return null;
+    } catch(e) {
+        console.error(`Error fetching document ${collectionName}/${docId}:`, e);
+        return null;
     }
-    return null;
 }
 
 export async function getPortfolioData(): Promise<PortfolioData> {
@@ -28,7 +39,9 @@ export async function getPortfolioData(): Promise<PortfolioData> {
         contactDetails,
         socials,
         achievements,
-        projects
+        projects,
+        aboutMeDoc,
+        authorImageDoc,
     ] = await Promise.all([
         getDocumentData<PersonalInfo>('site-data', 'personal-info'),
         getCollectionData<Education>('education'),
@@ -38,27 +51,24 @@ export async function getPortfolioData(): Promise<PortfolioData> {
         getCollectionData<Social>('socials'),
         getCollectionData<Achievement>('achievements'),
         getCollectionData<Project>('projects'),
+        getDocumentData<{ content: string }>('site-data', 'about-me'),
+        getDocumentData<{ url: string, hint: string }>('site-data', 'author-image'),
     ]);
 
-    const aboutMeDoc = await getDocumentData<{ content: string }>('site-data', 'about-me');
-    const authorImageDoc = await getDocumentData<{ url: string, hint: string }>('site-data', 'author-image');
-    const cvLinkDoc = await getDocumentData<{ url: string }>('site-data', 'cv-link');
-
+    const defaultPersonalInfo = { name: '', dob: '', bloodGroup: '', nationality: '', occupation: '', status: '', hobby: '', aimInLife: '' };
+    const defaultContactDetails = { contactMeLink: '', phone: '', emails: [] };
 
     return {
-        personalInfo: personalInfo!,
-        education: education,
-        skills: skills,
-        experience: experience,
-        contactDetails: {
-            ...contactDetails!,
-            contactMeLink: cvLinkDoc?.url || ''
-        },
-        socials: socials,
-        achievements: achievements,
-        aboutMe: aboutMeDoc?.content || "Default about me text.",
-        authorImageUrl: authorImageDoc?.url || '',
-        authorImageHint: authorImageDoc?.hint || '',
-        projects: projects,
+        personalInfo: personalInfo || defaultPersonalInfo,
+        education: education || [],
+        skills: skills || [],
+        experience: experience || [],
+        contactDetails: contactDetails || defaultContactDetails,
+        socials: socials || [],
+        achievements: achievements || [],
+        aboutMe: aboutMeDoc?.content || "Welcome to my portfolio. The content is being loaded.",
+        authorImageUrl: authorImageDoc?.url || 'https://picsum.photos/seed/author/400/500',
+        authorImageHint: authorImageDoc?.hint || 'placeholder image',
+        projects: projects || [],
     };
 }

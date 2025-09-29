@@ -412,7 +412,7 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
     }
   }
 
-  if (!isMounted) {
+  if (!isMounted || !data) {
     return (
         <div className="h-dvh w-full bg-background flex items-center justify-center">
             <Preloader showFire={true} isClosing={false} />
