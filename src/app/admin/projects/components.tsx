@@ -15,10 +15,18 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Save, Plus, Trash2 } from 'lucide-react';
+import { Save, Plus, Trash2, Tag } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { updateProjects } from './actions';
 import { useTransition } from 'react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from '@/components/ui/separator';
 
 const projectSchema = z.object({
   id: z.string(),
@@ -39,7 +47,7 @@ const formSchema = z.object({
 type ProjectsFormValues = z.infer<typeof formSchema>;
 type ProjectData = z.infer<typeof projectSchema>;
 
-export function ProjectsForm({ data }: { data: ProjectData[] }) {
+export function ProjectsForm({ data, bundles }: { data: ProjectData[], bundles: string[] }) {
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
 
@@ -205,9 +213,18 @@ export function ProjectsForm({ data }: { data: ProjectData[] }) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Category / Bundle</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="e.g., Featured Projects" />
-                      </FormControl>
+                       <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select a bundle" />
+                            </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                            {bundles.map(bundle => (
+                                <SelectItem key={bundle} value={bundle}>{bundle}</SelectItem>
+                            ))}
+                            </SelectContent>
+                        </Select>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -229,5 +246,77 @@ export function ProjectsForm({ data }: { data: ProjectData[] }) {
         </div>
       </form>
     </Form>
+  );
+}
+
+const bundleFormSchema = z.object({
+  newBundle: z.string().min(1, 'Bundle name cannot be empty.'),
+});
+
+export function BundleManager({ bundles }: { bundles: string[] }) {
+  const form = useForm({
+    resolver: zodResolver(bundleFormSchema),
+    defaultValues: { newBundle: '' },
+  });
+
+  function onSubmit(values: z.infer<typeof bundleFormSchema>) {
+    console.log('Adding new bundle:', values.newBundle);
+    // Here you would call a server action to add the new bundle
+    form.reset();
+  }
+
+  function onRemove(bundle: string) {
+    console.log('Removing bundle:', bundle);
+    // Here you would call a server action to remove the bundle
+  }
+
+  return (
+    <div className="space-y-6">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-start gap-4">
+          <FormField
+            control={form.control}
+            name="newBundle"
+            render={({ field }) => (
+              <FormItem className="flex-grow">
+                <FormLabel className="sr-only">New Bundle</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="Enter new bundle name" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button type="submit">
+            <Plus className="mr-2" />
+            Add Bundle
+          </Button>
+        </form>
+      </Form>
+
+      <Separator />
+
+      <div>
+        <h4 className="mb-4 text-lg font-medium">Existing Bundles</h4>
+        {bundles.length > 0 ? (
+          <div className="space-y-2">
+            {bundles.map(bundle => (
+                <div key={bundle} className="flex items-center justify-between rounded-lg border p-3">
+                    <div className="flex items-center gap-2">
+                        <Tag className="h-4 w-4 text-muted-foreground" />
+                        <span className="font-medium">{bundle}</span>
+                    </div>
+                     <Button variant="ghost" size="icon" onClick={() => onRemove(bundle)}>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                        <span className="sr-only">Remove {bundle}</span>
+                    </Button>
+                </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">No bundles found. Add one above to get started.</p>
+        )}
+      </div>
+    </div>
   );
 }
