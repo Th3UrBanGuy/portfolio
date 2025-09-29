@@ -16,13 +16,15 @@ const achievementSchema = z.object({
   full_description: z.string().min(1, "Full description is required."),
   how_achieved: z.string().min(1, "This field is required."),
   words_about_it: z.string().min(1, "This field is required."),
+  order: z.number(),
 });
 
 const achievementsArraySchema = z.array(achievementSchema);
 
-export async function updateAchievements(achievementsData: Achievement[]): Promise<{ success: boolean; error?: string }> {
+export async function updateAchievements(achievementsData: Omit<Achievement, 'order'>[]): Promise<{ success: boolean; error?: string }> {
   try {
-    const validatedData = achievementsArraySchema.parse(achievementsData);
+    const dataWithOrder = achievementsData.map((ach, index) => ({ ...ach, order: index }));
+    const validatedData = achievementsArraySchema.parse(dataWithOrder);
     
     const batch = writeBatch(db);
     const achievementsCollection = collection(db, 'achievements');

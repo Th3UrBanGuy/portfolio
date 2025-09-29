@@ -18,6 +18,7 @@ export type Education = {
   institution: string;
   session: string;
   details: string;
+  order: number;
 };
 
 export type Experience = {
@@ -28,6 +29,7 @@ export type Experience = {
   location: string;
   short_description: string;
   details: string[];
+  order: number;
 };
 
 export type ProjectLink = {
@@ -80,6 +82,7 @@ export type Achievement = {
   full_description: string;
   how_achieved: string;
   words_about_it: string;
+  order: number;
 };
 
 export type Skill = {
@@ -102,7 +105,7 @@ export type PortfolioData = {
   contactDetails: ContactDetails;
   socials: Social[];
   achievements: Achievement[];
-  cvLink: string;
+cvLink: string;
   customLinks: CustomLink[];
 };
 

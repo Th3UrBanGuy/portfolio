@@ -12,19 +12,19 @@ const educationSchema = z.object({
   institution: z.string().min(1, "Institution name is required."),
   session: z.string().min(1, "Session is required."),
   details: z.string().min(1, "Details are required."),
+  order: z.number(),
 });
 
 const educationArraySchema = z.array(educationSchema);
 
-export async function updateEducation(educationData: Education[]): Promise<{ success: boolean; error?: string }> {
+export async function updateEducation(educationData: Omit<Education, 'order'>[]): Promise<{ success: boolean; error?: string }> {
   try {
-    const validatedData = educationArraySchema.parse(educationData);
+    const dataWithOrder = educationData.map((edu, index) => ({ ...edu, order: index }));
+    const validatedData = educationArraySchema.parse(dataWithOrder);
     
     const batch = writeBatch(db);
     const educationCollection = collection(db, 'education');
 
-    // Simple strategy: delete all existing docs and add the new ones.
-    // For large collections, a more sophisticated diff-and-update would be better.
     const existingDocs = await getCollectionData<Education>('education');
     existingDocs.forEach(docToDelete => {
       batch.delete(doc(educationCollection, docToDelete.id));

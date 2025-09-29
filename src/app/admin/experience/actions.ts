@@ -15,13 +15,15 @@ const experienceSchema = z.object({
   duration: z.string().min(1, "Duration is required."),
   short_description: z.string().min(1, "Short description is required."),
   details: z.array(z.string().min(1, "Detail cannot be empty.")).min(1, "At least one detail point is required."),
+  order: z.number(),
 });
 
 const experienceArraySchema = z.array(experienceSchema);
 
-export async function updateExperience(experienceData: Experience[]): Promise<{ success: boolean; error?: string }> {
+export async function updateExperience(experienceData: Omit<Experience, 'order'>[]): Promise<{ success: boolean; error?: string }> {
   try {
-    const validatedData = experienceArraySchema.parse(experienceData);
+    const dataWithOrder = experienceData.map((exp, index) => ({ ...exp, order: index }));
+    const validatedData = experienceArraySchema.parse(dataWithOrder);
     
     const batch = writeBatch(db);
     const experienceCollection = collection(db, 'experience');

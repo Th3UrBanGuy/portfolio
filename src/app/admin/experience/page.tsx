@@ -1,4 +1,4 @@
-import { getPortfolioData } from '@/lib/placeholder-data';
+import { getCollectionData } from '@/lib/placeholder-data';
 import { ExperienceForm } from './components';
 import {
   Card,
@@ -7,9 +7,10 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { Experience } from '@/lib/types';
 
 export default async function ExperiencePage() {
-  const portfolioData = await getPortfolioData();
+  const experience = await getCollectionData<Experience>('experience', 'order');
 
   return (
     <div className="space-y-6">
@@ -21,7 +22,7 @@ export default async function ExperiencePage() {
           </CardDescription>
         </CardHeader>
       </Card>
-      <ExperienceForm data={portfolioData.experience} />
+      <ExperienceForm data={experience} />
     </div>
   );
 }

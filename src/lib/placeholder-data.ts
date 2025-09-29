@@ -1,11 +1,13 @@
 
 import type { PortfolioData, Project, PersonalInfo, Education, Skill, Experience, ContactDetails, Social, Achievement, CustomLink } from './types';
 import { db } from './firebase';
-import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc, query, orderBy } from 'firebase/firestore';
 
-export async function getCollectionData<T>(collectionName: string): Promise<T[]> {
+export async function getCollectionData<T>(collectionName: string, orderByField?: string): Promise<T[]> {
   try {
-    const querySnapshot = await getDocs(collection(db, collectionName));
+    const collectionRef = collection(db, collectionName);
+    const q = orderByField ? query(collectionRef, orderBy(orderByField)) : collectionRef;
+    const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as T));
   } catch (e) {
     console.error(`Error fetching collection ${collectionName}:`, e);
@@ -46,12 +48,12 @@ export async function getPortfolioData(): Promise<PortfolioData> {
         customLinks,
     ] = await Promise.all([
         getDocumentData<PersonalInfo>('site-data', 'personal-info'),
-        getCollectionData<Education>('education'),
+        getCollectionData<Education>('education', 'order'),
         getCollectionData<Skill>('skills'),
-        getCollectionData<Experience>('experience'),
+        getCollectionData<Experience>('experience', 'order'),
         getDocumentData<ContactDetails>('site-data', 'contact-details'),
         getCollectionData<Social>('socials'),
-        getCollectionData<Achievement>('achievements'),
+        getCollectionData<Achievement>('achievements', 'order'),
         getCollectionData<Project>('projects'),
         getDocumentData<{ content: string }>('site-data', 'about-me'),
         getDocumentData<{ url: string, hint: string }>('site-data', 'author-image'),

@@ -1,4 +1,4 @@
-import { getPortfolioData } from '@/lib/placeholder-data';
+import { getCollectionData } from '@/lib/placeholder-data';
 import { AchievementsForm } from './components';
 import {
   Card,
@@ -6,9 +6,10 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { Achievement } from '@/lib/types';
 
 export default async function AchievementsPage() {
-  const portfolioData = await getPortfolioData();
+  const achievements = await getCollectionData<Achievement>('achievements', 'order');
 
   return (
     <div className="space-y-6">
@@ -20,7 +21,7 @@ export default async function AchievementsPage() {
           </CardDescription>
         </CardHeader>
       </Card>
-      <AchievementsForm data={portfolioData.achievements} />
+      <AchievementsForm data={achievements} />
     </div>
   );
 }
