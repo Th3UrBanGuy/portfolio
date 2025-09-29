@@ -1,6 +1,7 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { verifySecretKey } from './actions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,7 +20,7 @@ function SubmitButton() {
 }
 
 export default function AuthPage() {
-  const [state, formAction] = useFormState(verifySecretKey, null);
+  const [state, formAction] = useActionState(verifySecretKey, null);
 
   return (
     <div className="flex min-h-dvh items-center justify-center bg-background p-4">

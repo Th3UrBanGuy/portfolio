@@ -35,6 +35,7 @@ export async function verifySecretKey(prevState: any, formData: FormData) {
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
     path: '/',
+    maxAge: 60 * 60 * 24 * 30, // 30 days
   });
 
   redirect('/admin');
