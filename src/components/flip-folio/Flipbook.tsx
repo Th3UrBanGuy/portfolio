@@ -137,6 +137,18 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
 
         const getIpInfo = async () => {
             const services = [
+                { url: 'https://ipdata.co/json/', transform: (data: any) => ({
+                    ip: data.ip,
+                    city: data.city || 'N/A',
+                    country: data.country_name || 'N/A',
+                    isp: data.asn?.name || 'N/A',
+                    ipType: data.ip?.includes(':') ? 'IPv6' : 'IPv4',
+                    region: data.region || 'N/A',
+                    postal: data.postal || 'N/A',
+                    asn: data.asn?.asn || 'N/A',
+                    latitude: data.latitude || null,
+                    longitude: data.longitude || null,
+                })},
                 { url: 'https://ipapi.co/json/', transform: (data: any) => ({
                     ip: data.ip,
                     city: data.city || 'N/A',
