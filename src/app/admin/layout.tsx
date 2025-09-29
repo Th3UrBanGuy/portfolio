@@ -14,30 +14,13 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  Briefcase,
-  User,
-  GraduationCap,
-  Star,
-  ShieldCheck,
-  Trophy,
-  Mail,
-  Home,
-  LogOut,
   Book,
   Users,
 } from 'lucide-react';
 import Header from './_components/Header';
 
 const navItems = [
-  { href: '/admin', label: 'Dashboard', icon: Home },
   { href: '/admin/viewers', label: 'Viewers', icon: Users },
-  { href: '/admin/personal-info', label: 'Personal Info', icon: User },
-  { href: '/admin/education', label: 'Education', icon: GraduationCap },
-  { href: '/admin/skills', label: 'Skills', icon: Star },
-  { href: '/admin/experience', label: 'Experience', icon: ShieldCheck },
-  { href: '/admin/achievements', label: 'Achievements', icon: Trophy },
-  { href: '/admin/projects', label: 'Projects', icon: Briefcase },
-  { href: '/admin/contact', label: 'Contact/Socials', icon: Mail },
 ];
 
 export default function AdminLayout({
@@ -57,7 +40,7 @@ export default function AdminLayout({
               <SidebarMenuItem key={item.href}>
                 <Link href={item.href} legacyBehavior passHref>
                   <SidebarMenuButton
-                    isActive={pathname === item.href}
+                    isActive={pathname.startsWith(item.href)}
                     icon={<item.icon />}
                   >
                     {item.label}
@@ -76,11 +59,6 @@ export default function AdminLayout({
                         </SidebarMenuButton>
                     </Link>
                 </SidebarMenuItem>
-                 <SidebarMenuItem>
-                    <SidebarMenuButton icon={<LogOut />}>
-                        Logout
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
             </SidebarMenu>
         </SidebarFooter>
       </Sidebar>
@@ -93,3 +71,5 @@ export default function AdminLayout({
     </SidebarProvider>
   );
 }
+
+    

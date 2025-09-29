@@ -177,7 +177,7 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
             os: getOS(),
             resolution: `${window.screen.width}x${window.screen.height}`,
             deviceMemory: (navigator as any).deviceMemory ? `${(navigator as any).deviceMemory} GB` : 'N/A',
-            cpuCores: navigator.hardwareConcurrency ? navigator.hardwareConcurrency : 'N/A',
+            cpuCores: (navigator.hardwareConcurrency && navigator.hardwareConcurrency !== Infinity) ? navigator.hardwareConcurrency : 'N/A',
         };
       
         await runRecordViewerFlow(viewerData);
