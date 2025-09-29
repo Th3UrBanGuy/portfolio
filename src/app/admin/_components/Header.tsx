@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 const getTitleFromPath = (path: string) => {
   if (path === '/admin') return 'Dashboard';
   if (path.startsWith('/admin/viewers')) return 'Viewers';
+  if (path.startsWith('/admin/profile')) return 'Profile';
   const parts = path.split('/').pop()?.split('-') || [];
   return parts.map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
 };
