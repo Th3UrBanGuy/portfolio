@@ -43,7 +43,7 @@ export default function ProjectsPage({ projects, onProjectSelect }: ProjectsPage
           {smallerProjects.length > 0 && (
             <Accordion type="single" collapsible className="w-full">
               <AccordionItem value="item-1" className='border-stone-400/50 rounded-lg border px-4 bg-black/5'>
-                <AccordionTrigger className='font-headline text-lg text-primary hover:no-underline [&[data-state=open]>svg]:text-primary'>
+                <AccordionTrigger className='font-headline text-lg text-accent hover:no-underline [&[data-state=open]>svg]:text-accent'>
                   <div className='flex items-center gap-3'>
                     <FolderArchive className='w-6 h-6' />
                     Urban Projects (Smaller Projects)
