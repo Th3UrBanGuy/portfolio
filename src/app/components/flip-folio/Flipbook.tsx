@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import type { PortfolioData, Project, Skill } from '@/lib/types';
+import type { PortfolioData, Project, Skill, Page } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import CoverPage from './pages/CoverPage';
@@ -23,10 +23,6 @@ import BackCoverPage from './pages/BackCoverPage';
 import Preloader from '@/components/Preloader';
 import StaticIntroPage from './pages/StaticIntroPage';
 import StaticOutroPage from './pages/StaticOutroPage';
-
-
-type Page = 'cover' | 'toc' | 'about' | 'private-info' | 'education' | 'skills' | 'experience' | 'achievements' | 'projects' | 'contact' | 'back-cover';
-const pageOrder: Page[] = ['cover', 'toc', 'about', 'private-info', 'education', 'skills', 'experience', 'achievements', 'projects', 'contact', 'back-cover'];
 
 const PageComponentWrapper = React.forwardRef<HTMLDivElement, { children: React.ReactNode, isCover?: boolean, isBackCover?: boolean, pageNumber: number }>(
   ({ children, isCover, isBackCover, pageNumber }, ref) => {
@@ -73,12 +69,18 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [bookDimensions, setBookDimensions] = useState({ width: 0, height: 0 });
 
+  // Use the dynamic page sequence from the fetched data
+  const pageOrder = data.pageSequence;
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
   const handleOpenBook = () => {
-    navigate('toc');
+    const tocIndex = pageOrder.indexOf('toc');
+    if (tocIndex !== -1) {
+      navigate(tocIndex);
+    }
   };
 
   useEffect(() => {
@@ -126,13 +128,19 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
   }, []);
 
 
-  const navigate = (page: Page) => {
-    const newIndex = pageOrder.indexOf(page);
+  const navigate = (pageIndex: number) => {
     if (bookRef.current) {
-      bookRef.current.pageFlip().turnToPage(newIndex);
+      bookRef.current.pageFlip().turnToPage(pageIndex);
     }
-    setCurrentPageIndex(newIndex);
+    setCurrentPageIndex(pageIndex);
   };
+
+  const navigateToPageType = (pageType: Page) => {
+    const pageIndex = pageOrder.indexOf(pageType);
+    if(pageIndex !== -1) {
+        navigate(pageIndex);
+    }
+  }
 
   const nextPage = () => {
     if (bookRef.current) {
@@ -152,7 +160,7 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
         case 'cover':
             return <CoverPage onOpen={handleOpenBook} />;
         case 'toc':
-            return <TableOfContents onNavigate={navigate} />;
+            return <TableOfContents onNavigate={navigateToPageType} pageSequence={pageOrder} />;
         case 'about':
             return <AboutPage personalInfo={data.personalInfo} imageUrl={data.authorImageUrl} imageHint={data.authorImageHint} aboutMe={data.aboutMe} cvLink={data.cvLink} />;
         case 'private-info':

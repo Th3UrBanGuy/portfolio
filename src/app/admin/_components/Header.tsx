@@ -15,6 +15,7 @@ const getTitleFromPath = (path: string) => {
   if (path.startsWith('/admin/achievements')) return 'Achievements';
   if (path.startsWith('/admin/projects')) return 'Projects';
   if (path.startsWith('/admin/contact')) return 'Contact & Socials';
+  if (path.startsWith('/admin/sequence')) return 'Page Sequence';
   if (path.startsWith('/admin/security')) return 'Security';
   const parts = path.split('/').pop()?.split('-') || [];
   return parts.map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');

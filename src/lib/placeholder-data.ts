@@ -1,5 +1,6 @@
 
-import type { PortfolioData, Project, PersonalInfo, Education, Skill, Experience, ContactDetails, Social, Achievement, CustomLink, PageTitle, PrivateInfo } from './types';
+import type { PortfolioData, Project, PersonalInfo, Education, Skill, Experience, ContactDetails, Social, Achievement, CustomLink, PageTitle, PrivateInfo, Page } from './types';
+import { ALL_PAGES } from './types';
 import { db } from './firebase';
 import { collection, getDocs, doc, getDoc, query, orderBy } from 'firebase/firestore';
 
@@ -57,6 +58,7 @@ export async function getPortfolioData(): Promise<PortfolioData> {
         cvLinkDoc,
         customLinks,
         pageTitles,
+        pageSequenceDoc,
     ] = await Promise.all([
         getDocumentData<PersonalInfo>('site-data', 'personal-info'),
         getDocumentData<PrivateInfo>('site-data', 'private-info'),
@@ -72,11 +74,27 @@ export async function getPortfolioData(): Promise<PortfolioData> {
         getDocumentData<{ url: string }>('site-data', 'cv-link'),
         getCollectionData<CustomLink>('custom-links'),
         getCollectionData<PageTitle>('page-titles'),
+        getDocumentData<{ sequence: Page[] }>('site-data', 'page-sequence'),
     ]);
 
     const defaultPersonalInfo = { name: '', dob: '', bloodGroup: '', nationality: '', occupation: '', status: '', hobby: '', aimInLife: '' };
     const defaultContactDetails = { emails: [], phoneNumbers: [] };
     const defaultPrivateInfo = { father_name: '', father_occupation: '', mother_name: '', mother_occupation: '', present_address: '', permanent_address: '', documents: [] };
+
+    let finalSequence = pageSequenceDoc?.sequence || [];
+
+    // Ensure all pages are present in the sequence, add new ones if they are not
+    if (finalSequence.length === 0) {
+        finalSequence = ALL_PAGES;
+    } else {
+        const currentPages = new Set(finalSequence);
+        ALL_PAGES.forEach(page => {
+            if (!currentPages.has(page)) {
+                finalSequence.push(page);
+            }
+        });
+    }
+
 
     return {
         personalInfo: personalInfo || defaultPersonalInfo,
@@ -94,5 +112,6 @@ export async function getPortfolioData(): Promise<PortfolioData> {
         cvLink: cvLinkDoc?.url || '',
         customLinks: customLinks || [],
         pageTitles: pageTitles || [],
+        pageSequence: finalSequence,
     };
 }

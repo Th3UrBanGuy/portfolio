@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, ArrowRight, UserCircle, GraduationCap, Star, Briefcase, Trophy, FolderKanban, Mail, Shield, Lock } from 'lucide-react';
+import { Users, ArrowRight, UserCircle, GraduationCap, Star, Briefcase, Trophy, FolderKanban, Mail, Shield, Lock, Move } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { KeyRound } from 'lucide-react';
 
@@ -22,6 +22,7 @@ type AdminView =
   | 'achievements'
   | 'projects'
   | 'contact'
+  | 'sequence'
   | 'security';
 
 type AdminDashboardProps = {
@@ -164,22 +165,19 @@ export default function Dashboard({ setActiveView }: AdminDashboardProps) {
             </CardDescription>
           </CardContent>
         </Card>
-        <Card onClick={() => {
-            // setActiveView('viewers') - This view doesn't exist yet.
-            alert("This feature is not yet implemented.");
-        }} className="hover:border-primary transition-colors cursor-pointer group">
+         <Card onClick={() => setActiveView('sequence')} className="hover:border-primary transition-colors cursor-pointer group">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <Users className="h-6 w-6 text-primary" />
-                <span className="text-lg">Portfolio Viewers</span>
+                <Move className="h-6 w-6 text-primary" />
+                <span className="text-lg">Page Sequence</span>
               </div>
               <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
             </CardTitle>
           </CardHeader>
           <CardContent>
             <CardDescription>
-              See who has been looking at your interactive portfolio.
+             Control the order of the pages in your portfolio flipbook.
             </CardDescription>
           </CardContent>
         </Card>

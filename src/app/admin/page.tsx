@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Book, UserCircle, GraduationCap, Star, Briefcase, Trophy, FolderKanban, Mail, Shield, LayoutDashboard, Lock } from 'lucide-react';
+import { Book, UserCircle, GraduationCap, Star, Briefcase, Trophy, FolderKanban, Mail, Shield, LayoutDashboard, Lock, Move } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import Header from './_components/Header';
@@ -16,6 +16,7 @@ import AchievementsPage from './_components/achievements/AchievementsPage';
 import ProjectsPage from './_components/projects/ProjectsPage';
 import ContactPage from './_components/contact/ContactPage';
 import SecurityPage from './_components/security/SecurityPage';
+import SequencePage from './_components/sequence/SequencePage';
 
 type AdminView =
   | 'dashboard'
@@ -27,6 +28,7 @@ type AdminView =
   | 'achievements'
   | 'projects'
   | 'contact'
+  | 'sequence'
   | 'security';
 
 export default function AdminPage() {
@@ -51,6 +53,8 @@ export default function AdminPage() {
         return <ProjectsPage {...props} />;
       case 'contact':
         return <ContactPage {...props} />;
+      case 'sequence':
+        return <SequencePage {...props} />;
       case 'security':
         return <SecurityPage {...props} />;
       default:
@@ -90,6 +94,7 @@ export default function AdminPage() {
               <NavLink view="achievements" icon={Trophy} label="Achievements" />
               <NavLink view="projects" icon={FolderKanban} label="Projects" />
               <NavLink view="contact" icon={Mail} label="Contact & Socials" />
+              <NavLink view="sequence" icon={Move} label="Page Sequence" />
               <NavLink view="security" icon={Shield} label="Security" />
             </nav>
           </div>
