@@ -8,13 +8,14 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, ArrowRight, UserCircle, GraduationCap, Star, Briefcase, Trophy, FolderKanban, Mail, Shield } from 'lucide-react';
+import { Users, ArrowRight, UserCircle, GraduationCap, Star, Briefcase, Trophy, FolderKanban, Mail, Shield, Lock } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { KeyRound } from 'lucide-react';
 
 type AdminView =
   | 'dashboard'
   | 'profile'
+  | 'private-info'
   | 'education'
   | 'skills'
   | 'experience'
@@ -48,6 +49,22 @@ export default function Dashboard({ setActiveView }: AdminDashboardProps) {
           <CardContent>
             <CardDescription>
               Manage your name, image, personal details, and CV link.
+            </CardDescription>
+          </CardContent>
+        </Card>
+        <Card onClick={() => setActiveView('private-info')} className="hover:border-primary transition-colors cursor-pointer group">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Lock className="h-6 w-6 text-primary" />
+                <span className="text-lg">Private Sanctum</span>
+              </div>
+              <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CardDescription>
+              Manage sensitive personal information and private documents.
             </CardDescription>
           </CardContent>
         </Card>

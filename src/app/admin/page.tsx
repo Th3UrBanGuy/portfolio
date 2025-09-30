@@ -2,12 +2,13 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Book, UserCircle, GraduationCap, Star, Briefcase, Trophy, FolderKanban, Mail, Shield, LayoutDashboard } from 'lucide-react';
+import { Book, UserCircle, GraduationCap, Star, Briefcase, Trophy, FolderKanban, Mail, Shield, LayoutDashboard, Lock } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import Header from './_components/Header';
 import Dashboard from './_components/Dashboard';
 import ProfilePage from './_components/profile/ProfilePage';
+import PrivateInfoPage from './_components/private-info/PrivateInfoPage';
 import EducationPage from './_components/education/EducationPage';
 import SkillsPage from './_components/skills/SkillsPage';
 import ExperiencePage from './_components/experience/ExperiencePage';
@@ -19,6 +20,7 @@ import SecurityPage from './_components/security/SecurityPage';
 type AdminView =
   | 'dashboard'
   | 'profile'
+  | 'private-info'
   | 'education'
   | 'skills'
   | 'experience'
@@ -35,6 +37,8 @@ export default function AdminPage() {
     switch (activeView) {
       case 'profile':
         return <ProfilePage {...props} />;
+      case 'private-info':
+        return <PrivateInfoPage {...props} />;
       case 'education':
         return <EducationPage {...props} />;
       case 'skills':
@@ -79,6 +83,7 @@ export default function AdminPage() {
             <nav className="grid items-start px-4 text-sm font-medium">
               <NavLink view="dashboard" icon={LayoutDashboard} label="Dashboard" />
               <NavLink view="profile" icon={UserCircle} label="Profile" />
+              <NavLink view="private-info" icon={Lock} label="Private Sanctum" />
               <NavLink view="education" icon={GraduationCap} label="Education" />
               <NavLink view="skills" icon={Star} label="Skills" />
               <NavLink view="experience" icon={Briefcase} label="Experience" />

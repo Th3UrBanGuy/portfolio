@@ -1,5 +1,5 @@
 
-import type { PortfolioData, Project, PersonalInfo, Education, Skill, Experience, ContactDetails, Social, Achievement, CustomLink, PageTitle } from './types';
+import type { PortfolioData, Project, PersonalInfo, Education, Skill, Experience, ContactDetails, Social, Achievement, CustomLink, PageTitle, PrivateInfo } from './types';
 import { db } from './firebase';
 import { collection, getDocs, doc, getDoc, query, orderBy } from 'firebase/firestore';
 
@@ -44,6 +44,7 @@ export async function getDocumentData<T>(collectionName: string, docId: string):
 export async function getPortfolioData(): Promise<PortfolioData> {
     const [
         personalInfo,
+        privateInfo,
         education,
         skills,
         experience,
@@ -58,6 +59,7 @@ export async function getPortfolioData(): Promise<PortfolioData> {
         pageTitles,
     ] = await Promise.all([
         getDocumentData<PersonalInfo>('site-data', 'personal-info'),
+        getDocumentData<PrivateInfo>('site-data', 'private-info'),
         getCollectionData<Education>('education', 'order'),
         getCollectionData<Skill>('skills'),
         getCollectionData<Experience>('experience', 'order'),
@@ -74,9 +76,11 @@ export async function getPortfolioData(): Promise<PortfolioData> {
 
     const defaultPersonalInfo = { name: '', dob: '', bloodGroup: '', nationality: '', occupation: '', status: '', hobby: '', aimInLife: '' };
     const defaultContactDetails = { emails: [], phoneNumbers: [] };
+    const defaultPrivateInfo = { father_name: '', father_occupation: '', mother_name: '', mother_occupation: '', present_address: '', permanent_address: '', documents: [] };
 
     return {
         personalInfo: personalInfo || defaultPersonalInfo,
+        privateInfo: privateInfo || defaultPrivateInfo,
         education: education || [],
         skills: skills || [],
         experience: experience || [],
@@ -92,5 +96,3 @@ export async function getPortfolioData(): Promise<PortfolioData> {
         pageTitles: pageTitles || [],
     };
 }
-
-

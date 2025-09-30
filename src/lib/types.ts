@@ -13,6 +13,23 @@ export type PersonalInfo = {
   aimInLife: string;
 };
 
+export type PrivateDocument = {
+  id: string;
+  label: string;
+  url: string;
+  icon_name: string;
+};
+
+export type PrivateInfo = {
+  father_name: string;
+  father_occupation: string;
+  mother_name: string;
+  mother_occupation: string;
+  present_address: string;
+  permanent_address: string;
+  documents: PrivateDocument[];
+}
+
 export type Education = {
   id: string;
   institution: string;
@@ -104,6 +121,7 @@ export type PageTitle = {
 
 export type PortfolioData = {
   personalInfo: PersonalInfo;
+  privateInfo: PrivateInfo;
   education: Education[];
   skills: Skill[];
   projects: Project[];
