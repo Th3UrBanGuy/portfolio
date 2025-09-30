@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { getDocumentData } from '@/lib/placeholder-data';
-import { PrivateInfoForm } from './components';
+import { PrivateInfoForm } from '@/app/admin/private-info/components';
 import {
   Card,
   CardDescription,
