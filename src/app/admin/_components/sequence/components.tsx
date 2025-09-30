@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Save, GripVertical } from 'lucide-react';
+import { Save, ArrowUp, ArrowDown } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useTransition } from 'react';
 import { updateSequence } from './actions';
@@ -30,19 +30,13 @@ export function SequenceForm({ initialSequence }: { initialSequence: Page[] }) {
     },
   });
 
-  const handleDragStart = (e: React.DragEvent<HTMLLIElement>, index: number) => {
-    e.dataTransfer.setData('draggedIndex', index.toString());
-  };
-
-  const handleDragOver = (e: React.DragEvent<HTMLLIElement>) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = (e: React.DragEvent<HTMLLIElement>, dropIndex: number) => {
-    const draggedIndex = parseInt(e.dataTransfer.getData('draggedIndex'), 10);
+  const handleMove = (index: number, direction: 'up' | 'down') => {
     const newSequence = [...sequence];
-    const [draggedItem] = newSequence.splice(draggedIndex, 1);
-    newSequence.splice(dropIndex, 0, draggedItem);
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    
+    // Swap elements
+    [newSequence[index], newSequence[targetIndex]] = [newSequence[targetIndex], newSequence[index]];
+
     setSequence(newSequence);
     form.setValue('sequence', newSequence, { shouldValidate: true, shouldDirty: true });
   };
@@ -66,40 +60,64 @@ export function SequenceForm({ initialSequence }: { initialSequence: Page[] }) {
     });
   }
 
+  // Find the boundaries for movable items
+  const firstMovableIndex = sequence.findIndex(p => !pageConfig[p].isFixed);
+  const lastMovableIndex = sequence.length - 1 - [...sequence].reverse().findIndex(p => !pageConfig[p].isFixed);
+
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
       <Card>
         <CardContent className="p-6">
             <p className="text-sm text-muted-foreground mb-4">
-                The first and last pages (Cover and Back Cover) are fixed. Drag the pages in between to set your desired order.
+                The first and last pages (Cover and Back Cover) are fixed. Use the arrow buttons to reorder the pages in between.
             </p>
           <ul className="space-y-2">
             {sequence.map((pageId, index) => {
               const config = pageConfig[pageId];
-              const isDraggable = !config.isFixed;
+              const isMovable = !config.isFixed;
               const Icon = config.icon;
 
               return (
                 <li
                   key={pageId}
-                  draggable={isDraggable}
-                  onDragStart={isDraggable ? (e) => handleDragStart(e, index) : undefined}
-                  onDragOver={isDraggable ? handleDragOver : undefined}
-                  onDrop={isDraggable ? (e) => handleDrop(e, index) : undefined}
                   className={`flex items-center p-3 rounded-lg border transition-shadow ${
-                    isDraggable
-                      ? 'cursor-grab bg-background hover:shadow-md'
+                    isMovable
+                      ? 'bg-background hover:shadow-md'
                       : 'cursor-not-allowed bg-muted text-muted-foreground'
                   }`}
                 >
                   <div className="flex items-center gap-3 flex-grow">
-                    {isDraggable && <GripVertical className="h-5 w-5 text-muted-foreground" />}
                     <Icon className="h-5 w-5 text-primary" />
                     <span className="font-medium">{config.label}</span>
                   </div>
-                  <span className="text-xs text-muted-foreground">
-                    {config.isFixed ? (index === 0 ? 'First Page' : 'Last Page') : `Position ${index}`}
-                  </span>
+                  {isMovable ? (
+                     <div className="flex items-center gap-1">
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleMove(index, 'up')}
+                            disabled={index === firstMovableIndex || isPending}
+                        >
+                            <ArrowUp className="h-4 w-4" />
+                            <span className="sr-only">Move Up</span>
+                        </Button>
+                         <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleMove(index, 'down')}
+                            disabled={index === lastMovableIndex || isPending}
+                        >
+                            <ArrowDown className="h-4 w-4" />
+                            <span className="sr-only">Move Down</span>
+                        </Button>
+                    </div>
+                  ) : (
+                    <span className="text-xs text-muted-foreground">
+                        {index === 0 ? 'Fixed (First Page)' : 'Fixed (Last Page)'}
+                    </span>
+                  )}
                 </li>
               );
             })}
