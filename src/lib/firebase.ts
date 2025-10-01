@@ -2,13 +2,19 @@ import { initializeApp, getApp, getApps } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  "projectId": "studio-6735051727-ce0b9",
-  "appId": "1:907990168113:web:26c266b21874efa4635b10",
-  "apiKey": "AIzaSyBu4iXxDcpF2u7h9bBxjkOCs2gWwY-ihQY",
-  "authDomain": "studio-6735051727-ce0b9.firebaseapp.com",
-  "measurementId": "",
-  "messagingSenderId": "907990168113"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
+
+// Basic validation
+if (!firebaseConfig.projectId || !firebaseConfig.apiKey) {
+  throw new Error('Firebase configuration is missing. Please check your .env.local file.');
+}
 
 // Initialize Firebase
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();

@@ -20,29 +20,31 @@ import { useTransition } from 'react';
 import { updateTitle } from '../actions';
 
 const formSchema = z.object({
-  title: z.string().min(1, "Page title is required."),
+  pageTitle: z.string().min(1, "Page title is required."),
+  tocTitle: z.string().min(1, "Table of Contents title is required."),
 });
 
 type TitleFormValues = z.infer<typeof formSchema>;
 
-export function TitleForm({ title }: { title: string }) {
+export function TitleForm({ pageTitle, tocTitle }: { pageTitle: string, tocTitle: string }) {
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<TitleFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: title,
+      pageTitle: pageTitle,
+      tocTitle: tocTitle,
     },
   });
 
   function onSubmit(values: TitleFormValues) {
     startTransition(async () => {
-      const result = await updateTitle(values.title);
+      const result = await updateTitle(values);
       if (result.success) {
         toast({
           title: 'Title Updated',
-          description: 'The page title has been saved.',
+          description: 'The page titles have been saved.',
         });
       } else {
         toast({
@@ -59,25 +61,40 @@ export function TitleForm({ title }: { title: string }) {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <Card>
             <CardHeader>
-                <CardTitle>Page Title</CardTitle>
+                <CardTitle>Page & ToC Titles</CardTitle>
             </CardHeader>
-            <CardContent className="flex items-center gap-4">
-                <FormField
-                    control={form.control}
-                    name="title"
-                    render={({ field }) => (
-                        <FormItem className="flex-grow">
-                        <FormLabel>Title</FormLabel>
-                        <FormControl>
-                            <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <Button type="submit" disabled={isPending} className="mt-8">
+            <CardContent className="flex flex-col gap-4">
+                <div className="flex items-center gap-4">
+                    <FormField
+                        control={form.control}
+                        name="pageTitle"
+                        render={({ field }) => (
+                            <FormItem className="flex-grow">
+                            <FormLabel>Page Title</FormLabel>
+                            <FormControl>
+                                <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="tocTitle"
+                        render={({ field }) => (
+                            <FormItem className="flex-grow">
+                            <FormLabel>Table of Contents Title</FormLabel>
+                            <FormControl>
+                                <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+                <Button type="submit" disabled={isPending} className="self-end">
                     <Save className="mr-2" />
-                    {isPending ? 'Saving...' : 'Save'}
+                    {isPending ? 'Saving...' : 'Save Titles'}
                 </Button>
             </CardContent>
         </Card>

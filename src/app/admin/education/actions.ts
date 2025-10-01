@@ -50,13 +50,12 @@ export async function updateEducation(educationData: Omit<Education, 'order'>[])
   }
 }
 
-export async function updateTitle(title: string): Promise<{ success: boolean; error?: string }> {
-  try {
-    await setDoc(doc(db, 'page-titles', 'education'), { title });
-
-    revalidatePath('/');
-    revalidatePath('/admin/education');
-
+export async function updateTitle(data: { pageTitle: string; tocTitle: string }): Promise<{ success: boolean; error?: string }> {
+    try {
+      await setDoc(doc(db, 'page-titles', 'education'), data);
+  
+      revalidatePath('/');
+      revalidatePath('/admin/education');
     return { success: true };
   } catch (error) {
     if (error instanceof z.ZodError) {

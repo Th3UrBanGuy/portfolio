@@ -24,7 +24,7 @@ type EducationPageProps = {
 
 export default function EducationPage({ setActiveView }: EducationPageProps) {
   const [education, setEducation] = useState<Education[]>([]);
-  const [title, setTitle] = useState('');
+  const [titles, setTitles] = useState({ pageTitle: '', tocTitle: '' });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -34,7 +34,10 @@ export default function EducationPage({ setActiveView }: EducationPageProps) {
         getDocumentData<PageTitle>('page-titles', 'education'),
       ]);
       setEducation(educationData);
-      setTitle(titleData?.title ?? 'Education');
+      setTitles({
+        pageTitle: titleData?.pageTitle ?? 'Education',
+        tocTitle: titleData?.tocTitle ?? 'Education',
+      });
       setLoading(false);
     }
     fetchData();
@@ -64,7 +67,7 @@ export default function EducationPage({ setActiveView }: EducationPageProps) {
         </div>
       ) : (
         <>
-            <TitleForm title={title} />
+            <TitleForm pageTitle={titles.pageTitle} tocTitle={titles.tocTitle} />
             <EducationForm data={education} />
         </>
       )}

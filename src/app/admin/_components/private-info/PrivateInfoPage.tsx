@@ -1,20 +1,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getDocumentData } from '@/lib/placeholder-data';
-import { PrivateInfoForm } from '@/app/admin/private-info/components';
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import type { PrivateInfo } from '@/lib/types';
+import { TitleForm } from '@/app/admin/private-info/components/TitleForm';
+import { PrivateInfo, PageTitle } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { getDocumentData } from '@/lib/placeholder-data';
+import EditPrivateInfoForm from './EditPrivateInfoForm';
 
-type AdminView = 'dashboard' | 'profile' | 'private-info' | 'education' | 'skills' | 'experience' | 'achievements' | 'projects' | 'contact' | 'security';
+type AdminView = 'dashboard' | 'profile' | 'education' | 'skills' | 'experience' | 'achievements' | 'projects' | 'contact' | 'security' | 'private-info';
 
 type PrivateInfoPageProps = {
   setActiveView: (view: AdminView) => void;
@@ -22,12 +18,20 @@ type PrivateInfoPageProps = {
 
 export default function PrivateInfoPage({ setActiveView }: PrivateInfoPageProps) {
   const [privateInfo, setPrivateInfo] = useState<PrivateInfo | null>(null);
+  const [titles, setTitles] = useState({ pageTitle: '', tocTitle: '' });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
-      const data = await getDocumentData<PrivateInfo>('site-data', 'private-info');
-      setPrivateInfo(data);
+      const [privateInfoData, titleData] = await Promise.all([
+        getDocumentData<PrivateInfo>('site-data', 'private-info'),
+        getDocumentData<PageTitle>('page-titles', 'private-info'),
+      ]);
+      setPrivateInfo(privateInfoData);
+      setTitles({
+        pageTitle: titleData?.pageTitle ?? 'Private Info',
+        tocTitle: titleData?.tocTitle ?? 'Private Info',
+      });
       setLoading(false);
     }
     fetchData();
@@ -35,12 +39,12 @@ export default function PrivateInfoPage({ setActiveView }: PrivateInfoPageProps)
 
   return (
     <div className="space-y-6">
-       <Card>
+      <Card>
         <CardHeader className="flex flex-row items-center justify-between">
             <div>
                 <CardTitle>Manage Private Information</CardTitle>
                 <CardDescription>
-                    Update your sensitive personal information and private documents.
+                    Edit the private information section of your portfolio.
                 </CardDescription>
             </div>
             <Button variant="outline" size="icon" onClick={() => setActiveView('dashboard')}>
@@ -50,12 +54,16 @@ export default function PrivateInfoPage({ setActiveView }: PrivateInfoPageProps)
       </Card>
       {loading || !privateInfo ? (
         <div className="space-y-4">
+          <Skeleton className="h-8 w-1/4" />
           <Skeleton className="h-12 w-full" />
-          <Skeleton className="h-32 w-full" />
-          <Skeleton className="h-32 w-full" />
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-40 w-full" />
         </div>
       ) : (
-        <PrivateInfoForm data={privateInfo} />
+        <>
+            <TitleForm pageTitle={titles.pageTitle} tocTitle={titles.tocTitle} />
+            <EditPrivateInfoForm initialData={privateInfo} />
+        </>
       )}
     </div>
   );

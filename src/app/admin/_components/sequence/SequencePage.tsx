@@ -12,7 +12,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
-import { Page, ALL_PAGES } from '@/lib/types';
+import { Page, ALL_PAGES, PageSequence } from '@/lib/types';
 
 
 type AdminView =
@@ -33,24 +33,23 @@ type SequencePageProps = {
 };
 
 export default function SequencePage({ setActiveView }: SequencePageProps) {
-  const [sequence, setSequence] = useState<Page[] | null>(null);
+  const [sequence, setSequence] = useState<PageSequence | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
-      const data = await getDocumentData<{ sequence: Page[] }>('site-data', 'page-sequence');
-      if (data?.sequence) {
-        // Ensure all pages are present, add new ones if they are not
-        const currentPages = new Set(data.sequence);
-        const fullSequence = [...data.sequence];
-        ALL_PAGES.forEach(page => {
-            if (!currentPages.has(page)) {
-                fullSequence.push(page);
-            }
-        });
-        setSequence(fullSequence);
+      const data = await getDocumentData<PageSequence | { sequence: Page[] }>('site-data', 'page-sequence');
+      if (data) {
+        if ('activePages' in data) {
+          setSequence(data as PageSequence);
+        } else if ('sequence' in data) {
+          // Convert old format to new format
+          const activePages = data.sequence;
+          const hiddenPages = ALL_PAGES.filter(p => !activePages.includes(p));
+          setSequence({ activePages, hiddenPages });
+        }
       } else {
-        setSequence(ALL_PAGES);
+        setSequence({ activePages: ALL_PAGES, hiddenPages: [] });
       }
       setLoading(false);
     }

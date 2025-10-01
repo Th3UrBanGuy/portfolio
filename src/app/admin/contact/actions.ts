@@ -88,9 +88,9 @@ export async function updateContactAndSocials(
   }
 }
 
-export async function updateTitle(title: string): Promise<{ success: boolean; error?: string }> {
+export async function updateTitle(data: { pageTitle: string; tocTitle: string }): Promise<{ success: boolean; error?: string }> {
     try {
-      await setDoc(doc(db, 'page-titles', 'contact'), { title });
+      await setDoc(doc(db, 'page-titles', 'contact'), data);
   
       revalidatePath('/');
       revalidatePath('/admin/contact');

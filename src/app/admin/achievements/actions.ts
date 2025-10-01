@@ -54,9 +54,9 @@ export async function updateAchievements(achievementsData: Omit<Achievement, 'or
   }
 }
 
-export async function updateTitle(title: string): Promise<{ success: boolean; error?: string }> {
+export async function updateTitle(data: { pageTitle: string; tocTitle: string }): Promise<{ success: boolean; error?: string }> {
     try {
-      await setDoc(doc(db, 'page-titles', 'achievements'), { title });
+      await setDoc(doc(db, 'page-titles', 'achievements'), data);
   
       revalidatePath('/');
       revalidatePath('/admin/achievements');

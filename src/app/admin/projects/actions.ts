@@ -59,9 +59,9 @@ export async function updateProjects(projectsData: ProjectData): Promise<{ succe
   }
 }
 
-export async function updateTitle(title: string): Promise<{ success: boolean; error?: string }> {
+export async function updateTitle(data: { pageTitle: string; tocTitle: string }): Promise<{ success: boolean; error?: string }> {
     try {
-      await setDoc(doc(db, 'page-titles', 'projects'), { title });
+      await setDoc(doc(db, 'page-titles', 'projects'), data);
   
       revalidatePath('/');
       revalidatePath('/admin/projects');

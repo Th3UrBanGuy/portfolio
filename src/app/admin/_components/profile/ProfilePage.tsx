@@ -1,19 +1,20 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getPortfolioData } from '@/lib/placeholder-data';
+import { getPortfolioData, getDocumentData } from '@/lib/placeholder-data';
 import { ProfileForm } from '@/app/admin/profile/components';
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { PortfolioData } from '@/lib/types';
+import { PortfolioData, PageTitle } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
+import { TitleForm } from '@/app/admin/profile/components/TitleForm';
+
 
 type AdminView = 'dashboard' | 'profile' | 'education' | 'skills' | 'experience' | 'achievements' | 'projects' | 'contact' | 'security';
 
@@ -23,12 +24,20 @@ type ProfilePageProps = {
 
 export default function ProfilePage({ setActiveView }: ProfilePageProps) {
   const [portfolioData, setPortfolioData] = useState<PortfolioData | null>(null);
+  const [titles, setTitles] = useState({ pageTitle: '', tocTitle: '' });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
-      const data = await getPortfolioData();
+      const [data, titleData] = await Promise.all([
+        getPortfolioData(),
+        getDocumentData<PageTitle>('page-titles', 'profile'),
+      ]);
       setPortfolioData(data);
+      setTitles({
+        pageTitle: titleData?.pageTitle ?? 'Profile',
+        tocTitle: titleData?.tocTitle ?? 'Profile',
+      });
       setLoading(false);
     }
     fetchData();
@@ -57,7 +66,10 @@ export default function ProfilePage({ setActiveView }: ProfilePageProps) {
           <Skeleton className="h-12 w-full" />
         </div>
       ) : (
-        <ProfileForm data={portfolioData!} />
+        <>
+            <TitleForm pageTitle={titles.pageTitle} tocTitle={titles.tocTitle} />
+            <ProfileForm data={portfolioData!} />
+        </>
       )}
     </div>
   );

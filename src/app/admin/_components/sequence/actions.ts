@@ -4,10 +4,11 @@ import { z } from 'zod';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { revalidatePath } from 'next/cache';
-import { PageSchema } from '@/lib/types';
+import { PageSchema } from '@/lib/schemas/page';
 
 const sequenceSchema = z.object({
-  sequence: z.array(PageSchema),
+  activePages: z.array(PageSchema),
+  hiddenPages: z.array(PageSchema),
 });
 
 export async function updateSequence(data: z.infer<typeof sequenceSchema>): Promise<{ success: boolean; error?: string }> {

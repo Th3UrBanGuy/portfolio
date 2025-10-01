@@ -49,13 +49,12 @@ export async function updateSkills(skillsData: Skill[]): Promise<{ success: bool
   }
 }
 
-export async function updateTitle(title: string): Promise<{ success: boolean; error?: string }> {
-  try {
-    await setDoc(doc(db, 'page-titles', 'skills'), { title });
-
-    revalidatePath('/');
-    revalidatePath('/admin/skills');
-
+export async function updateTitle(data: { pageTitle: string; tocTitle: string }): Promise<{ success: boolean; error?: string }> {
+    try {
+      await setDoc(doc(db, 'page-titles', 'skills'), data);
+  
+      revalidatePath('/');
+      revalidatePath('/admin/skills');
     return { success: true };
   } catch (error) {
     if (error instanceof z.ZodError) {

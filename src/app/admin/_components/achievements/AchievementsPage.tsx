@@ -23,7 +23,7 @@ type AchievementsPageProps = {
 
 export default function AchievementsPage({ setActiveView }: AchievementsPageProps) {
   const [achievements, setAchievements] = useState<Achievement[]>([]);
-  const [title, setTitle] = useState('');
+  const [titles, setTitles] = useState({ pageTitle: '', tocTitle: '' });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -33,7 +33,10 @@ export default function AchievementsPage({ setActiveView }: AchievementsPageProp
         getDocumentData<PageTitle>('page-titles', 'achievements'),
       ]);
       setAchievements(achievementsData);
-      setTitle(titleData?.title ?? 'Achievements');
+      setTitles({
+        pageTitle: titleData?.pageTitle ?? 'Achievements',
+        tocTitle: titleData?.tocTitle ?? 'Achievements',
+      });
       setLoading(false);
     }
     fetchData();
@@ -63,7 +66,7 @@ export default function AchievementsPage({ setActiveView }: AchievementsPageProp
         </div>
       ) : (
         <>
-            <TitleForm title={title} />
+            <TitleForm pageTitle={titles.pageTitle} tocTitle={titles.tocTitle} />
             <AchievementsForm data={achievements} />
         </>
       )}

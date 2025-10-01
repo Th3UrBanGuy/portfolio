@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import type { PortfolioData, Project, Skill } from '@/lib/types';
+import type { PortfolioData, Project, Skill, Page } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import CoverPage from './pages/CoverPage';
@@ -22,45 +22,39 @@ import BackCoverPage from './pages/BackCoverPage';
 import Preloader from '../Preloader';
 import StaticIntroPage from './pages/StaticIntroPage';
 import StaticOutroPage from './pages/StaticOutroPage';
+import PrivateInfoPage from './pages/PrivateInfoPage';
 
-
-type Page = 'cover' | 'toc' | 'about' | 'education' | 'skills' | 'experience' | 'achievements' | 'projects' | 'contact' | 'back-cover';
-const pageOrder: Page[] = ['cover', 'toc', 'about', 'education', 'skills', 'experience', 'achievements', 'projects', 'contact', 'back-cover'];
-
-const PageComponentWrapper = React.forwardRef<HTMLDivElement, { children: React.ReactNode, isCover?: boolean, isBackCover?: boolean, pageNumber: number }>(
-  ({ children, isCover, isBackCover, pageNumber }, ref) => {
-    return (
-      <div ref={ref} className={cn("overflow-hidden", (isCover || isBackCover) ? "bg-stone-950" : "bg-page-background text-page-foreground")}>
-        <div className={cn(
-            "p-8 md:p-10 h-full w-full relative",
-        )}>
-            {!(isCover || isBackCover) && (
-                <div className={cn(
-                    "absolute inset-y-0 w-8 pointer-events-none",
-                    pageNumber % 2 === 0 ? "left-0 bg-gradient-to-r from-black/10 to-transparent" : "right-0 bg-gradient-to-l from-black/10 to-transparent"
-                )} />
-            )}
-            
-            <div className="relative z-10 h-full w-full">
-                {children}
-            </div>
-            
-            {!(isCover || isBackCover) && (
-                 <div className={cn(
-                    "absolute bottom-4 text-xs font-sans",
-                    pageNumber % 2 === 0 ? "left-6" : "right-6",
-                    "text-page-foreground/50"
-                 )}>
-                    {pageNumber}
-                </div>
-            )}
-        </div>
+const PageComponentWrapper = React.forwardRef<HTMLDivElement, { children: React.ReactNode, isCover?: boolean, isBackCover?: boolean, pageNumber: number }>(({ children, isCover, isBackCover, pageNumber }, ref) => {
+  return (
+    <div ref={ref} className={cn("overflow-hidden", (isCover || isBackCover) ? "bg-stone-950" : "bg-page-background text-page-foreground")}>
+      <div className={cn(
+          "p-8 md:p-10 h-full w-full relative",
+      )}>
+          {!(isCover || isBackCover) && (
+              <div className={cn(
+                  "absolute inset-y-0 w-8 pointer-events-none",
+                  pageNumber % 2 === 0 ? "left-0 bg-gradient-to-r from-black/10 to-transparent" : "right-0 bg-gradient-to-l from-black/10 to-transparent"
+              )} />
+          )}
+          
+          <div className="relative z-10 h-full w-full">
+              {children}
+          </div>
+          
+          {!(isCover || isBackCover) && (
+               <div className={cn(
+                  "absolute bottom-4 text-xs font-sans",
+                  pageNumber % 2 === 0 ? "left-6" : "right-6",
+                  "text-page-foreground/50"
+               )}>
+                  {pageNumber}
+              </div>
+          )}
       </div>
-    );
-  }
-);
+    </div>
+  );
+});
 PageComponentWrapper.displayName = 'PageComponentWrapper';
-
 
 export default function Flipbook({ data }: { data: PortfolioData }) {
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
@@ -75,10 +69,6 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
   useEffect(() => {
     setIsMounted(true);
   }, []);
-
-  const handleOpenBook = () => {
-    navigate('toc');
-  };
 
   useEffect(() => {
     if (!isMounted) return;
@@ -118,19 +108,27 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
     };
   }, [isMounted, isMobile]);
 
-  const totalPages = pageOrder.length;
-
   const onFlip = useCallback((e: { data: number }) => {
     setCurrentPageIndex(e.data);
   }, []);
 
+  const pageOrder = data?.pageSequence?.activePages;
+
+  if (!isMounted || !data || !pageOrder) {
+    return (
+        <div className="h-dvh w-full bg-background flex items-center justify-center">
+            <Preloader showFire={true} isClosing={false} />
+        </div>
+    );
+  }
+
+  const totalPages = pageOrder.length;
 
   const navigate = (page: Page) => {
     const newIndex = pageOrder.indexOf(page);
-    if (bookRef.current) {
+    if (bookRef.current && newIndex !== -1) {
       bookRef.current.pageFlip().turnToPage(newIndex);
     }
-    setCurrentPageIndex(newIndex);
   };
 
   const nextPage = () => {
@@ -145,40 +143,38 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
     }
   };
 
+  const handleOpenBook = () => {
+    nextPage();
+  };
+
   const renderPageContent = (page: Page, pageNumber: number) => {
-    const pageTitle = data.pageTitles.find(p => p.id === page)?.title;
+    const titles = data.pageTitles.find(p => p.id === page);
     switch (page) {
         case 'cover':
             return <CoverPage onOpen={handleOpenBook} />;
         case 'toc':
-            return <TableOfContents onNavigate={navigate} />;
+            return <TableOfContents onNavigate={navigate} activePages={pageOrder} pageTitles={data.pageTitles} />;
         case 'about':
             return <AboutPage personalInfo={data.personalInfo} imageUrl={data.authorImageUrl} imageHint={data.authorImageHint} aboutMe={data.aboutMe} cvLink={data.cvLink} />;
         case 'education':
-            return <EducationPage education={data.education} title={pageTitle ?? 'Education'} />;
+            return <EducationPage education={data.education} title={titles?.pageTitle ?? 'Education'} />;
         case 'skills':
-            return <SkillsPage skills={data.skills} onSkillSelect={setSelectedSkill} title={pageTitle ?? 'Skills'} />;
+            return <SkillsPage skills={data.skills} onSkillSelect={setSelectedSkill} title={titles?.pageTitle ?? 'Skills'} />;
         case 'experience':
-            return <ExperiencePage experience={data.experience} title={pageTitle ?? 'Experience'} />;
+            return <ExperiencePage experience={data.experience} title={titles?.pageTitle ?? 'Experience'} />;
         case 'achievements':
-            return <AchievementsPage achievements={data.achievements} title={pageTitle ?? 'Achievements'} />;
+            return <AchievementsPage achievements={data.achievements} title={titles?.pageTitle ?? 'Achievements'} />;
+        case 'private-info':
+            return <PrivateInfoPage privateInfo={data.privateInfo} title={titles?.pageTitle ?? 'Private Sanctum'} />;
         case 'projects':
-            return <ProjectsPage projects={data.projects} onProjectSelect={setSelectedProject} title={pageTitle ?? 'Projects'} />;
+            return <ProjectsPage projects={data.projects} onProjectSelect={setSelectedProject} title={titles?.pageTitle ?? 'Projects'} />;
         case 'contact':
-            return <ContactPage contactDetails={data.contactDetails} socials={data.socials} customLinks={data.customLinks} title={pageTitle ?? 'Contact'}/>;
+            return <ContactPage contactDetails={data.contactDetails} socials={data.socials} customLinks={data.customLinks} title={titles?.pageTitle ?? 'Contact'}/>;
         case 'back-cover':
             return <BackCoverPage />;
         default:
             return null;
     }
-  }
-
-  if (!isMounted || !data) {
-    return (
-        <div className="h-dvh w-full bg-background flex items-center justify-center">
-            <Preloader showFire={true} isClosing={false} />
-        </div>
-    );
   }
 
   const flipbookPages = pageOrder.map((page, index) => (

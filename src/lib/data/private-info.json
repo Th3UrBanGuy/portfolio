@@ -1,0 +1,50 @@
+{
+  "parentalInfo": [
+    {
+      "id": "father_name",
+      "label": "Father Name",
+      "value": "Md Reaz Miah",
+      "isSecret": false
+    },
+    {
+      "id": "father_occupation",
+      "label": "Father's Occupation",
+      "value": "Businessman",
+      "isSecret": false
+    },
+    {
+      "id": "mother_name",
+      "label": "Mother's Name",
+      "value": "Sheema Ahmed",
+      "isSecret": false
+    },
+    {
+      "id": "mother_occupation",
+      "label": "Mother's Occupation",
+      "value": "Housewife",
+      "isSecret": false
+    }
+  ],
+  "addressInfo": [
+    {
+      "id": "present_address",
+      "label": "Present Address",
+      "value": "123 Main St, Anytown, USA",
+      "isSecret": false
+    },
+    {
+      "id": "permanent_address",
+      "label": "Permanent Address",
+      "value": "456 Oak Ave, Anytown, USA",
+      "isSecret": false
+    }
+  ],
+  "documents": [
+    {
+      "id": "new-doc-1759256693568",
+      "label": "Nt",
+      "url": "https://drive.google.com/file/d/1QJTndQSYgLVg0Pouc8E93L3IVqbUmsLh/view?usp=drivesdk",
+      "icon_name": "Filetext"
+    }
+  ]
+}

@@ -46,3 +46,20 @@ export async function updateProfile(data: ProfileFormValues): Promise<{ success:
     return { success: false, error: 'An unexpected error occurred.' };
   }
 }
+
+export async function updateTitle(data: { pageTitle: string; tocTitle: string }): Promise<{ success: boolean; error?: string }> {
+    try {
+      await setDoc(doc(db, 'page-titles', 'profile'), data);
+  
+      revalidatePath('/');
+      revalidatePath('/admin/profile');
+  
+      return { success: true };
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return { success: false, error: error.errors.map(e => e.message).join(', ') };
+      }
+      console.error('Error updating title:', error);
+      return { success: false, error: 'An unexpected error occurred.' };
+    }
+  }

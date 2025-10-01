@@ -6,16 +6,7 @@ import { BookOpenCheck, Briefcase, GraduationCap, Lock, Mail, Star, Trophy, User
 import React from 'react';
 
 // --- Page Sequence and Configuration ---
-export const PageSchema = z.enum([
-  'cover', 'toc', 'about', 'private-info', 'education', 'skills', 
-  'experience', 'achievements', 'projects', 'contact', 'back-cover'
-]);
-export type Page = z.infer<typeof PageSchema>;
-
-export const ALL_PAGES: Page[] = [
-  'cover', 'toc', 'about', 'private-info', 'education', 'skills', 
-  'experience', 'achievements', 'projects', 'contact', 'back-cover'
-];
+import { PageSchema, type Page } from './schemas/page';
 
 export const pageConfig: Record<Page, { id: Page; label: string; icon: React.ElementType; isFixed?: boolean; isNavigable?: boolean }> = {
   'cover': { id: 'cover', label: 'Cover', icon: () => null, isFixed: true, isNavigable: false },
@@ -30,6 +21,8 @@ export const pageConfig: Record<Page, { id: Page; label: string; icon: React.Ele
   'contact': { id: 'contact', label: 'Contact', icon: Mail, isFixed: false, isNavigable: true },
   'back-cover': { id: 'back-cover', label: 'Back Cover', icon: () => null, isFixed: true, isNavigable: false },
 };
+
+export const ALL_PAGES = Object.keys(pageConfig) as Page[];
 
 // --- Data Types ---
 
@@ -51,13 +44,21 @@ export type PrivateDocument = {
   icon_name: string;
 };
 
+export type CustomField = {
+  id: string;
+  label: string;
+  value: string;
+  isSecret: boolean;
+};
+
+export type PrivateInfoSection = {
+  id: string;
+  title: string;
+  fields: CustomField[];
+};
+
 export type PrivateInfo = {
-  father_name: string;
-  father_occupation: string;
-  mother_name: string;
-  mother_occupation: string;
-  present_address: string;
-  permanent_address: string;
+  sections: PrivateInfoSection[];
   documents: PrivateDocument[];
 }
 
@@ -147,7 +148,13 @@ export type Skill = {
 
 export type PageTitle = {
   id: string;
-  title: string;
+  pageTitle: string;
+  tocTitle: string;
+};
+
+export type PageSequence = {
+  activePages: Page[];
+  hiddenPages: Page[];
 };
 
 export type PortfolioData = {
@@ -166,7 +173,7 @@ export type PortfolioData = {
   cvLink: string;
   customLinks: CustomLink[];
   pageTitles: PageTitle[];
-  pageSequence: Page[];
+  pageSequence: PageSequence;
 };
 export type ViewerData = {
     id: string;

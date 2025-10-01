@@ -24,7 +24,7 @@ type ExperiencePageProps = {
 
 export default function ExperiencePage({ setActiveView }: ExperiencePageProps) {
   const [experience, setExperience] = useState<Experience[]>([]);
-  const [title, setTitle] = useState('');
+  const [titles, setTitles] = useState({ pageTitle: '', tocTitle: '' });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -34,7 +34,10 @@ export default function ExperiencePage({ setActiveView }: ExperiencePageProps) {
         getDocumentData<PageTitle>('page-titles', 'experience'),
       ]);
       setExperience(experienceData);
-      setTitle(titleData?.title ?? 'Experience');
+      setTitles({
+        pageTitle: titleData?.pageTitle ?? 'Experience',
+        tocTitle: titleData?.tocTitle ?? 'Experience',
+      });
       setLoading(false);
     }
     fetchData();
@@ -64,7 +67,7 @@ export default function ExperiencePage({ setActiveView }: ExperiencePageProps) {
         </div>
       ) : (
         <>
-            <TitleForm title={title} />
+            <TitleForm pageTitle={titles.pageTitle} tocTitle={titles.tocTitle} />
             <ExperienceForm data={experience} />
         </>
       )}

@@ -24,7 +24,7 @@ type ProjectsPageProps = {
 export default function ProjectsPage({ setActiveView }: ProjectsPageProps) {
   const [projects, setProjects] = useState<Project[]>([]);
   const [bundles, setBundles] = useState<string[]>([]);
-  const [title, setTitle] = useState('');
+  const [titles, setTitles] = useState({ pageTitle: '', tocTitle: '' });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -37,7 +37,10 @@ export default function ProjectsPage({ setActiveView }: ProjectsPageProps) {
       const bundleData = [...new Set(projectData.map(p => p.category))];
       setProjects(projectData);
       setBundles(bundleData);
-      setTitle(titleData?.title ?? 'Projects');
+      setTitles({
+        pageTitle: titleData?.pageTitle ?? 'Projects',
+        tocTitle: titleData?.tocTitle ?? 'Projects',
+      });
       setLoading(false);
     }
     fetchData();
@@ -67,7 +70,7 @@ export default function ProjectsPage({ setActiveView }: ProjectsPageProps) {
           </div>
         ) : (
             <>
-                <TitleForm title={title} />
+                <TitleForm pageTitle={titles.pageTitle} tocTitle={titles.tocTitle} />
                 <ContentView projects={projects} bundles={bundles} />
             </>
         )}

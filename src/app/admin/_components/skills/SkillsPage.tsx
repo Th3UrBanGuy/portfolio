@@ -24,7 +24,7 @@ type SkillsPageProps = {
 export default function SkillsPage({ setActiveView }: SkillsPageProps) {
   const [skills, setSkills] = useState<Skill[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
-  const [title, setTitle] = useState('');
+  const [titles, setTitles] = useState({ pageTitle: '', tocTitle: '' });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -37,7 +37,10 @@ export default function SkillsPage({ setActiveView }: SkillsPageProps) {
       const categoryData = [...new Set(skillData.map(s => s.category))];
       setSkills(skillData);
       setCategories(categoryData);
-      setTitle(titleData?.title ?? 'Skills');
+      setTitles({
+        pageTitle: titleData?.pageTitle ?? 'Skills',
+        tocTitle: titleData?.tocTitle ?? 'Skills',
+      });
       setLoading(false);
     }
     fetchData();
@@ -67,7 +70,7 @@ export default function SkillsPage({ setActiveView }: SkillsPageProps) {
           </div>
         ) : (
             <>
-                <TitleForm title={title} />
+                <TitleForm pageTitle={titles.pageTitle} tocTitle={titles.tocTitle} />
                 <ContentView initialSkills={skills} initialCategories={categories} />
             </>
         )}

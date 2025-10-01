@@ -58,9 +58,9 @@ export async function updateExperience(experienceData: Omit<Experience, 'order'>
   }
 }
 
-export async function updateTitle(title: string): Promise<{ success: boolean; error?: string }> {
+export async function updateTitle(data: { pageTitle: string; tocTitle: string }): Promise<{ success: boolean; error?: string }> {
     try {
-      await setDoc(doc(db, 'page-titles', 'experience'), { title });
+      await setDoc(doc(db, 'page-titles', 'experience'), data);
   
       revalidatePath('/');
       revalidatePath('/admin/experience');

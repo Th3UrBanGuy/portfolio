@@ -25,7 +25,7 @@ export default function ContactPage({ setActiveView }: ContactPageProps) {
   const [contactDetails, setContactDetails] = useState<ContactDetails | null>(null);
   const [socials, setSocials] = useState<Social[]>([]);
   const [customLinks, setCustomLinks] = useState<CustomLink[]>([]);
-  const [title, setTitle] = useState('');
+  const [titles, setTitles] = useState({ pageTitle: '', tocTitle: '' });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -37,7 +37,10 @@ export default function ContactPage({ setActiveView }: ContactPageProps) {
       setContactDetails(portfolioData.contactDetails);
       setSocials(portfolioData.socials);
       setCustomLinks(portfolioData.customLinks);
-      setTitle(titleData?.title ?? 'Contact');
+      setTitles({
+        pageTitle: titleData?.pageTitle ?? 'Contact',
+        tocTitle: titleData?.tocTitle ?? 'Contact',
+      });
       setLoading(false);
     }
     fetchData();
@@ -67,7 +70,7 @@ export default function ContactPage({ setActiveView }: ContactPageProps) {
         </div>
       ) : (
         <>
-            <TitleForm title={title} />
+            <TitleForm pageTitle={titles.pageTitle} tocTitle={titles.tocTitle} />
             <ContactForm
             contactDetails={contactDetails}
             socials={socials}
