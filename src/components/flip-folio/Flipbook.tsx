@@ -172,16 +172,39 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
             return <ContactPage contactDetails={data.contactDetails} socials={data.socials} customLinks={data.customLinks} title={titles?.pageTitle ?? 'Contact'}/>;
         case 'back-cover':
             return <BackCoverPage />;
+        case 'blank-page':
+            return <div></div>;
         default:
             return null;
     }
   }
 
-  const flipbookPages = pageOrder.map((page, index) => (
+  const pages: Page[] = [];
+  const coverPage = pageOrder.find(p => p === 'cover');
+  const backCoverPage = pageOrder.find(p => p === 'back-cover');
+  const contentPages = pageOrder.filter(p => p !== 'cover' && p !== 'back-cover');
+
+  if (coverPage) {
+    pages.push(coverPage);
+  }
+
+  pages.push(...contentPages);
+
+  if (!isMobile && contentPages.length % 2 !== 0) {
+    pages.push('blank-page' as Page);
+  }
+
+  if (backCoverPage) {
+    pages.push(backCoverPage);
+  }
+
+  const flipbookPages = pages.map((page, index) => (
     <PageComponentWrapper key={index} isCover={page === 'cover'} isBackCover={page === 'back-cover'} pageNumber={index}>
         {renderPageContent(page, index)}
     </PageComponentWrapper>
   ));
+
+  const finalTotalPages = flipbookPages.length;
 
 
   return (
@@ -217,7 +240,7 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
                         {flipbookPages}
                     </HTMLFlipBook>
 
-                     {!isMobile && currentPageIndex === totalPages - 1 && (
+                     {!isMobile && currentPageIndex === finalTotalPages - 1 && (
                         <div className='absolute right-0 top-0 bottom-0 w-1/2'>
                            <StaticOutroPage />
                         </div>
@@ -230,8 +253,8 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
             <Button onClick={prevPage} disabled={currentPageIndex === 0} variant="outline" size="icon" className="bg-background/50">
                 <ArrowLeft />
             </Button>
-            <span className="text-sm text-foreground/70">{currentPageIndex === 0 ? 'Cover' : currentPageIndex === totalPages - 1 ? 'Back Cover' : `${currentPageIndex} / ${totalPages - 2}`}</span>
-            <Button onClick={nextPage} disabled={currentPageIndex >= totalPages - 1} variant="outline" size="icon" className="bg-background/50">
+            <span className="text-sm text-foreground/70">{currentPageIndex === 0 ? 'Cover' : currentPageIndex === finalTotalPages - 1 ? 'Back Cover' : `${currentPageIndex} / ${finalTotalPages - 2}`}</span>
+            <Button onClick={nextPage} disabled={currentPageIndex >= finalTotalPages - 1} variant="outline" size="icon" className="bg-background/50">
                 <ArrowRight />
             </Button>
         </div>

@@ -25,7 +25,9 @@ const allNavItems = [
 ];
 
 export default function TableOfContents({ onNavigate, activePages, pageTitles, isStaticPanel = false }: TableOfContentsProps) {
-  const navItems = allNavItems.filter(item => activePages.includes(item.page));
+  const navItems = activePages
+    .map(page => allNavItems.find(item => item.page === page))
+    .filter((item): item is NonNullable<typeof item> => !!item);
 
   return (
     <div className={cn(
