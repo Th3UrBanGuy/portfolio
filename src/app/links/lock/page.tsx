@@ -181,11 +181,11 @@ export default function LockPage() {
         <div className="relative z-10 w-full max-w-md rounded-lg bg-gray-800/30 p-8 shadow-[0_0_30px_theme(colors.cyan.500/0.3)] backdrop-blur-sm transition-all duration-500 animate-in fade-in-0 zoom-in-95">
             <div className={cn("transition-opacity duration-500", isUnlocked ? 'opacity-0 h-0' : 'opacity-100')}>
                 <div className="text-center mb-6">
-                    <div className="mx-auto h-16 w-16 text-cyan-400 flex items-center justify-center">
+                    <div className="mx-auto h-16 w-16 text-cyan-400 flex items-center justify-center rounded-full overflow-hidden shadow-[0_0_25px_10px_hsl(var(--primary)/0.7)] animate-pulse-glow">
                         {settings?.lockScreenImageUrl ? (
-                            <Image src={settings.lockScreenImageUrl} alt="Lock Screen Icon" width={64} height={64} className="rounded-full object-cover animate-pulse-glow" />
+                            <Image src={settings.lockScreenImageUrl} alt="Lock Screen Icon" width={64} height={64} className="object-cover w-full h-full" />
                         ) : (
-                            <Fingerprint className="h-16 w-16 animate-pulse-glow" />
+                            <Fingerprint className="h-10 w-10" />
                         )}
                     </div>
                     <h1 className="text-2xl font-bold text-cyan-300 mt-4 tracking-wider" style={{ textShadow: '0 0 8px theme(colors.cyan.400/0.8)' }}>
