@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useOptimistic, useTransition } from 'react';
 import {
   collection,
   onSnapshot,
@@ -31,13 +31,33 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import { LinkForm } from './components/LinkForm';
 import { ShortLink } from '@/lib/types';
-import { Trash2, Edit, Copy, ExternalLink, Link as LinkIcon, LogOut } from 'lucide-react';
+import { Trash2, Edit, Copy, ExternalLink, Link as LinkIcon, LogOut, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { logout } from './actions';
+import { logout, saveLink } from './actions';
+import { Skeleton } from '@/components/ui/skeleton';
+
+
+type Action = 
+    | { type: 'add'; link: ShortLink }
+    | { type: 'update'; link: ShortLink }
+    | { type: 'delete'; id: string };
+
+
+function optimisticReducer(state: ShortLink[], action: Action): ShortLink[] {
+    switch (action.type) {
+        case 'add':
+            return [action.link, ...state];
+        case 'update':
+            return state.map(l => l.id === action.link.id ? action.link : l);
+        case 'delete':
+            return state.filter(l => l.id !== action.id);
+        default:
+            return state;
+    }
+}
 
 export default function LinksPage() {
   const [links, setLinks] = useState<ShortLink[]>([]);
@@ -45,6 +65,9 @@ export default function LinksPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingLink, setEditingLink] = useState<ShortLink | null>(null);
   const { toast } = useToast();
+  const [isPending, startTransition] = useTransition();
+
+  const [optimisticLinks, dispatch] = useOptimistic(links, optimisticReducer);
 
   useEffect(() => {
     const q = query(collection(db, 'short-links'), orderBy('createdAt', 'desc'));
@@ -60,11 +83,12 @@ export default function LinksPage() {
       },
       (error) => {
         console.error('Error fetching links:', error);
+        toast({ title: 'Error', description: 'Could not fetch links.', variant: 'destructive' });
         setLoading(false);
       }
     );
     return () => unsubscribe();
-  }, []);
+  }, [toast]);
 
   const handleEdit = (link: ShortLink) => {
     setEditingLink(link);
@@ -76,22 +100,39 @@ export default function LinksPage() {
     setIsFormOpen(true);
   };
 
+  const handleSave = async (values: Omit<ShortLink, 'createdAt'>) => {
+    const isUpdating = !!values.id;
+    const optimisticLink: ShortLink = {
+        ...values,
+        id: values.id || `temp-${Date.now()}`,
+        createdAt: new Date(),
+    };
+
+    startTransition(async () => {
+        dispatch({ type: isUpdating ? 'update' : 'add', link: optimisticLink });
+        const result = await saveLink(values);
+        if (result.success) {
+            toast({ title: isUpdating ? 'Link Updated' : 'Link Created' });
+        } else {
+            toast({ title: 'Error', description: result.error, variant: 'destructive' });
+            // Revert state by re-fetching (onSnapshot will handle this)
+        }
+    });
+    setIsFormOpen(false);
+  };
+
   const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this link?')) {
-      try {
-        await deleteDoc(doc(db, 'short-links', id));
-        toast({
-          title: 'Link Deleted',
-          description: 'The short link has been removed.',
+     if (confirm('Are you sure you want to delete this link?')) {
+        startTransition(async () => {
+            dispatch({ type: 'delete', id });
+            try {
+                await deleteDoc(doc(db, 'short-links', id));
+                toast({ title: 'Link Deleted' });
+            } catch (error) {
+                toast({ title: 'Error', description: 'Failed to delete link.', variant: 'destructive' });
+            }
         });
-      } catch (error) {
-        toast({
-          title: 'Error',
-          description: 'Failed to delete the link.',
-          variant: 'destructive',
-        });
-      }
-    }
+     }
   };
 
   const copyToClipboard = (slug: string) => {
@@ -135,7 +176,8 @@ export default function LinksPage() {
               </DialogHeader>
               <LinkForm
                 existingLink={editingLink}
-                onSuccess={() => setIsFormOpen(false)}
+                onSave={handleSave}
+                isSaving={isPending}
               />
             </DialogContent>
           </Dialog>
@@ -151,20 +193,22 @@ export default function LinksPage() {
               </TableHeader>
               <TableBody>
                 {loading ? (
+                  Array.from({ length: 3 }).map((_, i) => (
+                    <TableRow key={i}>
+                        <TableCell><Skeleton className="h-5 w-40" /></TableCell>
+                        <TableCell><Skeleton className="h-5 w-64" /></TableCell>
+                        <TableCell className="text-right"><Skeleton className="h-8 w-24 inline-block" /></TableCell>
+                    </TableRow>
+                  ))
+                ) : optimisticLinks.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={3} className="text-center">
-                      Loading...
-                    </TableCell>
-                  </TableRow>
-                ) : links.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={3} className="text-center">
+                    <TableCell colSpan={3} className="text-center h-24">
                       No links found. Create one to get started!
                     </TableCell>
                   </TableRow>
                 ) : (
-                  links.map((link) => (
-                    <TableRow key={link.id}>
+                  optimisticLinks.map((link) => (
+                    <TableRow key={link.id} className={link.id.startsWith('temp-') ? 'opacity-50' : ''}>
                       <TableCell className="font-medium">/links/{link.slug}</TableCell>
                       <TableCell className="max-w-xs truncate">
                         <a href={link.destination} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">

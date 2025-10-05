@@ -14,11 +14,9 @@ import {
   FormDescription,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useToast } from '@/hooks/use-toast';
-import { useTransition } from 'react';
-import { saveLink } from '../actions';
 import type { ShortLink } from '@/lib/types';
 import { Loader2 } from 'lucide-react';
+import { useEffect } from 'react';
 
 const formSchema = z.object({
   id: z.string().optional(),
@@ -33,13 +31,11 @@ type LinkFormValues = z.infer<typeof formSchema>;
 
 type LinkFormProps = {
   existingLink: ShortLink | null;
-  onSuccess: () => void;
+  onSave: (values: LinkFormValues) => void;
+  isSaving: boolean;
 };
 
-export function LinkForm({ existingLink, onSuccess }: LinkFormProps) {
-  const { toast } = useToast();
-  const [isPending, startTransition] = useTransition();
-
+export function LinkForm({ existingLink, onSave, isSaving }: LinkFormProps) {
   const form = useForm<LinkFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -49,28 +45,17 @@ export function LinkForm({ existingLink, onSuccess }: LinkFormProps) {
     },
   });
 
-  function onSubmit(values: LinkFormValues) {
-    startTransition(async () => {
-      const result = await saveLink(values);
-      if (result?.success) {
-        toast({
-          title: existingLink ? 'Link Updated' : 'Link Created',
-          description: `The link /links/${values.slug} has been saved.`,
-        });
-        onSuccess();
-      } else {
-        toast({
-          title: 'Error',
-          description: result?.error || 'An unexpected error occurred.',
-          variant: 'destructive',
-        });
-      }
+  useEffect(() => {
+    form.reset({
+      id: existingLink?.id || undefined,
+      slug: existingLink?.slug || '',
+      destination: existingLink?.destination || '',
     });
-  }
+  }, [existingLink, form]);
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSave)} className="space-y-6">
         <FormField
           control={form.control}
           name="destination"
@@ -105,8 +90,8 @@ export function LinkForm({ existingLink, onSuccess }: LinkFormProps) {
           )}
         />
         <div className="flex justify-end">
-          <Button type="submit" disabled={isPending}>
-            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <Button type="submit" disabled={isSaving}>
+            {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {existingLink ? 'Save Changes' : 'Create Link'}
           </Button>
         </div>
