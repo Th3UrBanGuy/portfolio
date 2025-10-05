@@ -11,9 +11,10 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Download, Link } from 'lucide-react';
+import { Download, Copy } from 'lucide-react';
 import type { ShortLink } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
+import { Card, CardContent } from '@/components/ui/card';
 
 type QrCodeDialogProps = {
   link: ShortLink | null;
@@ -48,32 +49,42 @@ export function QrCodeDialog({ link, open, onOpenChange, getFullShortUrl }: QrCo
     }
   };
 
+  const copyUrl = () => {
+    navigator.clipboard.writeText(url);
+    toast({
+      title: 'URL Copied',
+      description: 'The link has been copied to your clipboard.',
+    });
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>QR Code</DialogTitle>
           <DialogDescription>
-            Scan this code to visit your short link.
+            Scan this code or copy the URL to share your link.
           </DialogDescription>
         </DialogHeader>
-        <div className="flex flex-col items-center justify-center p-4 gap-4">
-          <div ref={qrRef} className="p-4 bg-white rounded-lg border">
-            <QRCodeCanvas
-              value={url}
-              size={256}
-              style={{ width: '100%', height: 'auto', maxWidth: '256px' }}
-              bgColor={"#ffffff"}
-              fgColor={"#000000"}
-              level={"H"}
-              includeMargin={true}
-            />
-          </div>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground p-2 bg-muted rounded-md w-full justify-center">
-            <Link className='h-4 w-4' />
-            <span className='font-mono truncate'>{url}</span>
-          </div>
-        </div>
+        <Card className='bg-muted/50'>
+            <CardContent className="flex flex-col items-center justify-center p-6 gap-4">
+                <div ref={qrRef} className="p-4 bg-white rounded-lg border">
+                    <QRCodeCanvas
+                    value={url}
+                    size={256}
+                    style={{ width: '100%', height: 'auto', maxWidth: '256px' }}
+                    bgColor={"#ffffff"}
+                    fgColor={"#000000"}
+                    level={"H"}
+                    includeMargin={true}
+                    />
+                </div>
+                <Button onClick={copyUrl} variant="outline" className="w-full">
+                    <Copy className="mr-2 h-4 w-4" />
+                    Copy URL
+                </Button>
+            </CardContent>
+        </Card>
         <DialogFooter>
           <Button onClick={downloadQRCode} className="w-full">
             <Download className="mr-2 h-4 w-4" />
