@@ -237,7 +237,7 @@ function FieldsArray({ control, sectionIndex }: { control: any, sectionIndex: nu
                             <FormItem className="flex flex-col items-start">
                                 <FormLabel>Secret</FormLabel>
                                 <FormControl>
-                                    <Switch checked={field.value} onCheckedChange={(value) => setTimeout(() => field.onChange(value), 0)} />
+                                    <Switch checked={field.value} onCheckedChange={field.onChange} />
                                 </FormControl>
                             </FormItem>
                         )}
@@ -254,3 +254,5 @@ function FieldsArray({ control, sectionIndex }: { control: any, sectionIndex: nu
         </div>
     )
 }
+
+    
