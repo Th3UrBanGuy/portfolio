@@ -5,8 +5,6 @@ import { NextResponse } from 'next/server';
 import { notFound } from 'next/navigation';
 import type { ShortLink } from '@/lib/types';
 
-export const runtime = 'edge';
-
 async function getLink(slug: string): Promise<ShortLink | null> {
   const q = query(
     collection(db, 'short-links'),
