@@ -171,6 +171,19 @@ export type ShortLink = {
   loading_duration_seconds?: number;
 };
 
+export type Visit = {
+    id: string;
+    timestamp: any; // Firestore ServerTimestamp
+    ip: string;
+    userAgent: string;
+    country: string;
+    city: string;
+    region: string;
+    isp: string;
+    browser: string;
+    os: string;
+}
+
 
 export type PortfolioData = {
   personalInfo: PersonalInfo;
