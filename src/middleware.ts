@@ -15,6 +15,7 @@ export function middleware(request: NextRequest) {
   // Handle link shortener authentication
   const isLinkerAuthenticated = request.cookies.get('link-auth')?.value === 'true';
   if (pathname.startsWith('/links') && !isLinkerAuthenticated && !pathname.startsWith('/links/auth') && pathname.split('/').length <= 3) {
+     // Allow access to actual slug routes like /links/my-slug
      if (pathname.split('/').length === 2 || (pathname.split('/').length === 3 && pathname.endsWith('/'))) {
         return NextResponse.redirect(new URL('/links/auth', request.url));
      }

@@ -11,12 +11,12 @@ import {
   where,
   getDocs,
   updateDoc,
+  deleteDoc,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
-import type { ShortLink } from '@/lib/types';
 
 // --- Authentication Actions ---
 const authSchema = z.object({
@@ -102,5 +102,19 @@ export async function saveLink(data: z.infer<typeof linkSchema>) {
       };
     }
     return { success: false, error: 'An unknown error occurred.' };
+  }
+}
+
+export async function deleteLink(id: string) {
+  try {
+    if (!id) {
+      return { success: false, error: 'No ID provided for deletion.' };
+    }
+    await deleteDoc(doc(db, 'short-links', id));
+    revalidatePath('/links');
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to delete link:", error);
+    return { success: false, error: 'Failed to delete link.' };
   }
 }

@@ -6,8 +6,6 @@ import {
   onSnapshot,
   query,
   orderBy,
-  deleteDoc,
-  doc,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import {
@@ -34,9 +32,9 @@ import {
 } from '@/components/ui/dialog';
 import { LinkForm } from './components/LinkForm';
 import { ShortLink } from '@/lib/types';
-import { Trash2, Edit, Copy, ExternalLink, Link as LinkIcon, LogOut, Loader2 } from 'lucide-react';
+import { Trash2, Edit, Copy, ExternalLink, Link as LinkIcon, LogOut } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { logout, saveLink } from './actions';
+import { logout, saveLink, deleteLink } from './actions';
 import { Skeleton } from '@/components/ui/skeleton';
 
 
@@ -49,6 +47,13 @@ type Action =
 function optimisticReducer(state: ShortLink[], action: Action): ShortLink[] {
     switch (action.type) {
         case 'add':
+            // Find if a temporary item exists and replace it, otherwise add new
+            const existingIndex = state.findIndex(l => l.id === action.link.id);
+            if (existingIndex > -1) {
+                const newState = [...state];
+                newState[existingIndex] = action.link;
+                return newState;
+            }
             return [action.link, ...state];
         case 'update':
             return state.map(l => l.id === action.link.id ? action.link : l);
@@ -65,7 +70,8 @@ export default function LinksPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingLink, setEditingLink] = useState<ShortLink | null>(null);
   const { toast } = useToast();
-  const [isPending, startTransition] = useTransition();
+  const [isSaving, startSavingTransition] = useTransition();
+  const [isDeleting, startDeletingTransition] = useTransition();
 
   const [optimisticLinks, dispatch] = useOptimistic(links, optimisticReducer);
 
@@ -102,20 +108,21 @@ export default function LinksPage() {
 
   const handleSave = async (values: Omit<ShortLink, 'createdAt'>) => {
     const isUpdating = !!values.id;
+    const tempId = values.id || `temp-${Date.now()}`;
     const optimisticLink: ShortLink = {
         ...values,
-        id: values.id || `temp-${Date.now()}`,
+        id: tempId,
         createdAt: new Date(),
     };
 
-    startTransition(async () => {
+    startSavingTransition(async () => {
         dispatch({ type: isUpdating ? 'update' : 'add', link: optimisticLink });
         const result = await saveLink(values);
         if (result.success) {
             toast({ title: isUpdating ? 'Link Updated' : 'Link Created' });
         } else {
             toast({ title: 'Error', description: result.error, variant: 'destructive' });
-            // Revert state by re-fetching (onSnapshot will handle this)
+            // The real data from onSnapshot will automatically correct the optimistic update
         }
     });
     setIsFormOpen(false);
@@ -123,13 +130,13 @@ export default function LinksPage() {
 
   const handleDelete = async (id: string) => {
      if (confirm('Are you sure you want to delete this link?')) {
-        startTransition(async () => {
+        startDeletingTransition(async () => {
             dispatch({ type: 'delete', id });
-            try {
-                await deleteDoc(doc(db, 'short-links', id));
+            const result = await deleteLink(id);
+            if (result.success) {
                 toast({ title: 'Link Deleted' });
-            } catch (error) {
-                toast({ title: 'Error', description: 'Failed to delete link.', variant: 'destructive' });
+            } else {
+                toast({ title: 'Error', description: result.error, variant: 'destructive' });
             }
         });
      }
@@ -162,6 +169,7 @@ export default function LinksPage() {
             <form action={logout}>
                 <Button variant="outline" size="icon" type="submit">
                     <LogOut />
+                    <span className="sr-only">Logout</span>
                 </Button>
             </form>
            </div>
@@ -177,7 +185,7 @@ export default function LinksPage() {
               <LinkForm
                 existingLink={editingLink}
                 onSave={handleSave}
-                isSaving={isPending}
+                isSaving={isSaving}
               />
             </DialogContent>
           </Dialog>
@@ -208,7 +216,7 @@ export default function LinksPage() {
                   </TableRow>
                 ) : (
                   optimisticLinks.map((link) => (
-                    <TableRow key={link.id} className={link.id.startsWith('temp-') ? 'opacity-50' : ''}>
+                    <TableRow key={link.id} className={link.id.startsWith('temp-') || isDeleting ? 'opacity-50' : ''}>
                       <TableCell className="font-medium">/links/{link.slug}</TableCell>
                       <TableCell className="max-w-xs truncate">
                         <a href={link.destination} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">

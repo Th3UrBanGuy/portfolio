@@ -8,6 +8,8 @@ import React from 'react';
 // --- Page Sequence and Configuration ---
 import { PageSchema, type Page } from './schemas/page';
 
+export { type Page, PageSchema };
+
 export const pageConfig: Record<Page, { id: Page; label: string; icon: React.ElementType; isFixed?: boolean; isNavigable?: boolean }> = {
   'cover': { id: 'cover', label: 'Cover', icon: () => null, isFixed: true, isNavigable: false },
   'toc': { id: 'toc', label: 'Table of Contents', icon: BookOpenCheck, isFixed: false, isNavigable: false },
@@ -54,6 +56,7 @@ export type CustomField = {
 export type PrivateInfoSection = {
   id: string;
   title: string;
+  icon_name?: string;
   fields: CustomField[];
 };
 
