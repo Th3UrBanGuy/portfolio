@@ -25,6 +25,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -36,7 +43,7 @@ import { LinkForm } from './components/LinkForm';
 import { QrCodeDialog } from './components/QrCodeDialog';
 import { SettingsDialog } from './components/SettingsDialog';
 import { ShortLink, LinkSettings } from '@/lib/types';
-import { Trash2, Edit, Copy, ExternalLink, Link as LinkIcon, LogOut, MoreVertical, BarChart2, QrCode, Settings } from 'lucide-react';
+import { Trash2, Edit, Copy, ExternalLink, Link as LinkIcon, LogOut, MoreVertical, BarChart2, QrCode, Settings, Search } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { logout, saveLink, deleteLink, saveSettings } from './actions';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -49,6 +56,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Input } from '@/components/ui/input';
 
 type Action = 
     | { type: 'add'; link: ShortLink }
@@ -83,6 +91,8 @@ export default function LinksPage() {
   const [editingLink, setEditingLink] = useState<ShortLink | null>(null);
   const [qrCodeLink, setQrCodeLink] = useState<ShortLink | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedPath, setSelectedPath] = useState('all');
   const { toast } = useToast();
   const [isSaving, startSavingTransition] = useTransition();
   const [isDeleting, startDeletingTransition] = useTransition();
@@ -125,6 +135,24 @@ export default function LinksPage() {
         unsubscribeSettings();
     };
   }, [toast]);
+  
+  const uniquePaths = useMemo(() => {
+    const paths = new Set(links.map(link => link.path || '/'));
+    return ['all', ...Array.from(paths)];
+  }, [links]);
+
+  const filteredLinks = useMemo(() => {
+    return optimisticLinks.filter(link => {
+      const pathMatch = selectedPath === 'all' || (link.path || '/') === selectedPath;
+      const searchTermLower = searchTerm.toLowerCase();
+      const searchMatch = 
+        !searchTerm ||
+        link.slug.toLowerCase().includes(searchTermLower) ||
+        link.destination.toLowerCase().includes(searchTermLower);
+      return pathMatch && searchMatch;
+    });
+  }, [optimisticLinks, selectedPath, searchTerm]);
+
 
   const handleEdit = (link: ShortLink) => {
     setEditingLink(link);
@@ -223,14 +251,14 @@ export default function LinksPage() {
                     <TableCell className="text-right"><Skeleton className="h-8 w-24 inline-block" /></TableCell>
                 </TableRow>
             ))
-            ) : optimisticLinks.length === 0 ? (
+            ) : filteredLinks.length === 0 ? (
             <TableRow>
                 <TableCell colSpan={3} className="text-center h-24">
-                No links found. Create one to get started!
+                No links found. Try adjusting your search or filters.
                 </TableCell>
             </TableRow>
             ) : (
-            optimisticLinks.map((link) => (
+            filteredLinks.map((link) => (
                 <TableRow key={link.id} className={link.id.startsWith('temp-') || isDeleting ? 'opacity-50' : ''}>
                 <TableCell className="font-medium">{getFullShortUrl(link.path || 'links', link.slug)}</TableCell>
                 <TableCell className="max-w-xs truncate">
@@ -289,12 +317,12 @@ export default function LinksPage() {
             Array.from({ length: 3 }).map((_, i) => (
                 <Card key={i}><CardContent className='p-4'><Skeleton className="h-24 w-full" /></CardContent></Card>
             ))
-        ) : optimisticLinks.length === 0 ? (
+        ) : filteredLinks.length === 0 ? (
             <div className="text-center text-muted-foreground py-12">
-                No links found. Create one to get started!
+                No links found. Try adjusting your search or filters.
             </div>
         ) : (
-            optimisticLinks.map(link => (
+            filteredLinks.map(link => (
                 <Card key={link.id} className={link.id.startsWith('temp-') || isDeleting ? 'opacity-50' : ''}>
                     <CardContent className="p-4 flex justify-between items-start gap-4">
                         <div className="flex-grow space-y-2 overflow-hidden">
@@ -336,30 +364,56 @@ export default function LinksPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground p-4 md:p-8">
-      <Card className="max-w-4xl mx-auto">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-                <LinkIcon />
-                URL Shortener
-            </CardTitle>
-            <CardDescription>
-              Create and manage your custom short links.
-            </CardDescription>
-          </div>
-           <div className="flex gap-2">
-            <Button onClick={handleAddNew}>Create New Link</Button>
-             <Button variant="outline" size="icon" onClick={() => setIsSettingsOpen(true)}>
-                <Settings />
-                <span className="sr-only">Settings</span>
-            </Button>
-            <form action={logout}>
-                <Button variant="outline" size="icon" type="submit">
-                    <LogOut />
-                    <span className="sr-only">Logout</span>
-                </Button>
-            </form>
-           </div>
+      <Card className="max-w-5xl mx-auto">
+        <CardHeader>
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div>
+                    <CardTitle className="flex items-center gap-2">
+                        <LinkIcon />
+                        URL Shortener
+                    </CardTitle>
+                    <CardDescription>
+                    Create and manage your custom short links.
+                    </CardDescription>
+                </div>
+                <div className="flex items-center gap-2">
+                    <Button onClick={handleAddNew}>Create New Link</Button>
+                    <Button variant="outline" size="icon" onClick={() => setIsSettingsOpen(true)}>
+                        <Settings />
+                        <span className="sr-only">Settings</span>
+                    </Button>
+                    <form action={logout}>
+                        <Button variant="outline" size="icon" type="submit">
+                            <LogOut />
+                            <span className="sr-only">Logout</span>
+                        </Button>
+                    </form>
+                </div>
+            </div>
+            <div className="flex flex-col md:flex-row gap-4 pt-4">
+                <div className="relative flex-grow">
+                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input
+                        type="search"
+                        placeholder="Search by slug or destination..."
+                        className="pl-8 sm:w-full"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
+                <Select value={selectedPath} onValueChange={setSelectedPath}>
+                    <SelectTrigger className="w-full md:w-[180px]">
+                        <SelectValue placeholder="Filter by path" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {uniquePaths.map(path => (
+                            <SelectItem key={path} value={path}>
+                                {path === 'all' ? 'All Paths' : path}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </div>
         </CardHeader>
         <CardContent>
           <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
