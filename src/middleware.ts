@@ -2,21 +2,31 @@ import { NextResponse, type NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const isAuthenticated = request.cookies.get('admin-auth')?.value === 'true';
-
-  // Protect all /admin routes except for /auth itself
-  if (pathname.startsWith('/admin') && !isAuthenticated) {
+  
+  // Handle main admin panel authentication
+  const isAdminAuthenticated = request.cookies.get('admin-auth')?.value === 'true';
+  if (pathname.startsWith('/admin') && !isAdminAuthenticated) {
     return NextResponse.redirect(new URL('/auth', request.url));
   }
-  
-  // If the user is authenticated and tries to visit /auth, redirect to admin
-  if (pathname.startsWith('/auth') && isAuthenticated) {
+  if (pathname.startsWith('/auth') && isAdminAuthenticated) {
     return NextResponse.redirect(new URL('/admin', request.url));
   }
+
+  // Handle link shortener authentication
+  const isLinkerAuthenticated = request.cookies.get('link-auth')?.value === 'true';
+  if (pathname.startsWith('/links') && !isLinkerAuthenticated && !pathname.startsWith('/links/auth') && pathname.split('/').length <= 3) {
+     if (pathname.split('/').length === 2 || (pathname.split('/').length === 3 && pathname.endsWith('/'))) {
+        return NextResponse.redirect(new URL('/links/auth', request.url));
+     }
+  }
+   if (pathname.startsWith('/links/auth') && isLinkerAuthenticated) {
+    return NextResponse.redirect(new URL('/links', request.url));
+  }
+
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/auth'],
+  matcher: ['/admin/:path*', '/auth', '/links/:path*'],
 };

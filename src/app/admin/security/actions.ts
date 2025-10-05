@@ -4,28 +4,43 @@ import { z } from 'zod';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
 
-const securitySchema = z.object({
+const adminKeySchema = z.object({
   secretKey: z.string().min(6, 'Secret key must be at least 6 characters long.'),
 });
 
-export async function updateSecretKey(data: { secretKey: string }): Promise<{ success: boolean; error?: string }> {
+const linkShortenerKeySchema = z.object({
+    linkShortenerKey: z.string().min(6, 'Password must be at least 6 characters long.'),
+});
+
+export async function updateAdminKey(data: { secretKey: string }): Promise<{ success: boolean; error?: string }> {
   try {
-    const validatedData = securitySchema.parse(data);
-
+    const validatedData = adminKeySchema.parse(data);
     await setDoc(doc(db, 'site-data', 'admin-auth'), { key: validatedData.secretKey });
-
     revalidatePath('/admin/security');
-
     return { success: true };
   } catch (error) {
     if (error instanceof z.ZodError) {
       return { success: false, error: error.errors.map(e => e.message).join(', ') };
     }
-    console.error('Error updating secret key:', error);
+    console.error('Error updating admin key:', error);
     return { success: false, error: 'An unexpected error occurred.' };
   }
+}
+
+export async function updateLinkShortenerKey(data: { linkShortenerKey: string }): Promise<{ success: boolean; error?: string }> {
+    try {
+      const validatedData = linkShortenerKeySchema.parse(data);
+      await setDoc(doc(db, 'site-data', 'link-auth'), { key: validatedData.linkShortenerKey });
+      revalidatePath('/admin/security');
+      return { success: true };
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return { success: false, error: error.errors.map(e => e.message).join(', ') };
+      }
+      console.error('Error updating link shortener key:', error);
+      return { success: false, error: 'An unexpected error occurred.' };
+    }
 }
 
 export async function resetSecretKey(key: string): Promise<void> {

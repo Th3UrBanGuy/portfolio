@@ -20,13 +20,19 @@ type SecurityPageProps = {
 };
 
 export default function SecurityPage({ setActiveView }: SecurityPageProps) {
-  const [currentKey, setCurrentKey] = useState('');
+  const [adminKey, setAdminKey] = useState('');
+  const [linkShortenerKey, setLinkShortenerKey] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
-      const authData = await getDocumentData<{ key: string }>('site-data', 'admin-auth');
-      setCurrentKey(authData?.key ?? '');
+      const [adminAuthData, linkAuthData] = await Promise.all([
+        getDocumentData<{ key: string }>('site-data', 'admin-auth'),
+        getDocumentData<{ key: string }>('site-data', 'link-auth')
+      ]);
+      
+      setAdminKey(adminAuthData?.key ?? '');
+      setLinkShortenerKey(linkAuthData?.key ?? '');
       setLoading(false);
     }
     fetchData();
@@ -39,7 +45,7 @@ export default function SecurityPage({ setActiveView }: SecurityPageProps) {
             <div>
                 <CardTitle>Manage Security</CardTitle>
                 <CardDescription>
-                    Update the secret key used to access the admin panel.
+                    Update access credentials for the admin panel and URL shortener.
                 </CardDescription>
             </div>
             <Button variant="outline" size="icon" onClick={() => setActiveView('dashboard')}>
@@ -49,11 +55,11 @@ export default function SecurityPage({ setActiveView }: SecurityPageProps) {
       </Card>
       {loading ? (
         <div className="space-y-4">
-          <Skeleton className="h-8 w-1/4" />
-          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-24 w-full" />
         </div>
       ) : (
-        <SecurityForm currentKey={currentKey} />
+        <SecurityForm currentAdminKey={adminKey} currentLinkShortenerKey={linkShortenerKey} />
       )}
     </div>
   );

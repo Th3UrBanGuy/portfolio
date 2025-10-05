@@ -17,30 +17,44 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Save, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { updateSecretKey } from './actions';
+import { updateAdminKey, updateLinkShortenerKey } from './actions';
 import { useTransition, useState } from 'react';
 
-const securitySchema = z.object({
+const adminKeySchema = z.object({
   secretKey: z.string().min(6, 'Secret key must be at least 6 characters long.'),
 });
 
-type SecurityFormValues = z.infer<typeof securitySchema>;
+const linkShortenerKeySchema = z.object({
+  linkShortenerKey: z.string().min(6, 'Password must be at least 6 characters long.'),
+});
 
-export function SecurityForm({ currentKey }: { currentKey: string }) {
+type AdminKeyFormValues = z.infer<typeof adminKeySchema>;
+type LinkShortenerKeyFormValues = z.infer<typeof linkShortenerKeySchema>;
+
+export function SecurityForm({ currentAdminKey, currentLinkShortenerKey }: { currentAdminKey: string, currentLinkShortenerKey: string }) {
+  return (
+    <div className="space-y-8">
+      <AdminKeyForm currentKey={currentAdminKey} />
+      <LinkShortenerKeyForm currentKey={currentLinkShortenerKey} />
+    </div>
+  );
+}
+
+function AdminKeyForm({ currentKey }: { currentKey: string }) {
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
   const [showKey, setShowKey] = useState(false);
 
-  const form = useForm<SecurityFormValues>({
-    resolver: zodResolver(securitySchema),
+  const form = useForm<AdminKeyFormValues>({
+    resolver: zodResolver(adminKeySchema),
     defaultValues: {
       secretKey: currentKey,
     },
   });
 
-  function onSubmit(values: SecurityFormValues) {
+  function onSubmit(values: AdminKeyFormValues) {
     startTransition(async () => {
-      const result = await updateSecretKey(values);
+      const result = await updateAdminKey(values);
       if (result.success) {
         toast({
           title: 'Secret Key Updated',
@@ -61,7 +75,7 @@ export function SecurityForm({ currentKey }: { currentKey: string }) {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <Card>
           <CardHeader>
-            <CardTitle>Update Secret Key</CardTitle>
+            <CardTitle>Admin Panel Access</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <FormField
@@ -69,7 +83,7 @@ export function SecurityForm({ currentKey }: { currentKey: string }) {
               name="secretKey"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>New Secret Key</FormLabel>
+                  <FormLabel>Admin Secret Key</FormLabel>
                   <div className="relative">
                     <FormControl>
                       <Input 
@@ -89,21 +103,103 @@ export function SecurityForm({ currentKey }: { currentKey: string }) {
                     </Button>
                   </div>
                   <FormDescription>
-                    This key will be required to access the admin panel. Minimum 6 characters.
+                    This key is required to access the main portfolio admin panel. Minimum 6 characters.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
+             <div className="flex justify-end">
+                <Button type="submit" disabled={isPending}>
+                    <Save className="mr-2" />
+                    {isPending ? 'Saving...' : 'Save Admin Key'}
+                </Button>
+            </div>
           </CardContent>
         </Card>
+      </form>
+    </Form>
+  );
+}
 
-        <div className="flex justify-end">
-          <Button type="submit" disabled={isPending}>
-            <Save className="mr-2" />
-            {isPending ? 'Saving...' : 'Save Key'}
-          </Button>
-        </div>
+
+function LinkShortenerKeyForm({ currentKey }: { currentKey: string }) {
+  const { toast } = useToast();
+  const [isPending, startTransition] = useTransition();
+  const [showKey, setShowKey] = useState(false);
+
+  const form = useForm<LinkShortenerKeyFormValues>({
+    resolver: zodResolver(linkShortenerKeySchema),
+    defaultValues: {
+      linkShortenerKey: currentKey,
+    },
+  });
+
+  function onSubmit(values: LinkShortenerKeyFormValues) {
+    startTransition(async () => {
+      const result = await updateLinkShortenerKey(values);
+      if (result.success) {
+        toast({
+          title: 'Link Shortener Password Updated',
+          description: 'The password for the link shortener interface has been changed.',
+        });
+      } else {
+        toast({
+          title: 'Error',
+          description: result.error,
+          variant: 'destructive',
+        });
+      }
+    });
+  }
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>URL Shortener Access</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <FormField
+              control={form.control}
+              name="linkShortenerKey"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Link Shortener Password</FormLabel>
+                  <div className="relative">
+                    <FormControl>
+                      <Input 
+                        type={showKey ? 'text' : 'password'}
+                        {...field}
+                      />
+                    </FormControl>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
+                      onClick={() => setShowKey(!showKey)}
+                    >
+                      {showKey ? <EyeOff /> : <Eye />}
+                      <span className="sr-only">{showKey ? 'Hide password' : 'Show password'}</span>
+                    </Button>
+                  </div>
+                  <FormDescription>
+                    This password secures the custom URL shortener interface. Minimum 6 characters.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="flex justify-end">
+                <Button type="submit" disabled={isPending}>
+                    <Save className="mr-2" />
+                    {isPending ? 'Saving...' : 'Save URL Password'}
+                </Button>
+            </div>
+          </CardContent>
+        </Card>
       </form>
     </Form>
   );

@@ -157,6 +157,14 @@ export type PageSequence = {
   hiddenPages: Page[];
 };
 
+export type ShortLink = {
+  id: string;
+  slug: string;
+  destination: string;
+  createdAt: any; // Firestore ServerTimestamp
+};
+
+
 export type PortfolioData = {
   personalInfo: PersonalInfo;
   privateInfo: PrivateInfo;
