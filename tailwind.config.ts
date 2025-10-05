@@ -1,9 +1,12 @@
 import type {Config} from 'tailwindcss';
 
-function plugin({addUtilities}: {addUtilities: any}) {
+function plugin({addUtilities, addVariant}: {addUtilities: any, addVariant: any}) {
   addUtilities({
     '.backface-hidden': {
       'backface-visibility': 'hidden',
+    },
+    '.bg-grid-cyan-500': {
+       backgroundImage: 'url("data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 32 32\' width=\'32\' height=\'32\' fill=\'none\' stroke=\'rgb(107 114 128 / 0.1)\'%3e%3cpath d=\'M0 .5H31.5V32\'/%3e%3c/svg%3e")',
     },
   });
 }
@@ -22,6 +25,7 @@ export default {
         headline: ['Merriweather', 'serif'],
         handwriting: ['Kalam', 'cursive'],
         code: ['monospace'],
+        mono: ['"SF Mono"', '"Fira Code"', '"Fira Mono"', '"Roboto Mono"', 'monospace'],
       },
       colors: {
         background: 'hsl(var(--background))',
@@ -128,6 +132,10 @@ export default {
           '0%, 100%': { opacity: '0.8', boxShadow: '0 0 10px 4px hsl(var(--primary) / 0.7)' },
           '50%': { opacity: '1', boxShadow: '0 0 25px 10px hsl(var(--primary) / 0.9)' },
         },
+        'spin-reverse': {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(-360deg)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -137,6 +145,7 @@ export default {
         'flip-out-prev': 'flip-out-prev 0.6s ease-in-out forwards',
         'flip-in-prev': 'flip-in-prev 0.6s ease-in-out forwards',
         'pulse-glow': 'pulse-glow 2.5s ease-in-out infinite',
+        'spin-reverse': 'spin-reverse 10s linear infinite',
       },
     },
   },

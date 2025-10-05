@@ -65,14 +65,17 @@ const linkSchema = z.object({
     .min(3, 'Slug must be at least 3 characters.')
     .regex(/^[a-zA-Z0-9_-]+$/, 'Slug can only contain letters, numbers, hyphens, and underscores.'),
   destination: z.string().url('Must be a valid URL.'),
+  password: z.string().optional(),
+  loading_text: z.string().optional(),
+  loading_duration_seconds: z.coerce.number().optional(),
 });
 
 export async function saveLink(data: z.infer<typeof linkSchema>) {
   try {
     const validatedData = linkSchema.parse(data);
-    const { id, path, slug, destination } = validatedData;
-
-    // Check if path/slug combination already exists for another link
+    const { id, path, slug, destination, password, loading_text, loading_duration_seconds } = validatedData;
+    
+    // Check for uniqueness
     const q = query(
         collection(db, 'short-links'), 
         where('path', '==', path), 
@@ -83,19 +86,22 @@ export async function saveLink(data: z.infer<typeof linkSchema>) {
       return { success: false, error: 'This path/slug combination is already in use.' };
     }
 
+    const linkData: any = {
+      path,
+      slug,
+      destination,
+      password: password || null,
+      loading_text: loading_text || null,
+      loading_duration_seconds: loading_duration_seconds || null,
+    };
+    
     if (id) {
-      // Update existing link
       const docRef = doc(db, 'short-links', id);
-      await updateDoc(docRef, { path, slug, destination });
+      await updateDoc(docRef, linkData);
     } else {
-      // Create new link
+      linkData.createdAt = serverTimestamp();
       const newDocRef = doc(collection(db, 'short-links'));
-      await setDoc(newDocRef, {
-        path,
-        slug,
-        destination,
-        createdAt: serverTimestamp(),
-      });
+      await setDoc(newDocRef, linkData);
     }
 
     revalidatePath('/links');
@@ -117,7 +123,6 @@ export async function deleteLink(id: string) {
     if (!id) {
       return { success: false, error: 'No ID provided for deletion.' };
     }
-    // To revalidate, we need to know the path and slug before deleting
     const docRef = doc(db, 'short-links', id);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {

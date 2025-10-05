@@ -16,7 +16,6 @@ async function getLink(path: string, slug: string): Promise<ShortLink | null> {
   const querySnapshot = await getDocs(q);
 
   if (querySnapshot.empty) {
-    // Fallback for old links that don't have a path field
     if (path === 'links') {
         const oldQuery = query(
             collection(db, 'short-links'),
@@ -27,7 +26,6 @@ async function getLink(path: string, slug: string): Promise<ShortLink | null> {
         if (!oldQuerySnapshot.empty) {
             const doc = oldQuerySnapshot.docs[0];
             const data = doc.data();
-            // check if path field exists to avoid infinite loops
             if (!data.path) {
                 return { id: doc.id, ...data } as ShortLink;
             }
@@ -54,21 +52,37 @@ export async function GET(
   let slug: string;
 
   if (slugSegments.length === 1) {
-    // This could be an old link like /links/{slug} being treated as path=slug
-    // Or it could be a new root link path=/, slug=...
-    // We will assume for now it's a root link if there is only one segment
     path = '/';
     slug = slugSegments[0];
   } else {
     [path, slug] = slugSegments;
   }
 
-
   const link = await getLink(path, slug);
 
-  if (link && link.destination) {
-    return NextResponse.redirect(link.destination);
-  } else {
+  if (!link) {
     return notFound();
   }
+
+  const destinationUrl = new URL(link.destination);
+  const lockUrl = new URL('/links/lock', request.url);
+  const loadingUrl = new URL('/loading', request.url);
+
+  // If link is password protected
+  if (link.password) {
+    lockUrl.searchParams.set('destination', destinationUrl.toString());
+    lockUrl.searchParams.set('id', link.id);
+    return NextResponse.redirect(lockUrl);
+  }
+
+  // If link has a loading screen
+  if (link.loading_text && link.loading_duration_seconds) {
+    loadingUrl.searchParams.set('destination', destinationUrl.toString());
+    loadingUrl.searchParams.set('text', link.loading_text);
+    loadingUrl.searchParams.set('duration', link.loading_duration_seconds.toString());
+    return NextResponse.redirect(loadingUrl);
+  }
+
+  // Standard redirect
+  return NextResponse.redirect(destinationUrl);
 }

@@ -166,6 +166,9 @@ export type ShortLink = {
   slug: string;
   destination: string;
   createdAt: any; // Firestore ServerTimestamp
+  password?: string;
+  loading_text?: string;
+  loading_duration_seconds?: number;
 };
 
 
