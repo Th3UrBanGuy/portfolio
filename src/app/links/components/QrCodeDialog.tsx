@@ -62,6 +62,7 @@ export function QrCodeDialog({ link, open, onOpenChange, getFullShortUrl }: QrCo
             <QRCodeCanvas
               value={url}
               size={256}
+              style={{ width: '100%', height: 'auto', maxWidth: '256px' }}
               bgColor={"#ffffff"}
               fgColor={"#000000"}
               level={"H"}
