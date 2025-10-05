@@ -7,14 +7,14 @@ import { redirect } from 'next/navigation';
 
 const schema = z.object({
   id: z.string().min(1, 'Link ID is missing.'),
-  destination: z.string().url('Invalid destination URL.'),
+  destination_b64: z.string().min(1, 'Destination is missing.'),
   password: z.string().min(1, 'Password is required.'),
 });
 
 export async function verifyPassword(prevState: any, formData: FormData) {
   const validatedFields = schema.safeParse({
     id: formData.get('id'),
-    destination: formData.get('destination'),
+    destination_b64: formData.get('destination_b64'),
     password: formData.get('password'),
   });
 
@@ -24,7 +24,7 @@ export async function verifyPassword(prevState: any, formData: FormData) {
     };
   }
 
-  const { id, destination, password } = validatedFields.data;
+  const { id, destination_b64, password } = validatedFields.data;
 
   try {
     const linkDoc = await getDoc(doc(db, 'short-links', id));
@@ -41,5 +41,6 @@ export async function verifyPassword(prevState: any, formData: FormData) {
     return { error: 'Could not verify link. Please try again.' };
   }
   
+  const destination = Buffer.from(destination_b64, 'base64').toString('ascii');
   redirect(destination);
 }

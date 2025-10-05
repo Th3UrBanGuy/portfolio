@@ -23,12 +23,12 @@ function LockForm() {
     const [state, formAction] = useActionState(verifyPassword, null);
 
     const id = searchParams.get('id');
-    const destination = searchParams.get('destination');
+    const destinationB64 = searchParams.get('destination_b64');
     
     return (
         <form action={formAction} className="space-y-4">
              <input type="hidden" name="id" value={id || ''} />
-            <input type="hidden" name="destination" value={destination || ''} />
+            <input type="hidden" name="destination_b64" value={destinationB64 || ''} />
 
             <div className="relative">
                 <Fingerprint className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-cyan-400/50" />

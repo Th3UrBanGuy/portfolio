@@ -138,7 +138,8 @@ export async function GET(
 
   // If link is password protected
   if (link.password) {
-    lockUrl.searchParams.set('destination', destinationUrl.toString());
+    const encodedDestination = Buffer.from(destinationUrl.toString()).toString('base64');
+    lockUrl.searchParams.set('destination_b64', encodedDestination);
     lockUrl.searchParams.set('id', link.id);
     return NextResponse.redirect(lockUrl);
   }
