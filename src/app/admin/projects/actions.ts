@@ -20,7 +20,7 @@ const projectSchema = z.object({
   full_description: z.string().min(1, "Full description is required."),
   technologies: z.array(z.string().min(1, "Technology cannot be empty.")).min(1, "At least one technology is required."),
   links: z.array(projectLinkSchema).min(1, "At least one link is required."),
-  category: z.string().min(1, "Category is required."),
+  category: z.string(),
 });
 
 const projectsArraySchema = z.array(projectSchema);
@@ -29,7 +29,13 @@ type ProjectData = z.infer<typeof projectsArraySchema>;
 
 export async function updateProjects(projectsData: ProjectData): Promise<{ success: boolean; error?: string }> {
   try {
-    const validatedData = projectsArraySchema.parse(projectsData);
+    // Convert '__individual__' back to an empty string before validation/saving
+    const sanitizedData = projectsData.map(p => ({
+        ...p,
+        category: p.category === '__individual__' ? '' : p.category,
+    }));
+      
+    const validatedData = projectsArraySchema.parse(sanitizedData);
     
     const batch = writeBatch(db);
     const projectsCollection = collection(db, 'projects');

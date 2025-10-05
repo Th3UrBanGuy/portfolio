@@ -17,7 +17,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Save, Plus, Trash2, Tag, Edit, Check, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { updateProjects, addBundle, updateBundle, deleteBundle } from './actions';
+import { addBundle, updateBundle, deleteBundle } from './actions';
 import { useTransition, useState, useOptimistic } from 'react';
 import {
   Select,
@@ -125,15 +125,14 @@ function ProjectLinks({ control, projectIndex }: { control: Control<ProjectsForm
   );
 }
 
-
-export function ProjectsForm({ data, bundles }: { data: Project[], bundles: ProjectBundle[] }) {
+export function ProjectsForm({ data, bundles, onSave }: { data: Project[], bundles: ProjectBundle[], onSave: (data: any) => Promise<any> }) {
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<ProjectsFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      projects: data,
+      projects: data.map(p => ({ ...p, category: p.category || '__individual__' })),
     },
   });
 
@@ -144,7 +143,7 @@ export function ProjectsForm({ data, bundles }: { data: Project[], bundles: Proj
 
   function onSubmit(values: ProjectsFormValues) {
     startTransition(async () => {
-      const result = await updateProjects(values.projects);
+      const result = await onSave(values.projects);
       if (result.success) {
         toast({
           title: 'Projects Updated',
@@ -169,7 +168,7 @@ export function ProjectsForm({ data, bundles }: { data: Project[], bundles: Proj
       full_description: '',
       technologies: [],
       links: [{ label: 'Live Preview', url: '' }],
-      category: bundles[0]?.name || '',
+      category: bundles[0]?.name || '__individual__',
     });
   };
 
@@ -273,7 +272,7 @@ export function ProjectsForm({ data, bundles }: { data: Project[], bundles: Proj
                             </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="">No Bundle (Individual)</SelectItem>
+                              <SelectItem value="__individual__">No Bundle (Individual)</SelectItem>
                             {bundles.map(bundle => (
                                 <SelectItem key={bundle.id} value={bundle.name}>{bundle.name}</SelectItem>
                             ))}
@@ -436,7 +435,7 @@ export function BundleManager({ initialBundles }: { initialBundles: ProjectBundl
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleDelete(deletingBundleId!)} disabled={isPending}>
+                        <AlertDialogAction onClick={() => handleDeleteBundle(deletingBundleId!)} disabled={isPending}>
                             Delete
                         </AlertDialogAction>
                     </AlertDialogFooter>

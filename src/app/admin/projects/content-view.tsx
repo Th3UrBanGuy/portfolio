@@ -12,9 +12,14 @@ import { Button } from '@/components/ui/button';
 import { ProjectsForm, BundleManager } from './components';
 import { FolderKanban, ListTree } from 'lucide-react';
 import type { Project, ProjectBundle } from '@/lib/types';
+import { updateProjects } from './actions';
 
 export function ContentView({ projects, bundles }: { projects: Project[], bundles: ProjectBundle[] }) {
     const [view, setView] = useState<'projects' | 'bundles'>('projects');
+
+    const handleSaveProjects = async (data: Project[]) => {
+        return await updateProjects(data);
+    };
 
     return (
         <div className="space-y-6">
@@ -43,7 +48,7 @@ export function ContentView({ projects, bundles }: { projects: Project[], bundle
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <ProjectsForm data={projects} bundles={bundles} />
+                        <ProjectsForm data={projects} bundles={bundles} onSave={handleSaveProjects} />
                     </CardContent>
                 </Card>
             )}
