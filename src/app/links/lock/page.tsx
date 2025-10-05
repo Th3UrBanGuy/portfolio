@@ -183,7 +183,7 @@ export default function LockPage() {
                 <div className="text-center mb-6">
                     <div className="mx-auto h-16 w-16 text-cyan-400 flex items-center justify-center">
                         {settings?.lockScreenImageUrl ? (
-                            <Image src={settings.lockScreenImageUrl} alt="Lock Screen Icon" width={64} height={64} className="animate-pulse-glow" />
+                            <Image src={settings.lockScreenImageUrl} alt="Lock Screen Icon" width={64} height={64} className="rounded-full object-cover animate-pulse-glow" />
                         ) : (
                             <Fingerprint className="h-16 w-16 animate-pulse-glow" />
                         )}

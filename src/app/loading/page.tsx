@@ -82,7 +82,7 @@ const LoadingScreen = () => {
           <div className="relative w-40 h-40 rounded-full flex items-center justify-center shadow-[0_0_20px_theme(colors.cyan.400),inset_0_0_20px_theme(colors.cyan.400)]">
              <div className='w-20 h-20 text-cyan-400 flex items-center justify-center'>
                 {settings?.loadingScreenImageUrl ? (
-                    <Image src={settings.loadingScreenImageUrl} alt="Loading Screen Icon" width={80} height={80} className="animate-pulse-glow" />
+                    <Image src={settings.loadingScreenImageUrl} alt="Loading Screen Icon" width={80} height={80} className="rounded-full object-cover animate-pulse-glow" />
                 ) : (
                     <ShieldCheck className="w-20 h-20 animate-pulse-glow" />
                 )}
