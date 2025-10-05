@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getPortfolioData } from '@/lib/placeholder-data';
+import { getPortfolioData, getDocumentData } from '@/lib/placeholder-data';
 import {
   Card,
   CardDescription,
