@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useOptimistic, useTransition, useReducer } from 'react';
 import {
   Card,
   CardContent,
@@ -14,8 +14,39 @@ import { FolderKanban, ListTree } from 'lucide-react';
 import type { Project, ProjectBundle } from '@/lib/types';
 import { updateProjects } from './actions';
 
+
+type BundleAction = {
+    type: 'add' | 'update' | 'delete';
+    bundle: ProjectBundle;
+};
+
+function bundleReducer(state: ProjectBundle[], action: BundleAction): ProjectBundle[] {
+    switch (action.type) {
+        case 'add':
+            return [...state, action.bundle];
+        case 'update':
+            // If the ID is temporary, replace it with the real one. Otherwise, update name.
+            const existing = state.find(b => b.id === action.bundle.id || b.name === action.bundle.name);
+            if (existing && existing.id.startsWith('temp-')) {
+                 return state.map(b => b.id === existing.id ? action.bundle : b);
+            }
+            return state.map(b => b.id === action.bundle.id ? action.bundle : b);
+        case 'delete':
+            return state.filter(b => b.id !== action.bundle.id);
+        default:
+            return state;
+    }
+}
+
+
 export function ContentView({ projects, bundles }: { projects: Project[], bundles: ProjectBundle[] }) {
     const [view, setView] = useState<'projects' | 'bundles'>('projects');
+    const [isPending, startTransition] = useTransition();
+
+    const [optimisticBundles, setOptimisticBundles] = useOptimistic(
+        bundles,
+        bundleReducer
+    );
 
     const handleSaveProjects = async (data: Project[]) => {
         return await updateProjects(data);
@@ -48,7 +79,7 @@ export function ContentView({ projects, bundles }: { projects: Project[], bundle
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <ProjectsForm data={projects} bundles={bundles} onSave={handleSaveProjects} />
+                        <ProjectsForm data={projects} bundles={optimisticBundles} onSave={handleSaveProjects} />
                     </CardContent>
                 </Card>
             )}
@@ -62,10 +93,12 @@ export function ContentView({ projects, bundles }: { projects: Project[], bundle
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <BundleManager initialBundles={bundles} />
+                        <BundleManager initialBundles={optimisticBundles} setOptimisticBundles={setOptimisticBundles} />
                     </CardContent>
                 </Card>
             )}
         </div>
     );
 }
+
+    

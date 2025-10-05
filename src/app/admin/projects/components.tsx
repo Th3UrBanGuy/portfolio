@@ -18,7 +18,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Save, Plus, Trash2, Tag, Edit, Check, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { addBundle, updateBundle, deleteBundle } from './actions';
-import { useTransition, useState, useOptimistic } from 'react';
+import { useTransition, useState, useOptimistic, useEffect } from 'react';
 import {
   Select,
   SelectContent,
@@ -141,6 +141,13 @@ export function ProjectsForm({ data, bundles, onSave }: { data: Project[], bundl
     name: 'projects',
   });
 
+  useEffect(() => {
+    form.reset({
+      projects: data.map(p => ({ ...p, category: p.category || '__individual__' }))
+    });
+  }, [data, form]);
+
+
   function onSubmit(values: ProjectsFormValues) {
     startTransition(async () => {
       const result = await onSave(values.projects);
@@ -168,7 +175,7 @@ export function ProjectsForm({ data, bundles, onSave }: { data: Project[], bundl
       full_description: '',
       technologies: [],
       links: [{ label: 'Live Preview', url: '' }],
-      category: bundles[0]?.name || '__individual__',
+      category: '__individual__',
     });
   };
 
@@ -303,28 +310,18 @@ export function ProjectsForm({ data, bundles, onSave }: { data: Project[], bundl
 }
 
 
-export function BundleManager({ initialBundles }: { initialBundles: ProjectBundle[] }) {
+export function BundleManager({ 
+    initialBundles, 
+    setOptimisticBundles 
+}: { 
+    initialBundles: ProjectBundle[], 
+    setOptimisticBundles: (action: { type: 'add' | 'update' | 'delete', bundle: ProjectBundle }) => void 
+}) {
     const { toast } = useToast();
     const [isPending, startTransition] = useTransition();
     const [newBundleName, setNewBundleName] = useState('');
     const [editingBundle, setEditingBundle] = useState<{ id: string; name: string } | null>(null);
     const [deletingBundleId, setDeletingBundleId] = useState<string | null>(null);
-
-    const [optimisticBundles, setOptimisticBundles] = useOptimistic(
-        initialBundles,
-        (state, { type, bundle }: { type: 'add' | 'update' | 'delete', bundle: ProjectBundle }) => {
-            switch (type) {
-                case 'add':
-                    return [...state, bundle];
-                case 'update':
-                    return state.map(b => b.id === bundle.id ? bundle : b);
-                case 'delete':
-                    return state.filter(b => b.id !== bundle.id);
-                default:
-                    return state;
-            }
-        }
-    );
 
     const handleAddBundle = () => {
         if (!newBundleName.trim()) {
@@ -336,12 +333,14 @@ export function BundleManager({ initialBundles }: { initialBundles: ProjectBundl
 
         startTransition(async () => {
             setOptimisticBundles({ type: 'add', bundle: newBundle });
+            setNewBundleName('');
             const result = await addBundle(newBundle.name);
-            if (result.success) {
-                toast({ title: 'Bundle Added' });
-                setNewBundleName('');
+            if (result.success && result.id) {
+                 setOptimisticBundles({ type: 'update', bundle: { id: result.id, name: newBundle.name } });
+                 toast({ title: 'Bundle Added' });
             } else {
                 toast({ title: 'Error', description: result.error, variant: 'destructive' });
+                setOptimisticBundles({ type: 'delete', bundle: newBundle });
             }
         });
     };
@@ -354,29 +353,39 @@ export function BundleManager({ initialBundles }: { initialBundles: ProjectBundl
             setEditingBundle(null);
             return;
         }
-
+        
         startTransition(async () => {
+            const oldBundle = initialBundles.find(b => b.id === editingBundle.id);
             setOptimisticBundles({ type: 'update', bundle: editingBundle });
+            setEditingBundle(null);
+
             const result = await updateBundle(editingBundle.id, editingBundle.name);
              if (result.success) {
                 toast({ title: 'Bundle Updated' });
             } else {
                 toast({ title: 'Error', description: result.error, variant: 'destructive' });
+                if(oldBundle) {
+                    setOptimisticBundles({ type: 'update', bundle: oldBundle });
+                }
             }
-            setEditingBundle(null);
         });
     };
     
     const handleDeleteBundle = (id: string) => {
+        const bundleToDelete = initialBundles.find(b => b.id === id);
+        if (!bundleToDelete) return;
+
         startTransition(async () => {
-            setOptimisticBundles({ type: 'delete', bundle: { id, name: '' } });
+            setOptimisticBundles({ type: 'delete', bundle: bundleToDelete });
+            setDeletingBundleId(null);
+
             const result = await deleteBundle(id);
              if (result.success) {
                 toast({ title: 'Bundle Deleted' });
             } else {
                 toast({ title: 'Error', description: result.error, variant: 'destructive' });
+                setOptimisticBundles({ type: 'add', bundle: bundleToDelete });
             }
-            setDeletingBundleId(null);
         });
     };
 
@@ -394,7 +403,7 @@ export function BundleManager({ initialBundles }: { initialBundles: ProjectBundl
                 </Button>
             </div>
             <div className="space-y-2">
-                {optimisticBundles.map(bundle => (
+                {initialBundles.map(bundle => (
                     <div key={bundle.id} className="flex items-center justify-between rounded-lg border p-3">
                         {editingBundle?.id === bundle.id ? (
                             <Input
@@ -402,6 +411,8 @@ export function BundleManager({ initialBundles }: { initialBundles: ProjectBundl
                                 onChange={(e) => setEditingBundle({ ...editingBundle, name: e.target.value })}
                                 className="h-8"
                                 autoFocus
+                                onBlur={handleUpdateBundle}
+                                onKeyDown={(e) => e.key === 'Enter' && handleUpdateBundle()}
                             />
                         ) : (
                             <div className="flex items-center gap-2">
@@ -417,8 +428,8 @@ export function BundleManager({ initialBundles }: { initialBundles: ProjectBundl
                                 </>
                             ) : (
                                 <>
-                                    <Button size="icon" variant="ghost" onClick={() => setEditingBundle(bundle)}><Edit className="h-4 w-4" /></Button>
-                                    <Button size="icon" variant="ghost" onClick={() => setDeletingBundleId(bundle.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                                    <Button size="icon" variant="ghost" onClick={() => setEditingBundle(bundle)} disabled={isPending}><Edit className="h-4 w-4" /></Button>
+                                    <Button size="icon" variant="ghost" onClick={() => setDeletingBundleId(bundle.id)} disabled={isPending}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                                 </>
                             )}
                         </div>
@@ -444,3 +455,4 @@ export function BundleManager({ initialBundles }: { initialBundles: ProjectBundl
         </div>
     );
 }
+    
