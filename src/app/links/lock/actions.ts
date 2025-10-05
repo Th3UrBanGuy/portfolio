@@ -3,7 +3,6 @@
 import { z } from 'zod';
 import { getDoc, doc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { redirect } from 'next/navigation';
 
 const schema = z.object({
   id: z.string().min(1, 'Link ID is missing.'),
@@ -11,7 +10,13 @@ const schema = z.object({
   password: z.string().min(1, 'Password is required.'),
 });
 
-export async function verifyPassword(prevState: any, formData: FormData) {
+type State = {
+  success: boolean;
+  destination?: string;
+  error?: string;
+};
+
+export async function verifyPassword(prevState: any, formData: FormData): Promise<State | null> {
   const validatedFields = schema.safeParse({
     id: formData.get('id'),
     destination_b64: formData.get('destination_b64'),
@@ -20,6 +25,7 @@ export async function verifyPassword(prevState: any, formData: FormData) {
 
   if (!validatedFields.success) {
     return {
+      success: false,
       error: 'An unexpected error occurred. Please try again.',
     };
   }
@@ -30,17 +36,19 @@ export async function verifyPassword(prevState: any, formData: FormData) {
     const linkDoc = await getDoc(doc(db, 'short-links', id));
 
     if (!linkDoc.exists() || !linkDoc.data().password) {
-      return { error: 'This link is not password protected.' };
+      return { success: false, error: 'This link is not password protected.' };
     }
 
     if (linkDoc.data().password !== password) {
-      return { error: 'Invalid password. Access denied.' };
+      return { success: false, error: 'Invalid password. Access denied.' };
     }
 
+    const destination = Buffer.from(destination_b64, 'base64').toString('ascii');
+    
+    // On success, return the destination URL to the client
+    return { success: true, destination };
+
   } catch (e) {
-    return { error: 'Could not verify link. Please try again.' };
+    return { success: false, error: 'Could not verify link. Please try again.' };
   }
-  
-  const destination = Buffer.from(destination_b64, 'base64').toString('ascii');
-  redirect(destination);
 }
