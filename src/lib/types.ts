@@ -175,6 +175,11 @@ export type ShortLink = {
   loading_duration_seconds?: number;
 };
 
+export type LinkSettings = {
+    lockScreenImageUrl: string;
+    loadingScreenImageUrl: string;
+}
+
 export type Visit = {
     id: string;
     timestamp: any; // Firestore ServerTimestamp

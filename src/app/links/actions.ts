@@ -141,3 +141,28 @@ export async function deleteLink(id: string) {
     return { success: false, error: 'Failed to delete link.' };
   }
 }
+
+// --- Settings Actions ---
+const settingsSchema = z.object({
+    lockScreenImageUrl: z.string().url().or(z.literal('')),
+    loadingScreenImageUrl: z.string().url().or(z.literal('')),
+});
+
+export async function saveSettings(data: z.infer<typeof settingsSchema>) {
+    try {
+        const validatedData = settingsSchema.parse(data);
+        await setDoc(doc(db, 'site-data', 'link-shortener-settings'), validatedData);
+        revalidatePath('/links');
+        revalidatePath('/links/lock');
+        revalidatePath('/loading');
+        return { success: true };
+    } catch (error) {
+        if (error instanceof z.ZodError) {
+            return {
+                success: false,
+                error: error.errors.map((e) => `${e.path.join('.')} - ${e.message}`).join(', '),
+            };
+        }
+        return { success: false, error: 'An unknown error occurred while saving settings.' };
+    }
+}

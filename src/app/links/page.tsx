@@ -6,6 +6,8 @@ import {
   onSnapshot,
   query,
   orderBy,
+  getDoc,
+  doc
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import {
@@ -32,10 +34,11 @@ import {
 } from '@/components/ui/dialog';
 import { LinkForm } from './components/LinkForm';
 import { QrCodeDialog } from './components/QrCodeDialog';
-import { ShortLink } from '@/lib/types';
-import { Trash2, Edit, Copy, ExternalLink, Link as LinkIcon, LogOut, MoreVertical, BarChart2, QrCode } from 'lucide-react';
+import { SettingsDialog } from './components/SettingsDialog';
+import { ShortLink, LinkSettings } from '@/lib/types';
+import { Trash2, Edit, Copy, ExternalLink, Link as LinkIcon, LogOut, MoreVertical, BarChart2, QrCode, Settings } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { logout, saveLink, deleteLink } from './actions';
+import { logout, saveLink, deleteLink, saveSettings } from './actions';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -74,10 +77,12 @@ function optimisticReducer(state: ShortLink[], action: Action): ShortLink[] {
 
 export default function LinksPage() {
   const [links, setLinks] = useState<ShortLink[]>([]);
+  const [settings, setSettings] = useState<LinkSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingLink, setEditingLink] = useState<ShortLink | null>(null);
   const [qrCodeLink, setQrCodeLink] = useState<ShortLink | null>(null);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const { toast } = useToast();
   const [isSaving, startSavingTransition] = useTransition();
   const [isDeleting, startDeletingTransition] = useTransition();
@@ -107,7 +112,18 @@ export default function LinksPage() {
         setLoading(false);
       }
     );
-    return () => unsubscribe();
+    
+    const settingsDocRef = doc(db, 'site-data', 'link-shortener-settings');
+    const unsubscribeSettings = onSnapshot(settingsDocRef, (doc) => {
+        if (doc.exists()) {
+            setSettings(doc.data() as LinkSettings);
+        }
+    });
+
+    return () => {
+        unsubscribe();
+        unsubscribeSettings();
+    };
   }, [toast]);
 
   const handleEdit = (link: ShortLink) => {
@@ -143,6 +159,19 @@ export default function LinksPage() {
         }
     });
     setIsFormOpen(false);
+  };
+
+  const handleSaveSettings = async (values: LinkSettings) => {
+    startSavingTransition(async () => {
+        const result = await saveSettings(values);
+        if (result.success) {
+            toast({ title: 'Settings Saved' });
+            setSettings(values);
+        } else {
+            toast({ title: 'Error', description: result.error, variant: 'destructive' });
+        }
+    });
+    setIsSettingsOpen(false);
   };
 
   const handleDelete = async (id: string) => {
@@ -320,6 +349,10 @@ export default function LinksPage() {
           </div>
            <div className="flex gap-2">
             <Button onClick={handleAddNew}>Create New Link</Button>
+             <Button variant="outline" size="icon" onClick={() => setIsSettingsOpen(true)}>
+                <Settings />
+                <span className="sr-only">Settings</span>
+            </Button>
             <form action={logout}>
                 <Button variant="outline" size="icon" type="submit">
                     <LogOut />
@@ -347,6 +380,14 @@ export default function LinksPage() {
               </ScrollArea>
             </DialogContent>
           </Dialog>
+
+           <SettingsDialog
+                open={isSettingsOpen}
+                onOpenChange={setIsSettingsOpen}
+                onSave={handleSaveSettings}
+                isSaving={isSaving}
+                currentSettings={settings}
+            />
 
            <QrCodeDialog 
                 link={qrCodeLink}

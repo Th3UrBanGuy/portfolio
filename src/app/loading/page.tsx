@@ -5,6 +5,10 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ShieldCheck, Rocket, Zap, Atom } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import type { LinkSettings } from '@/lib/types';
+import Image from 'next/image';
 
 const icons = [ShieldCheck, Rocket, Zap, Atom];
 
@@ -16,6 +20,18 @@ const LoadingScreen = () => {
   const duration = parseInt(searchParams.get('duration') || '3', 10);
   
   const [progress, setProgress] = useState(0);
+  const [settings, setSettings] = useState<LinkSettings | null>(null);
+
+
+  useEffect(() => {
+    async function fetchSettings() {
+        const settingsDoc = await getDoc(doc(db, 'site-data', 'link-shortener-settings'));
+        if (settingsDoc.exists()) {
+            setSettings(settingsDoc.data() as LinkSettings);
+        }
+    }
+    fetchSettings();
+  }, []);
 
   useEffect(() => {
     if (!destination) {
@@ -63,8 +79,14 @@ const LoadingScreen = () => {
               }}
             />
           ))}
-          <div className="relative w-40 h-40 border-4 border-cyan-400/50 rounded-full flex items-center justify-center shadow-[0_0_20px_theme(colors.cyan.400),inset_0_0_20px_theme(colors.cyan.400)]">
-             <ShieldCheck className="w-20 h-20 text-cyan-400 animate-pulse-glow" />
+          <div className="relative w-40 h-40 rounded-full flex items-center justify-center shadow-[0_0_20px_theme(colors.cyan.400),inset_0_0_20px_theme(colors.cyan.400)]">
+             <div className='w-20 h-20 text-cyan-400 flex items-center justify-center'>
+                {settings?.loadingScreenImageUrl ? (
+                    <Image src={settings.loadingScreenImageUrl} alt="Loading Screen Icon" width={80} height={80} className="animate-pulse-glow" />
+                ) : (
+                    <ShieldCheck className="w-20 h-20 animate-pulse-glow" />
+                )}
+             </div>
           </div>
         </div>
 

@@ -9,6 +9,11 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, Fingerprint, Loader2 } from 'lucide-react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import Image from 'next/image';
+import type { LinkSettings } from '@/lib/types';
+
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -83,6 +88,17 @@ export default function LockPage() {
     const [isUnlocked, setIsUnlocked] = useState(false);
     const [animationText, setAnimationText] = useState('');
     const [destinationUrl, setDestinationUrl] = useState('');
+    const [settings, setSettings] = useState<LinkSettings | null>(null);
+
+    useEffect(() => {
+        async function fetchSettings() {
+            const settingsDoc = await getDoc(doc(db, 'site-data', 'link-shortener-settings'));
+            if (settingsDoc.exists()) {
+                setSettings(settingsDoc.data() as LinkSettings);
+            }
+        }
+        fetchSettings();
+    }, []);
 
     const handleUnlockSuccess = (destination: string) => {
         setIsUnlocked(true);
@@ -162,10 +178,16 @@ export default function LockPage() {
         <canvas ref={canvasRef} className="absolute inset-0 z-0 opacity-30"></canvas>
         <div className="absolute inset-0 bg-grid-cyan-500/10 [mask-image:linear-gradient(to_bottom,white_0%,white_75%,transparent_100%)]"></div>
 
-        <div className="relative z-10 w-full max-w-md rounded-lg border border-cyan-400/30 bg-gray-800/30 p-8 shadow-[0_0_30px_theme(colors.cyan.500/0.3)] backdrop-blur-sm transition-all duration-500">
+        <div className="relative z-10 w-full max-w-md rounded-lg bg-gray-800/30 p-8 shadow-[0_0_30px_theme(colors.cyan.500/0.3)] backdrop-blur-sm transition-all duration-500 animate-in fade-in-0 zoom-in-95">
             <div className={cn("transition-opacity duration-500", isUnlocked ? 'opacity-0 h-0' : 'opacity-100')}>
                 <div className="text-center mb-6">
-                    <Fingerprint className="mx-auto h-16 w-16 text-cyan-400 animate-pulse-glow" />
+                    <div className="mx-auto h-16 w-16 text-cyan-400 flex items-center justify-center">
+                        {settings?.lockScreenImageUrl ? (
+                            <Image src={settings.lockScreenImageUrl} alt="Lock Screen Icon" width={64} height={64} className="animate-pulse-glow" />
+                        ) : (
+                            <Fingerprint className="h-16 w-16 animate-pulse-glow" />
+                        )}
+                    </div>
                     <h1 className="text-2xl font-bold text-cyan-300 mt-4 tracking-wider" style={{ textShadow: '0 0 8px theme(colors.cyan.400/0.8)' }}>
                         Secure Access Required
                     </h1>
