@@ -1,18 +1,11 @@
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-  limit,
-} from 'firebase/firestore';
+
+import { collection, query, where, getDocs, limit } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { redirect } from 'next/navigation';
+import { NextResponse } from 'next/server';
 import { notFound } from 'next/navigation';
 import type { ShortLink } from '@/lib/types';
 
-type Props = {
-  params: { slug: string };
-};
+export const runtime = 'edge';
 
 async function getLink(slug: string): Promise<ShortLink | null> {
   const q = query(
@@ -30,13 +23,23 @@ async function getLink(slug: string): Promise<ShortLink | null> {
   return { id: doc.id, ...doc.data() } as ShortLink;
 }
 
-export default async function SlugRedirectPage({ params }: Props) {
+export async function GET(
+  request: Request,
+  { params }: { params: { slug: string } }
+) {
   const { slug } = params;
+
+  if (!slug) {
+    return notFound();
+  }
+
   const link = await getLink(slug);
 
   if (link) {
-    redirect(link.destination);
+    return NextResponse.redirect(link.destination);
   } else {
-    notFound();
+    // If the link is not found, redirect to a 404 page.
+    // You can customize this to redirect to your main portfolio or another page.
+    return notFound();
   }
 }
