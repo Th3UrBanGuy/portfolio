@@ -31,8 +31,9 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { LinkForm } from './components/LinkForm';
+import { QrCodeDialog } from './components/QrCodeDialog';
 import { ShortLink } from '@/lib/types';
-import { Trash2, Edit, Copy, ExternalLink, Link as LinkIcon, LogOut, MoreVertical, BarChart2 } from 'lucide-react';
+import { Trash2, Edit, Copy, ExternalLink, Link as LinkIcon, LogOut, MoreVertical, BarChart2, QrCode } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { logout, saveLink, deleteLink } from './actions';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -76,6 +77,7 @@ export default function LinksPage() {
   const [loading, setLoading] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingLink, setEditingLink] = useState<ShortLink | null>(null);
+  const [qrCodeLink, setQrCodeLink] = useState<ShortLink | null>(null);
   const { toast } = useToast();
   const [isSaving, startSavingTransition] = useTransition();
   const [isDeleting, startDeletingTransition] = useTransition();
@@ -117,6 +119,10 @@ export default function LinksPage() {
     setEditingLink(null);
     setIsFormOpen(true);
   };
+
+  const handleShowQrCode = (link: ShortLink) => {
+    setQrCodeLink(link);
+  }
 
   const handleSave = async (values: Omit<ShortLink, 'createdAt'>) => {
     const isUpdating = !!values.id;
@@ -219,6 +225,13 @@ export default function LinksPage() {
                         <BarChart2 className="h-4 w-4" />
                     </Button>
                     <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleShowQrCode(link)}
+                    >
+                        <QrCode className="h-4 w-4" />
+                    </Button>
+                    <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => handleEdit(link)}
@@ -273,6 +286,9 @@ export default function LinksPage() {
                                 </DropdownMenuItem>
                                  <DropdownMenuItem onClick={() => router.push(`/links/analytics?id=${link.id}`)}>
                                     <BarChart2 className="mr-2 h-4 w-4" /> Analytics
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleShowQrCode(link)}>
+                                    <QrCode className="mr-2 h-4 w-4" /> QR Code
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => handleEdit(link)}>
                                     <Edit className="mr-2 h-4 w-4" /> Edit
@@ -331,6 +347,14 @@ export default function LinksPage() {
               </ScrollArea>
             </DialogContent>
           </Dialog>
+
+           <QrCodeDialog 
+                link={qrCodeLink}
+                open={!!qrCodeLink}
+                onOpenChange={() => setQrCodeLink(null)}
+                getFullShortUrl={getFullShortUrl}
+            />
+
             {isMobile ? renderMobileView() : renderDesktopView()}
         </CardContent>
       </Card>
