@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getPortfolioData, getDocumentData } from '@/lib/placeholder-data';
+import { getPortfolioData } from '@/lib/placeholder-data';
 import {
   Card,
   CardDescription,
@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/card';
 import { ContentView } from '@/app/admin/projects/content-view';
 import { TitleForm } from '@/app/admin/projects/components/TitleForm';
-import type { Project, PageTitle } from '@/lib/types';
+import type { Project, PageTitle, ProjectBundle } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
@@ -23,7 +23,7 @@ type ProjectsPageProps = {
 
 export default function ProjectsPage({ setActiveView }: ProjectsPageProps) {
   const [projects, setProjects] = useState<Project[]>([]);
-  const [bundles, setBundles] = useState<string[]>([]);
+  const [bundles, setBundles] = useState<ProjectBundle[]>([]);
   const [titles, setTitles] = useState({ pageTitle: '', tocTitle: '' });
   const [loading, setLoading] = useState(true);
 
@@ -33,8 +33,8 @@ export default function ProjectsPage({ setActiveView }: ProjectsPageProps) {
         getPortfolioData(),
         getDocumentData<PageTitle>('page-titles', 'projects'),
       ]);
-      const projectData = portfolioData.projects as Project[] || [];
-      const bundleData = [...new Set(projectData.map(p => p.category))];
+      const projectData = portfolioData.projects || [];
+      const bundleData = portfolioData.projectBundles || [];
       setProjects(projectData);
       setBundles(bundleData);
       setTitles({

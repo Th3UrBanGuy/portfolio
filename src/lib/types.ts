@@ -101,6 +101,10 @@ export type Project = {
   order?: number;
 };
 
+export type ProjectBundle = {
+    id: string;
+    name: string;
+};
 
 export type Social = {
     id: string;
@@ -191,6 +195,7 @@ export type PortfolioData = {
   education: Education[];
   skills: Skill[];
   projects: Project[];
+  projectBundles: ProjectBundle[];
   experience: Experience[];
   authorImageUrl: string;
   authorImageHint: string;

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import type { PortfolioData, Project, Skill, Page } from '@/lib/types';
+import type { PortfolioData, Project, Skill, Page, ProjectBundle } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import CoverPage from './pages/CoverPage';
@@ -167,7 +167,7 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
         case 'private-info':
             return <PrivateInfoPage privateInfo={data.privateInfo} title={titles?.pageTitle ?? 'Private Sanctum'} />;
         case 'projects':
-            return <ProjectsPage projects={data.projects} onProjectSelect={setSelectedProject} title={titles?.pageTitle ?? 'Projects'} />;
+            return <ProjectsPage projects={data.projects} bundles={data.projectBundles} onProjectSelect={setSelectedProject} title={titles?.pageTitle ?? 'Projects'} />;
         case 'contact':
             return <ContactPage contactDetails={data.contactDetails} socials={data.socials} customLinks={data.customLinks} title={titles?.pageTitle ?? 'Contact'}/>;
         case 'back-cover':

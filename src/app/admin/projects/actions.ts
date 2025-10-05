@@ -1,7 +1,7 @@
 'use server';
 
 import { z } from 'zod';
-import { collection, writeBatch, doc, setDoc } from 'firebase/firestore';
+import { collection, writeBatch, doc, setDoc, addDoc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { revalidatePath } from 'next/cache';
 import { getCollectionData } from '@/lib/placeholder-data';
@@ -75,3 +75,48 @@ export async function updateTitle(data: { pageTitle: string; tocTitle: string })
       return { success: false, error: 'An unexpected error occurred.' };
     }
   }
+
+const bundleSchema = z.object({
+  id: z.string().optional(),
+  name: z.string().min(1, "Bundle name is required."),
+});
+
+export async function addBundle(name: string): Promise<{ success: boolean; error?: string; id?: string }> {
+  try {
+    const validatedData = bundleSchema.omit({id: true}).parse({ name });
+    const docRef = await addDoc(collection(db, "project-bundles"), validatedData);
+    revalidatePath('/admin/projects');
+    return { success: true, id: docRef.id };
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return { success: false, error: error.errors.map(e => e.message).join(', ') };
+    }
+    return { success: false, error: 'An unexpected error occurred.' };
+  }
+}
+
+export async function updateBundle(id: string, name: string): Promise<{ success: boolean; error?: string }> {
+    try {
+        const validatedData = bundleSchema.omit({id: true}).parse({ name });
+        const docRef = doc(db, 'project-bundles', id);
+        await updateDoc(docRef, validatedData);
+        revalidatePath('/admin/projects');
+        return { success: true };
+    } catch (error) {
+        if (error instanceof z.ZodError) {
+            return { success: false, error: error.errors.map(e => e.message).join(', ') };
+        }
+        return { success: false, error: 'An unexpected error occurred.' };
+    }
+}
+
+export async function deleteBundle(id: string): Promise<{ success: boolean; error?: string }> {
+    try {
+        const docRef = doc(db, 'project-bundles', id);
+        await deleteDoc(docRef);
+        revalidatePath('/admin/projects');
+        return { success: true };
+    } catch (error) {
+        return { success: false, error: 'An unexpected error occurred.' };
+    }
+}

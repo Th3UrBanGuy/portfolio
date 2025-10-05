@@ -15,10 +15,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Save, Plus, Trash2, Tag } from 'lucide-react';
+import { Save, Plus, Trash2, Tag, Edit, Check, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { updateProjects } from './actions';
-import { useTransition } from 'react';
+import { updateProjects, addBundle, updateBundle, deleteBundle } from './actions';
+import { useTransition, useState, useOptimistic } from 'react';
 import {
   Select,
   SelectContent,
@@ -26,8 +26,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Separator } from '@/components/ui/separator';
-import type { Project } from '@/lib/types';
+import type { Project, ProjectBundle } from '@/lib/types';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 const projectLinkSchema = z.object({
   label: z.string().min(1, "Link label is required."),
@@ -42,7 +51,7 @@ const projectSchema = z.object({
   full_description: z.string().min(1, "Full description is required."),
   technologies: z.array(z.string().min(1, "Technology cannot be empty.")).min(1, "At least one technology is required."),
   links: z.array(projectLinkSchema).min(1, "At least one link is required."),
-  category: z.string().min(1, "Category is required."),
+  category: z.string(), // Can be empty for individual projects
 });
 
 const formSchema = z.object({
@@ -117,7 +126,7 @@ function ProjectLinks({ control, projectIndex }: { control: Control<ProjectsForm
 }
 
 
-export function ProjectsForm({ data, bundles }: { data: Project[], bundles: string[] }) {
+export function ProjectsForm({ data, bundles }: { data: Project[], bundles: ProjectBundle[] }) {
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
 
@@ -160,7 +169,7 @@ export function ProjectsForm({ data, bundles }: { data: Project[], bundles: stri
       full_description: '',
       technologies: [],
       links: [{ label: 'Live Preview', url: '' }],
-      category: bundles[0] || 'New Category',
+      category: bundles[0]?.name || '',
     });
   };
 
@@ -264,8 +273,9 @@ export function ProjectsForm({ data, bundles }: { data: Project[], bundles: stri
                             </SelectTrigger>
                             </FormControl>
                             <SelectContent>
+                              <SelectItem value="">No Bundle (Individual)</SelectItem>
                             {bundles.map(bundle => (
-                                <SelectItem key={bundle} value={bundle}>{bundle}</SelectItem>
+                                <SelectItem key={bundle.id} value={bundle.name}>{bundle.name}</SelectItem>
                             ))}
                             </SelectContent>
                         </Select>
@@ -294,30 +304,144 @@ export function ProjectsForm({ data, bundles }: { data: Project[], bundles: stri
 }
 
 
-export function BundleManager({ bundles }: { bundles: string[] }) {
-    return (
-      <div className="space-y-6">
-        <div>
-          <h4 className="mb-4 text-lg font-medium">Existing Bundles</h4>
-           <p className="text-sm text-muted-foreground mb-4">
-            Bundles (or categories) are created automatically when you assign a project to a new bundle name in the Project Management view. To remove a bundle, ensure no projects are assigned to it.
-          </p>
-          {bundles.length > 0 ? (
-            <div className="space-y-2">
-              {bundles.map(bundle => (
-                  <div key={bundle} className="flex items-center justify-between rounded-lg border p-3">
-                      <div className="flex items-center gap-2">
-                          <Tag className="h-4 w-4 text-muted-foreground" />
-                          <span className="font-medium">{bundle}</span>
-                      </div>
-                  </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">No bundles found. Add a project and assign it a bundle to get started.</p>
-          )}
-        </div>
-      </div>
+export function BundleManager({ initialBundles }: { initialBundles: ProjectBundle[] }) {
+    const { toast } = useToast();
+    const [isPending, startTransition] = useTransition();
+    const [newBundleName, setNewBundleName] = useState('');
+    const [editingBundle, setEditingBundle] = useState<{ id: string; name: string } | null>(null);
+    const [deletingBundleId, setDeletingBundleId] = useState<string | null>(null);
+
+    const [optimisticBundles, setOptimisticBundles] = useOptimistic(
+        initialBundles,
+        (state, { type, bundle }: { type: 'add' | 'update' | 'delete', bundle: ProjectBundle }) => {
+            switch (type) {
+                case 'add':
+                    return [...state, bundle];
+                case 'update':
+                    return state.map(b => b.id === bundle.id ? bundle : b);
+                case 'delete':
+                    return state.filter(b => b.id !== bundle.id);
+                default:
+                    return state;
+            }
+        }
     );
-  }
-  
+
+    const handleAddBundle = () => {
+        if (!newBundleName.trim()) {
+            toast({ title: 'Error', description: 'Bundle name cannot be empty.', variant: 'destructive' });
+            return;
+        }
+        const tempId = `temp-${Date.now()}`;
+        const newBundle = { id: tempId, name: newBundleName.trim() };
+
+        startTransition(async () => {
+            setOptimisticBundles({ type: 'add', bundle: newBundle });
+            const result = await addBundle(newBundle.name);
+            if (result.success) {
+                toast({ title: 'Bundle Added' });
+                setNewBundleName('');
+            } else {
+                toast({ title: 'Error', description: result.error, variant: 'destructive' });
+            }
+        });
+    };
+
+    const handleUpdateBundle = () => {
+        if (!editingBundle || !editingBundle.name.trim()) return;
+        
+        const originalBundle = initialBundles.find(b => b.id === editingBundle.id);
+        if (originalBundle?.name === editingBundle.name) {
+            setEditingBundle(null);
+            return;
+        }
+
+        startTransition(async () => {
+            setOptimisticBundles({ type: 'update', bundle: editingBundle });
+            const result = await updateBundle(editingBundle.id, editingBundle.name);
+             if (result.success) {
+                toast({ title: 'Bundle Updated' });
+            } else {
+                toast({ title: 'Error', description: result.error, variant: 'destructive' });
+            }
+            setEditingBundle(null);
+        });
+    };
+    
+    const handleDeleteBundle = (id: string) => {
+        startTransition(async () => {
+            setOptimisticBundles({ type: 'delete', bundle: { id, name: '' } });
+            const result = await deleteBundle(id);
+             if (result.success) {
+                toast({ title: 'Bundle Deleted' });
+            } else {
+                toast({ title: 'Error', description: result.error, variant: 'destructive' });
+            }
+            setDeletingBundleId(null);
+        });
+    };
+
+    return (
+        <div className="space-y-6">
+            <div className="flex gap-2">
+                <Input
+                    value={newBundleName}
+                    onChange={(e) => setNewBundleName(e.target.value)}
+                    placeholder="New bundle name..."
+                    disabled={isPending}
+                />
+                <Button onClick={handleAddBundle} disabled={isPending}>
+                    <Plus className="mr-2" /> Add
+                </Button>
+            </div>
+            <div className="space-y-2">
+                {optimisticBundles.map(bundle => (
+                    <div key={bundle.id} className="flex items-center justify-between rounded-lg border p-3">
+                        {editingBundle?.id === bundle.id ? (
+                            <Input
+                                value={editingBundle.name}
+                                onChange={(e) => setEditingBundle({ ...editingBundle, name: e.target.value })}
+                                className="h-8"
+                                autoFocus
+                            />
+                        ) : (
+                            <div className="flex items-center gap-2">
+                                <Tag className="h-4 w-4 text-muted-foreground" />
+                                <span className="font-medium">{bundle.name}</span>
+                            </div>
+                        )}
+                        <div className="flex items-center gap-1">
+                            {editingBundle?.id === bundle.id ? (
+                                <>
+                                    <Button size="icon" variant="ghost" onClick={handleUpdateBundle}><Check className="h-4 w-4 text-green-500" /></Button>
+                                    <Button size="icon" variant="ghost" onClick={() => setEditingBundle(null)}><X className="h-4 w-4 text-red-500" /></Button>
+                                </>
+                            ) : (
+                                <>
+                                    <Button size="icon" variant="ghost" onClick={() => setEditingBundle(bundle)}><Edit className="h-4 w-4" /></Button>
+                                    <Button size="icon" variant="ghost" onClick={() => setDeletingBundleId(bundle.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                ))}
+            </div>
+            <AlertDialog open={!!deletingBundleId} onOpenChange={() => setDeletingBundleId(null)}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete the bundle. Projects in this bundle will become "Individual".
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => handleDelete(deletingBundleId!)} disabled={isPending}>
+                            Delete
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </div>
+    );
+}

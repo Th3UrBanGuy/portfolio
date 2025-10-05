@@ -11,9 +11,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { ProjectsForm, BundleManager } from './components';
 import { FolderKanban, ListTree } from 'lucide-react';
-import type { Project } from '@/lib/types';
+import type { Project, ProjectBundle } from '@/lib/types';
 
-export function ContentView({ projects, bundles }: { projects: Project[], bundles: string[] }) {
+export function ContentView({ projects, bundles }: { projects: Project[], bundles: ProjectBundle[] }) {
     const [view, setView] = useState<'projects' | 'bundles'>('projects');
 
     return (
@@ -57,7 +57,7 @@ export function ContentView({ projects, bundles }: { projects: Project[], bundle
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <BundleManager bundles={bundles} />
+                        <BundleManager initialBundles={bundles} />
                     </CardContent>
                 </Card>
             )}
