@@ -142,14 +142,21 @@ export default function LinksPage() {
      }
   };
 
-  const copyToClipboard = (slug: string) => {
-    const url = `${window.location.origin}/links/${slug}`;
+  const copyToClipboard = (path: string, slug: string) => {
+    const url = `${window.location.origin}/${path === '/' ? '' : path + '/'}${slug}`;
     navigator.clipboard.writeText(url);
     toast({
       title: 'Copied to Clipboard',
       description: url,
     });
   };
+
+  const getFullShortUrl = (path: string, slug: string) => {
+      if (path === '/') {
+          return `/${slug}`;
+      }
+      return `/${path}/${slug}`;
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground p-4 md:p-8">
@@ -194,7 +201,7 @@ export default function LinksPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Slug</TableHead>
+                  <TableHead>Short URL</TableHead>
                   <TableHead>Destination</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
@@ -217,7 +224,7 @@ export default function LinksPage() {
                 ) : (
                   optimisticLinks.map((link) => (
                     <TableRow key={link.id} className={link.id.startsWith('temp-') || isDeleting ? 'opacity-50' : ''}>
-                      <TableCell className="font-medium">/links/{link.slug}</TableCell>
+                      <TableCell className="font-medium">{getFullShortUrl(link.path || 'links', link.slug)}</TableCell>
                       <TableCell className="max-w-xs truncate">
                         <a href={link.destination} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
                             {link.destination} <ExternalLink className="h-3 w-3" />
@@ -227,7 +234,7 @@ export default function LinksPage() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => copyToClipboard(link.slug)}
+                          onClick={() => copyToClipboard(link.path || 'links', link.slug)}
                         >
                           <Copy className="h-4 w-4" />
                         </Button>

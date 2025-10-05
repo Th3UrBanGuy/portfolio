@@ -59,6 +59,7 @@ export async function logout() {
 
 const linkSchema = z.object({
   id: z.string().optional(),
+  path: z.string().min(1, 'Path is required. Use "/" for root.').regex(/^[a-zA-Z0-9_-]*$|\/$/, 'Path can only contain letters, numbers, hyphens, and underscores, or be a single "/"'),
   slug: z
     .string()
     .min(3, 'Slug must be at least 3 characters.')
@@ -69,23 +70,28 @@ const linkSchema = z.object({
 export async function saveLink(data: z.infer<typeof linkSchema>) {
   try {
     const validatedData = linkSchema.parse(data);
-    const { id, slug, destination } = validatedData;
+    const { id, path, slug, destination } = validatedData;
 
-    // Check if slug already exists for another link
-    const q = query(collection(db, 'short-links'), where('slug', '==', slug));
+    // Check if path/slug combination already exists for another link
+    const q = query(
+        collection(db, 'short-links'), 
+        where('path', '==', path), 
+        where('slug', '==', slug)
+    );
     const querySnapshot = await getDocs(q);
     if (!querySnapshot.empty && (!id || querySnapshot.docs[0].id !== id)) {
-      return { success: false, error: 'This slug is already in use.' };
+      return { success: false, error: 'This path/slug combination is already in use.' };
     }
 
     if (id) {
       // Update existing link
       const docRef = doc(db, 'short-links', id);
-      await updateDoc(docRef, { slug, destination });
+      await updateDoc(docRef, { path, slug, destination });
     } else {
       // Create new link
       const newDocRef = doc(collection(db, 'short-links'));
       await setDoc(newDocRef, {
+        path,
         slug,
         destination,
         createdAt: serverTimestamp(),
@@ -93,12 +99,13 @@ export async function saveLink(data: z.infer<typeof linkSchema>) {
     }
 
     revalidatePath('/links');
+    revalidatePath(`/${path}/${slug}`);
     return { success: true };
   } catch (error) {
     if (error instanceof z.ZodError) {
       return {
         success: false,
-        error: error.errors.map((e) => e.message).join(', '),
+        error: error.errors.map((e) => `${e.path.join('.')} - ${e.message}`).join(', '),
       };
     }
     return { success: false, error: 'An unknown error occurred.' };
@@ -110,8 +117,19 @@ export async function deleteLink(id: string) {
     if (!id) {
       return { success: false, error: 'No ID provided for deletion.' };
     }
-    await deleteDoc(doc(db, 'short-links', id));
-    revalidatePath('/links');
+    // To revalidate, we need to know the path and slug before deleting
+    const docRef = doc(db, 'short-links', id);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+        const { path, slug } = docSnap.data();
+        await deleteDoc(docRef);
+        revalidatePath('/links');
+        if (path && slug) {
+            revalidatePath(`/${path}/${slug}`);
+        }
+    } else {
+        return { success: false, error: 'Link not found.' };
+    }
     return { success: true };
   } catch (error) {
     console.error("Failed to delete link:", error);

@@ -162,6 +162,7 @@ export type PageSequence = {
 
 export type ShortLink = {
   id: string;
+  path?: string;
   slug: string;
   destination: string;
   createdAt: any; // Firestore ServerTimestamp
