@@ -1,8 +1,8 @@
 'use server';
 
-import { collection, query, where, getDocs, limit } from 'firebase/firestore';
+import { collection, query, where, getDocs, limit, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import { notFound } from 'next/navigation';
 import type { ShortLink } from '@/lib/types';
 
@@ -38,8 +38,73 @@ async function getLink(path: string, slug: string): Promise<ShortLink | null> {
   return { id: doc.id, ...doc.data() } as ShortLink;
 }
 
+function parseUserAgent(userAgent: string) {
+    let browser = 'Unknown';
+    let os = 'Unknown';
+
+    if (/windows/i.test(userAgent)) os = 'Windows';
+    else if (/macintosh|mac os x/i.test(userAgent)) os = 'macOS';
+    else if (/android/i.test(userAgent)) os = 'Android';
+    else if (/linux/i.test(userAgent)) os = 'Linux';
+    else if (/iphone|ipad|ipod/i.test(userAgent)) os = 'iOS';
+
+    if (/chrome/i.test(userAgent) && !/edge|edg/i.test(userAgent)) browser = 'Chrome';
+    else if (/safari/i.test(userAgent) && !/chrome/i.test(userAgent)) browser = 'Safari';
+    else if (/firefox/i.test(userAgent)) browser = 'Firefox';
+    else if (/msie|trident/i.test(userAgent)) browser = 'Internet Explorer';
+    else if (/edge|edg/i.test(userAgent)) browser = 'Edge';
+    
+    return { browser, os };
+}
+
+
+async function trackVisit(request: NextRequest, linkId: string) {
+    try {
+        const userAgent = request.headers.get('user-agent') || 'Unknown';
+        const ip = request.ip || request.headers.get('x-forwarded-for') || 'Unknown';
+        const { browser, os } = parseUserAgent(userAgent);
+        
+        let geo = {
+            country: 'Unknown',
+            city: 'Unknown',
+            region: 'Unknown',
+            isp: 'Unknown',
+        };
+
+        if (ip !== 'Unknown') {
+            try {
+                const response = await fetch(`https://ipinfo.tw/json?ip=${ip}`, {
+                    headers: { 'User-Agent': 'curl/7.64.1' }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    geo.country = data.country_name || 'Unknown';
+                    geo.isp = data.as_desc || 'Unknown';
+                }
+            } catch (e) {
+                console.error("IP info fetch failed:", e);
+            }
+        }
+
+        const visitData = {
+            timestamp: serverTimestamp(),
+            ip,
+            userAgent,
+            browser,
+            os,
+            ...geo
+        };
+
+        const visitRef = doc(collection(db, `short-links/${linkId}/visits`));
+        await setDoc(visitRef, visitData);
+
+    } catch (error) {
+        console.error('Error tracking visit:', error);
+    }
+}
+
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { slug: string[] } }
 ) {
   const slugSegments = params.slug;
@@ -63,6 +128,9 @@ export async function GET(
   if (!link) {
     return notFound();
   }
+
+  // Start tracking visit in the background (don't await it)
+  trackVisit(request, link.id);
 
   const destinationUrl = new URL(link.destination);
   const lockUrl = new URL('/links/lock', request.url);

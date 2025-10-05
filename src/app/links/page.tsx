@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useOptimistic, useTransition } from 'react';
+import { useState, useEffect, useOptimistic, useTransition, useMemo } from 'react';
 import {
   collection,
   onSnapshot,
@@ -32,11 +32,19 @@ import {
 } from '@/components/ui/dialog';
 import { LinkForm } from './components/LinkForm';
 import { ShortLink } from '@/lib/types';
-import { Trash2, Edit, Copy, ExternalLink, Link as LinkIcon, LogOut } from 'lucide-react';
+import { Trash2, Edit, Copy, ExternalLink, Link as LinkIcon, LogOut, MoreVertical, BarChart2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { logout, saveLink, deleteLink } from './actions';
 import { Skeleton } from '@/components/ui/skeleton';
-
+import { useIsMobile } from '@/hooks/use-mobile';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { useRouter } from 'next/navigation';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 type Action = 
     | { type: 'add'; link: ShortLink }
@@ -47,7 +55,6 @@ type Action =
 function optimisticReducer(state: ShortLink[], action: Action): ShortLink[] {
     switch (action.type) {
         case 'add':
-            // Find if a temporary item exists and replace it, otherwise add new
             const existingIndex = state.findIndex(l => l.id === action.link.id);
             if (existingIndex > -1) {
                 const newState = [...state];
@@ -72,8 +79,13 @@ export default function LinksPage() {
   const { toast } = useToast();
   const [isSaving, startSavingTransition] = useTransition();
   const [isDeleting, startDeletingTransition] = useTransition();
+  const isMobile = useIsMobile();
+  const router = useRouter();
 
-  const [optimisticLinks, dispatch] = useOptimistic(links, optimisticReducer);
+  const [optimisticLinks, dispatch] = useOptimistic(
+    useMemo(() => links.sort((a, b) => (b.createdAt?.toDate() || 0) - (a.createdAt?.toDate() || 0)), [links]),
+    optimisticReducer
+  );
 
   useEffect(() => {
     const q = query(collection(db, 'short-links'), orderBy('createdAt', 'desc'));
@@ -122,7 +134,6 @@ export default function LinksPage() {
             toast({ title: isUpdating ? 'Link Updated' : 'Link Created' });
         } else {
             toast({ title: 'Error', description: result.error, variant: 'destructive' });
-            // The real data from onSnapshot will automatically correct the optimistic update
         }
     });
     setIsFormOpen(false);
@@ -143,7 +154,7 @@ export default function LinksPage() {
   };
 
   const copyToClipboard = (path: string, slug: string) => {
-    const url = `${window.location.origin}/${path === '/' ? '' : path + '/'}${slug}`;
+    const url = `${window.location.origin}${getFullShortUrl(path, slug)}`;
     navigator.clipboard.writeText(url);
     toast({
       title: 'Copied to Clipboard',
@@ -157,6 +168,126 @@ export default function LinksPage() {
       }
       return `/${path}/${slug}`;
   }
+
+  const renderDesktopView = () => (
+    <div className="border rounded-lg">
+        <Table>
+        <TableHeader>
+            <TableRow>
+            <TableHead>Short URL</TableHead>
+            <TableHead>Destination</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+        </TableHeader>
+        <TableBody>
+            {loading ? (
+            Array.from({ length: 3 }).map((_, i) => (
+                <TableRow key={i}>
+                    <TableCell><Skeleton className="h-5 w-40" /></TableCell>
+                    <TableCell><Skeleton className="h-5 w-64" /></TableCell>
+                    <TableCell className="text-right"><Skeleton className="h-8 w-24 inline-block" /></TableCell>
+                </TableRow>
+            ))
+            ) : optimisticLinks.length === 0 ? (
+            <TableRow>
+                <TableCell colSpan={3} className="text-center h-24">
+                No links found. Create one to get started!
+                </TableCell>
+            </TableRow>
+            ) : (
+            optimisticLinks.map((link) => (
+                <TableRow key={link.id} className={link.id.startsWith('temp-') || isDeleting ? 'opacity-50' : ''}>
+                <TableCell className="font-medium">{getFullShortUrl(link.path || 'links', link.slug)}</TableCell>
+                <TableCell className="max-w-xs truncate">
+                    <a href={link.destination} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
+                        {link.destination} <ExternalLink className="h-3 w-3" />
+                    </a>
+                </TableCell>
+                <TableCell className="text-right">
+                    <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => copyToClipboard(link.path || 'links', link.slug)}
+                    >
+                    <Copy className="h-4 w-4" />
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => router.push(`/links/analytics?id=${link.id}`)}
+                    >
+                        <BarChart2 className="h-4 w-4" />
+                    </Button>
+                    <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleEdit(link)}
+                    >
+                    <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleDelete(link.id)}
+                    >
+                    <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
+                </TableCell>
+                </TableRow>
+            ))
+            )}
+        </TableBody>
+        </Table>
+    </div>
+  );
+  
+  const renderMobileView = () => (
+    <div className="space-y-4">
+        {loading ? (
+            Array.from({ length: 3 }).map((_, i) => (
+                <Card key={i}><CardContent className='p-4'><Skeleton className="h-24 w-full" /></CardContent></Card>
+            ))
+        ) : optimisticLinks.length === 0 ? (
+            <div className="text-center text-muted-foreground py-12">
+                No links found. Create one to get started!
+            </div>
+        ) : (
+            optimisticLinks.map(link => (
+                <Card key={link.id} className={link.id.startsWith('temp-') || isDeleting ? 'opacity-50' : ''}>
+                    <CardContent className="p-4 flex justify-between items-start gap-4">
+                        <div className="flex-grow space-y-2 overflow-hidden">
+                            <p className="font-semibold truncate">{getFullShortUrl(link.path || 'links', link.slug)}</p>
+                            <a href={link.destination} target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground truncate flex items-center gap-1.5 hover:underline">
+                               <ExternalLink className="h-3 w-3 flex-shrink-0"/> <span className="truncate">{link.destination}</span>
+                            </a>
+                        </div>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon" className="-mr-2 flex-shrink-0">
+                                    <MoreVertical className="h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => copyToClipboard(link.path || 'links', link.slug)}>
+                                    <Copy className="mr-2 h-4 w-4" /> Copy
+                                </DropdownMenuItem>
+                                 <DropdownMenuItem onClick={() => router.push(`/links/analytics?id=${link.id}`)}>
+                                    <BarChart2 className="mr-2 h-4 w-4" /> Analytics
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleEdit(link)}>
+                                    <Edit className="mr-2 h-4 w-4" /> Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleDelete(link.id)} className="text-destructive">
+                                    <Trash2 className="mr-2 h-4 w-4" /> Delete
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </CardContent>
+                </Card>
+            ))
+        )}
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-background text-foreground p-4 md:p-8">
@@ -189,76 +320,18 @@ export default function LinksPage() {
                   {editingLink ? 'Edit Link' : 'Create New Link'}
                 </DialogTitle>
               </DialogHeader>
-              <LinkForm
-                existingLink={editingLink}
-                onSave={handleSave}
-                isSaving={isSaving}
-              />
+              <ScrollArea className="max-h-[80vh] p-1">
+                <div className='p-5'>
+                    <LinkForm
+                        existingLink={editingLink}
+                        onSave={handleSave}
+                        isSaving={isSaving}
+                    />
+                </div>
+              </ScrollArea>
             </DialogContent>
           </Dialog>
-
-          <div className="border rounded-lg">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Short URL</TableHead>
-                  <TableHead>Destination</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
-                  Array.from({ length: 3 }).map((_, i) => (
-                    <TableRow key={i}>
-                        <TableCell><Skeleton className="h-5 w-40" /></TableCell>
-                        <TableCell><Skeleton className="h-5 w-64" /></TableCell>
-                        <TableCell className="text-right"><Skeleton className="h-8 w-24 inline-block" /></TableCell>
-                    </TableRow>
-                  ))
-                ) : optimisticLinks.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={3} className="text-center h-24">
-                      No links found. Create one to get started!
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  optimisticLinks.map((link) => (
-                    <TableRow key={link.id} className={link.id.startsWith('temp-') || isDeleting ? 'opacity-50' : ''}>
-                      <TableCell className="font-medium">{getFullShortUrl(link.path || 'links', link.slug)}</TableCell>
-                      <TableCell className="max-w-xs truncate">
-                        <a href={link.destination} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
-                            {link.destination} <ExternalLink className="h-3 w-3" />
-                        </a>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => copyToClipboard(link.path || 'links', link.slug)}
-                        >
-                          <Copy className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleEdit(link)}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleDelete(link.id)}
-                        >
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
+            {isMobile ? renderMobileView() : renderDesktopView()}
         </CardContent>
       </Card>
     </div>

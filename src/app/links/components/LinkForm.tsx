@@ -15,8 +15,8 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import type { ShortLink } from '@/lib/types';
-import { Loader2, Lock, Shield, Sparkles } from 'lucide-react';
-import { useEffect } from 'react';
+import { Loader2, Shield, Sparkles } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 
@@ -55,8 +55,11 @@ export function LinkForm({ existingLink, onSave, isSaving }: LinkFormProps) {
     },
   });
 
+  const [isPasswordEnabled, setIsPasswordEnabled] = useState(!!existingLink?.password);
+  const [isLoaderEnabled, setIsLoaderEnabled] = useState(!!existingLink?.loading_text);
+
   useEffect(() => {
-    form.reset({
+    const defaultValues = {
       id: existingLink?.id || undefined,
       path: existingLink?.path || 'links',
       slug: existingLink?.slug || '',
@@ -64,11 +67,13 @@ export function LinkForm({ existingLink, onSave, isSaving }: LinkFormProps) {
       password: existingLink?.password || '',
       loading_text: existingLink?.loading_text || '',
       loading_duration_seconds: existingLink?.loading_duration_seconds || 0,
-    });
+    };
+    form.reset(defaultValues);
+    setIsPasswordEnabled(!!defaultValues.password);
+    setIsLoaderEnabled(!!defaultValues.loading_text);
   }, [existingLink, form]);
 
   const pathValue = form.watch('path');
-  const hasPassword = !!form.watch('password');
 
   return (
     <Form {...form}>
@@ -130,18 +135,17 @@ export function LinkForm({ existingLink, onSave, isSaving }: LinkFormProps) {
                 <FormLabel className="flex items-center gap-2 font-semibold">
                     <Shield /> Password Protection
                 </FormLabel>
-                <Controller
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                        <Switch
-                            checked={!!field.value}
-                            onCheckedChange={(checked) => field.onChange(checked ? '' : undefined)}
-                        />
-                    )}
+                <Switch
+                    checked={isPasswordEnabled}
+                    onCheckedChange={(checked) => {
+                        setIsPasswordEnabled(checked);
+                        if (!checked) {
+                            form.setValue('password', '');
+                        }
+                    }}
                 />
             </div>
-            {hasPassword && (
+            {isPasswordEnabled && (
                  <FormField
                     control={form.control}
                     name="password"
@@ -158,33 +162,49 @@ export function LinkForm({ existingLink, onSave, isSaving }: LinkFormProps) {
         </div>
 
         <div className="space-y-4 rounded-lg border p-4">
-            <h3 className="font-semibold flex items-center gap-2"><Sparkles /> Custom Loading Screen</h3>
-             <FormField
-                control={form.control}
-                name="loading_text"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Loading Message</FormLabel>
-                    <FormControl>
-                        <Input placeholder="e.g., Unlocking new content..." {...field} />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
+            <div className="flex items-center justify-between">
+                <h3 className="font-semibold flex items-center gap-2"><Sparkles /> Custom Loading Screen</h3>
+                <Switch
+                    checked={isLoaderEnabled}
+                    onCheckedChange={(checked) => {
+                        setIsLoaderEnabled(checked);
+                        if (!checked) {
+                            form.setValue('loading_text', '');
+                            form.setValue('loading_duration_seconds', 0);
+                        }
+                    }}
                 />
-            <FormField
-                control={form.control}
-                name="loading_duration_seconds"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Duration (seconds)</FormLabel>
-                    <FormControl>
-                        <Input type="number" placeholder="e.g., 3" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
-            />
+            </div>
+            {isLoaderEnabled && (
+                <>
+                    <FormField
+                        control={form.control}
+                        name="loading_text"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Loading Message</FormLabel>
+                            <FormControl>
+                                <Input placeholder="e.g., Unlocking new content..." {...field} />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                    <FormField
+                        control={form.control}
+                        name="loading_duration_seconds"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Duration (seconds)</FormLabel>
+                            <FormControl>
+                                <Input type="number" placeholder="e.g., 3" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </>
+            )}
         </div>
 
         <div className="flex justify-end">
