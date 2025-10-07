@@ -70,7 +70,7 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
   const [bookDimensions, setBookDimensions] = useState({ width: 0, height: 0 });
 
   // Use the dynamic page sequence from the fetched data
-  const pageOrder = data.pageSequence;
+  const pageOrder = data.pageSequence.activePages;
 
   useEffect(() => {
     setIsMounted(true);
@@ -142,41 +142,57 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
     }
   }
 
-  const nextPage = () => {
+  const nextPage = useCallback(() => {
     if (bookRef.current) {
         bookRef.current.pageFlip().flipNext();
     }
-  };
+  }, []);
 
-  const prevPage = () => {
+  const prevPage = useCallback(() => {
     if (bookRef.current) {
       bookRef.current.pageFlip().flipPrev();
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'ArrowLeft') {
+        prevPage();
+      } else if (event.key === 'ArrowRight') {
+        nextPage();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [prevPage, nextPage]);
 
   const renderPageContent = (page: Page, pageNumber: number) => {
-    const pageTitle = data.pageTitles.find(p => p.id === page)?.title;
+    const titles = data.pageTitles.find(p => p.id === page);
     switch (page) {
         case 'cover':
             return <CoverPage onOpen={handleOpenBook} />;
         case 'toc':
-            return <TableOfContents onNavigate={navigateToPageType} pageSequence={pageOrder} />;
+            return <TableOfContents onNavigate={navigateToPageType} pageSequence={pageOrder} pageTitles={data.pageTitles} />;
         case 'about':
             return <AboutPage personalInfo={data.personalInfo} imageUrl={data.authorImageUrl} imageHint={data.authorImageHint} aboutMe={data.aboutMe} cvLink={data.cvLink} />;
         case 'private-info':
-            return <PrivateInfoPage privateInfo={data.privateInfo} title={pageTitle ?? 'Private Sanctum'} />;
+            return <PrivateInfoPage privateInfo={data.privateInfo} title={titles?.pageTitle ?? 'Private Sanctum'} />;
         case 'education':
-            return <EducationPage education={data.education} title={pageTitle ?? 'Education'} />;
+            return <EducationPage education={data.education} title={titles?.pageTitle ?? 'Education'} />;
         case 'skills':
-            return <SkillsPage skills={data.skills} onSkillSelect={setSelectedSkill} title={pageTitle ?? 'Skills'} />;
+            return <SkillsPage skills={data.skills} onSkillSelect={setSelectedSkill} title={titles?.pageTitle ?? 'Skills'} />;
         case 'experience':
-            return <ExperiencePage experience={data.experience} title={pageTitle ?? 'Experience'} />;
+            return <ExperiencePage experience={data.experience} title={titles?.pageTitle ?? 'Experience'} />;
         case 'achievements':
-            return <AchievementsPage achievements={data.achievements} title={pageTitle ?? 'Achievements'} />;
+            return <AchievementsPage achievements={data.achievements} title={titles?.pageTitle ?? 'Achievements'} />;
         case 'projects':
-            return <ProjectsPage projects={data.projects} onProjectSelect={setSelectedProject} title={pageTitle ?? 'Projects'} />;
+            return <ProjectsPage projects={data.projects} bundles={data.projectBundles} onProjectSelect={setSelectedProject} title={titles?.pageTitle ?? 'Projects'} />;
         case 'contact':
-            return <ContactPage contactDetails={data.contactDetails} socials={data.socials} customLinks={data.customLinks} title={pageTitle ?? 'Contact'}/>;
+            return <ContactPage contactDetails={data.contactDetails} socials={data.socials} customLinks={data.customLinks} title={titles?.pageTitle ?? 'Contact'}/>;
         case 'back-cover':
             return <BackCoverPage />;
         default:
