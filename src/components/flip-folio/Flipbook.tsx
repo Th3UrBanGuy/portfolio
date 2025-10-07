@@ -187,7 +187,7 @@ export default function Flipbook({ data }: { data: PortfolioData }) {
         case 'cover':
             return <CoverPage onOpen={handleOpenBook} />;
         case 'toc':
-            return <TableOfContents onNavigate={navigateToPageType} pageSequence={pageOrder} pageTitles={data.pageTitles} />;
+            return <TableOfContents onNavigate={navigateToPageType} activePages={pageOrder} pageTitles={data.pageTitles} />;
         case 'about':
             return <AboutPage personalInfo={data.personalInfo} imageUrl={data.authorImageUrl} imageHint={data.authorImageHint} aboutMe={data.aboutMe} cvLink={data.cvLink} />;
         case 'private-info':
